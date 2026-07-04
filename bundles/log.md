@@ -2,6 +2,8 @@
 
 ## 2026-07-04
 
+- **Update**: Tightened the architecture bundle with explicit discovery, resolution, output, and error contracts after council review.
+- **Creation**: Added the [Architecture](architecture/) bundle to capture the initial `tooling` library and CLI decisions.
 - **Creation**: Added [Open Knowledge Format Specification](references/Open%20Knowledge%20Format%20Specification.md) as a local reference for the tooling bundle.
 - **Update**: Aligned the architecture prompt and PRDs around a Phase 1 reading MVP and kept the `tooling` knowledge bundle in English.
 - **Update**: Translated the `tooling` knowledge bundle to English and renamed documents, folders, and internal links accordingly.

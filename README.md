@@ -8,6 +8,16 @@ The first supported domain is OKF: reading, navigating, validating, and reportin
 
 This package is intentionally local to this repository for now. It should become a standalone library or CLI only after the API, command behavior, JSON output, and test coverage are stable enough to justify extraction.
 
+## Installation From Source
+
+Install the project in editable mode from the repository root:
+
+```bash
+python -m pip install -e .
+```
+
+This makes the `tooling` command available in your active environment while keeping the package linked to the local source code.
+
 ## Planned CLI
 
 ```bash

@@ -26,10 +26,11 @@ It returns concept documents only. Reserved files and directories stay out of th
 - Combine filters with AND semantics.
 - Sort the final concept list by `concept_id` ascending.
 - Apply an optional `--offset` and `--limit` window after filtering and sorting.
+- Reject negative `--offset` and `--limit` values instead of coercing them.
 
 ## Output
 
-- Human output should be concise, stable, and able to report when the visible slice is truncated.
+- Human output should be concise, stable, path-first, and able to show the bundle-relative location of each concept.
 - JSON output should use the shared envelope and put the windowed concept result object in `data`.
 - The top-level `issues` array should carry tolerated read problems without failing the command.
 
@@ -38,12 +39,14 @@ It returns concept documents only. Reserved files and directories stay out of th
 - Do not add reserved files or directories to the list payload.
 - Do not infer extra grouping or summarization that changes the semantic inventory.
 - Do not let `list` become a second `tree`.
+- Do not silently normalize invalid window inputs.
 
 ## Why
 
 - The data model already separates `Concept` from `Directory`.
 - The command stays easier to consume when it answers one question: which concepts are present?
 - Stable ordering, filter semantics, and explicit windowing keep downstream automation predictable.
+- Human output is more useful when it identifies the concept and where to find it.
 
 ## Relation
 

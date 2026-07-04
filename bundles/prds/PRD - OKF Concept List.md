@@ -30,7 +30,8 @@ Implement `tooling okf list` as a deterministic concept-only inventory command f
 - Combine `--type` and `--tag` with AND semantics.
 - Sort the final result set by `concept_id` ascending.
 - Support windowing with `--offset` and `--limit` after filtering and sorting.
-- Emit a stable human-readable summary and the shared JSON envelope.
+- Reject negative `--offset` and `--limit` values as invalid user input.
+- Emit a stable human-readable summary that includes the bundle-relative path for each concept, and the shared JSON envelope.
 - Preserve tolerated read issues in the top-level `issues` array.
 
 ## Requirements
@@ -42,11 +43,13 @@ Implement `tooling okf list` as a deterministic concept-only inventory command f
 - `--tag` must match an individual tag exactly.
 - When both filters are provided, a concept must satisfy both to appear in the result.
 - Sorting must be stable and deterministic across repeated runs.
+- `--offset` and `--limit` must accept only non-negative integers.
+- Negative `--offset` and `--limit` values must fail with a non-zero exit status and an actionable error.
 - JSON output must place the windowed inventory object in `data`.
 - The `data` object must include `concepts`, `total`, `returned`, `offset`, `limit`, and `truncated`.
 - `total` must represent the full filtered match count before windowing.
 - `truncated` must be `true` whenever the current payload does not include the full filtered match set.
-- Human output may apply a readability cap, but that cap must not change the JSON result set or the sort order.
+- Human output must include the bundle-relative path for each concept so the listed item can be located quickly.
 - Tolerated read problems must not fail the command unless the bundle cannot be read at all.
 
 ## Acceptance Criteria
@@ -73,6 +76,8 @@ Implement `tooling okf list` as a deterministic concept-only inventory command f
 - Emits stable JSON for the windowed concept payload.
 - Preserves tolerated read issues in the JSON envelope.
 - Excludes `index.md` and `log.md` from the concept inventory.
+- Rejects negative `--offset` and `--limit` values.
+- Includes bundle-relative paths in human output.
 
 ## Non-Goals
 
@@ -82,6 +87,7 @@ Implement `tooling okf list` as a deterministic concept-only inventory command f
 - Grouping concepts by type or tag in the output is out of scope.
 - Changing the shared JSON envelope is out of scope.
 - Inferring concepts from non-Markdown sources is out of scope.
+- Silent coercion of invalid window arguments is out of scope.
 
 ## Relations
 

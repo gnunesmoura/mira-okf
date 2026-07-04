@@ -7,6 +7,16 @@ from . import __version__
 from .okf.commands import command_stub
 
 
+def _non_negative_int(value: str) -> int:
+    try:
+        parsed = int(value)
+    except ValueError as error:
+        raise argparse.ArgumentTypeError("must be an integer") from error
+    if parsed < 0:
+        raise argparse.ArgumentTypeError("must be non-negative")
+    return parsed
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="tooling")
     parser.add_argument("--version", action="version", version=f"tooling {__version__}")
@@ -17,7 +27,17 @@ def build_parser() -> argparse.ArgumentParser:
 
     for name, help_text, arguments in (
         ("tree", "Show a summarized bundle tree.", (("--depth", {"type": int, "default": 2}), ("--summary", {"action": "store_true"}), ("--json", {"action": "store_true"}))),
-        ("list", "List concepts in a bundle.", (("--type", {}), ("--tag", {}), ("--json", {"action": "store_true"}))),
+        (
+            "list",
+            "List concepts in a bundle.",
+            (
+                ("--type", {}),
+                ("--tag", {}),
+                ("--offset", {"type": _non_negative_int, "default": 0}),
+                ("--limit", {"type": _non_negative_int}),
+                ("--json", {"action": "store_true"}),
+            ),
+        ),
         ("show", "Show a single concept.", (("--summary", {"action": "store_true"}), ("--json", {"action": "store_true"}))),
     ):
         command_parser = okf_subparsers.add_parser(name, help=help_text)

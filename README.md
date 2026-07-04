@@ -12,7 +12,7 @@ This package is intentionally local to this repository for now. It should become
 
 ```bash
 tooling okf tree [<bundle>] --depth <n> [--summary] [--json]
-tooling okf list [<bundle>] [--type <type>] [--tag <tag>] [--json]
+tooling okf list [<bundle>] [--type <type>] [--tag <tag>] [--offset <n>] [--limit <n>] [--json]
 tooling okf show [<bundle>] <concept-id-or-path> [--summary] [--json]
 tooling okf links [<bundle>] [--broken] [--external] [--json]
 tooling okf backlinks [<bundle>] <concept-id-or-path> [--json]

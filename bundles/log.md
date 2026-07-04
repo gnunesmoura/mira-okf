@@ -2,6 +2,7 @@
 
 ## 2026-07-04
 
+- **Update**: Tightened the OKF concept list definitions so invalid pagination is rejected and human list output exposes bundle-relative paths.
 - **Update**: Split the OKF read model into dedicated reader and listing modules so `list` no longer depends on `tree` for shared inventory behavior.
 - **Update**: Extracted shared OKF bundle resolution into a dedicated module so `tree`, `list`, and future commands reuse the same discovery and ambiguity rules.
 - **Update**: Finalized the [PRD - OKF Concept List](prds/PRD%20-%20OKF%20Concept%20List.md) for concept inventory, exact-match filters, and bounded browsing.

@@ -52,10 +52,12 @@ Keep key names stable and predictable so automation can consume them without spe
 
 ## Human Output
 
-- Keep human output concise and path-first.
+- Keep human output concise, path-first, and actionable.
 - Make `tree`, `list`, and `show` visually distinct but structurally consistent.
+- `list` should show the bundle-relative path for each concept, alongside the concept identity and other compact summary fields when available.
 - `list` may note when a visible slice is truncated, but the JSON payload must carry the authoritative `total` and window metadata.
 - Do not rely on color or terminal width for meaning.
+- Do not silently coerce invalid CLI inputs such as negative window bounds.
 
 ## Ordering
 

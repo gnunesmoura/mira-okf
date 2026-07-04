@@ -23,6 +23,7 @@ tags:
 - Sort the full filtered match set by `concept_id` ascending.
 - Apply an optional `--offset` and `--limit` window to the sorted matches.
 - When no explicit window is supplied, return the full filtered match set.
+- Reject negative `--offset` and `--limit` inputs before constructing the result window.
 - Represent the JSON payload in `data` as an object with:
     - `concepts`: the concept slice for the current window;
     - `total`: total matched concepts before windowing;
@@ -39,6 +40,7 @@ Human output may apply a readability cap, but that cap is a presentation choice 
 - The command gains a stable browsing model for large bundles.
 - JSON consumers need to read `data.concepts` instead of assuming `data` is an array.
 - The contract stays deterministic because filtering, sorting, and windowing happen in one defined order.
+- Invalid window arguments fail early instead of producing misleading empty slices.
 
 ## Alternatives Considered
 

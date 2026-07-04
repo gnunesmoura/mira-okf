@@ -23,10 +23,10 @@ Help people, scripts, and skills inspect the concepts in an OKF bundle without m
 - `--type` and `--tag` apply as exact-match filters.
 - `--type` and `--tag` combine with AND semantics when both are present.
 - Results are sorted by `concept_id` ascending.
+- Human output is concise and path-first so users can locate a concept quickly.
 - Human and JSON output stay stable for automation and skills.
-- The command can cap large human result sets and signal when output was truncated.
-- The command can report total matched concepts so users know whether they are browsing a small or large bundle.
-- The command can support chunked browsing of large inventories through bounded result windows.
+- The command reports total matched concepts so users know whether they are browsing a small or large bundle.
+- The command supports chunked browsing of large inventories through bounded result windows.
 
 ## Out of Scope
 
@@ -52,7 +52,7 @@ The command gives scripts and agents a fast way to answer:
 2. The CLI reads the bundle and collects concepts.
 3. Optional `--type` and `--tag` filters narrow the concept set.
 4. Optional bounds keep large result sets readable and browsable.
-5. The CLI prints a compact human view or a stable JSON payload from the same filtered list.
+5. The CLI prints a compact, path-first human view or a stable JSON payload from the same filtered list.
 
 ## Acceptance Criteria
 
@@ -61,13 +61,14 @@ The command gives scripts and agents a fast way to answer:
 - `tooling okf list <bundle> --type <type>` returns only concepts whose type exactly matches `<type>`.
 - `tooling okf list <bundle> --tag <tag>` returns only concepts whose tags include `<tag>`.
 - `tooling okf list <bundle> --type <type> --tag <tag>` returns only concepts that satisfy both filters.
-- Large result sets can be truncated in human output while still reporting the total match count.
 - Large result sets can be browsed in bounded windows without changing the stable sort order.
-- Any truncation is explicit in JSON output so automation can detect incomplete views.
 - Output order is stable and sorted by `concept_id`.
 - JSON output places the filtered concept window object in `data`.
 - Top-level `issues` still carry tolerated read problems.
 - Reserved files remain visible in `tree`, not in `list`.
+- Human output includes the bundle-relative path for each listed concept.
+- `--offset` and `--limit` reject negative values instead of silently normalizing them.
+- Invalid window arguments produce an actionable error and a non-zero exit status.
 
 ## Minimum Tests
 
@@ -78,8 +79,9 @@ The command gives scripts and agents a fast way to answer:
 - Returns deterministic order after filtering.
 - Emits stable JSON for the filtered concept window.
 - Preserves tolerated read issues without failing the command.
-- Surfaces truncation explicitly when a result set exceeds the human output cap.
 - Reports the total matched count alongside truncated or bounded result sets.
+- Includes the bundle-relative path in human output.
+- Rejects negative `--offset` and `--limit` values.
 
 ## Relations
 

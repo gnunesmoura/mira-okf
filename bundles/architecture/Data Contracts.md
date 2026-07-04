@@ -71,6 +71,7 @@ List result invariants:
 - `offset` is the zero-based position into the sorted filtered match set;
 - `limit` is `null` when the full filtered match set is returned;
 - `truncated` is `true` when the current payload does not include every matched concept.
+- `offset` and `limit` are non-negative when present; invalid values are rejected before the result object is built.
 
 ## Directory
 

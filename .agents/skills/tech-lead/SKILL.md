@@ -5,7 +5,7 @@ description: Write implementation-directing PRD OKF documents. Use this skill wh
 
 # Tech Lead
 
-Use this skill to turn shaped product and architecture context into `PRD` OKF documents that direct implementation.
+Use this skill to turn shaped product and architecture context into `PRD` OKF documents that direct implementation. Use it after features and architecture decisions are established, or when a bundle needs implementation direction.
 
 ## Output
 
@@ -43,3 +43,4 @@ Use concise sections:
 - Name files, commands, contracts, and expected outputs when known.
 - Include the narrowest useful test plan.
 - Do not restate every feature or decision; link them and summarize only what implementation needs.
+- If feature scope or technical direction is still missing, call out the blocker instead of inventing requirements.

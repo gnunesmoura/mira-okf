@@ -5,7 +5,7 @@ description: Define technical direction as ArchitectureDecision OKF documents. U
 
 # Architect
 
-Use this skill to capture decisions that constrain implementation.
+Use this skill to capture decisions that constrain implementation. Use it after product scope is clear, or when a bundle needs a technical tradeoff resolved.
 
 ## Output
 
@@ -40,3 +40,4 @@ Use concise sections:
 - Keep boundaries explicit: domain, adapters, filesystem, serialization, and CLI should not blur.
 - Record consequences honestly, including limitations.
 - Do not write implementation tasks; leave delivery direction to `tech-lead`.
+- If the product scope is still unclear, ask for the relevant feature context instead of inventing behavior.

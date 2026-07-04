@@ -5,7 +5,7 @@ description: Define product features as Feature OKF documents. Use this skill wh
 
 # Tech PM
 
-Use this skill to turn product intent into `Feature` OKF documents.
+Use this skill to turn product intent into `Feature` OKF documents. Use it for bundle feature shaping, not for architecture or implementation planning.
 
 ## Output
 
@@ -42,3 +42,4 @@ Use concise sections:
 - Split unrelated behavior into separate Feature documents.
 - Link parent PRDs, dependent features, and relevant architecture decisions.
 - Do not invent architecture; leave technical tradeoffs to `architect`.
+- If a request needs implementation detail or system design to answer well, stop at the feature boundary and surface the missing architectural decision instead of guessing.

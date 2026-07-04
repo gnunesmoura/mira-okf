@@ -2,6 +2,9 @@
 
 ## 2026-07-04
 
+- **Update**: Split the OKF read model into dedicated reader and listing modules so `list` no longer depends on `tree` for shared inventory behavior.
+- **Update**: Extracted shared OKF bundle resolution into a dedicated module so `tree`, `list`, and future commands reuse the same discovery and ambiguity rules.
+- **Update**: Finalized the [PRD - OKF Concept List](prds/PRD%20-%20OKF%20Concept%20List.md) for concept inventory, exact-match filters, and bounded browsing.
 - **Creation**: Added the [Feature - OKF Concept List](features/Feature%20-%20OKF%20Concept%20List.md) concept and aligned the list contract to concepts only.
 - **Update**: Tightened the architecture bundle with explicit discovery, resolution, output, and error contracts after council review.
 - **Creation**: Added the [Architecture](architecture/) bundle to capture the initial `tooling` library and CLI decisions.

@@ -10,6 +10,8 @@ tags:
 
 # Data Contracts
 
+The OKF read model should be built once in the shared reader module and reused by `tree`, `list`, and later commands. Command handlers should only transform that model into their own output shape.
+
 ## Bundle
 
 - `root_path`

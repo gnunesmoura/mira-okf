@@ -10,6 +10,12 @@ tags:
 
 # Discovery and Resolution
 
+## Shared Resolver
+
+The CLI should use one shared bundle resolution path for `tree`, `list`, `show`, and future OKF commands.
+
+Keep the discovery rules, ambiguity formatting, and bundle-relative path normalization in the shared resolver instead of reimplementing them in command handlers.
+
 ## Bundle Discovery
 
 When `<bundle>` is provided, treat it as a path to a bundle root directory and resolve it relative to the current working directory when needed.

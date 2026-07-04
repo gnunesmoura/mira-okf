@@ -12,19 +12,19 @@ tags:
 
 ## tree
 
-Resolve the bundle, scan directories to the requested depth, count concepts and reserved files, and render a summarized structure.
+Resolve the bundle through the shared resolver, scan directories to the requested depth, count concepts and reserved files, and render a summarized structure.
 
 Tree output should not require full body reads. It may use frontmatter for concept counts and summary metadata, but it should not duplicate parsing rules that already live in the inventory layer.
 
 ## list
 
-Resolve the bundle, inventory concepts only, apply optional exact-match `type` and `tag` filters with AND semantics, sort by `concept_id`, and return a deterministic windowed listing with total-match metadata.
+Resolve the bundle through the shared resolver, inventory concepts only, apply optional exact-match `type` and `tag` filters with AND semantics, sort by `concept_id`, and return a deterministic windowed listing with total-match metadata.
 
 When `--offset` and `--limit` are present, apply them after filtering and sorting so that chunked browsing stays stable.
 
 ## show
 
-Resolve the bundle and then resolve a target concept by the fixed precedence in `Discovery and Resolution`, returning the parsed concept and its issues.
+Resolve the bundle through the shared resolver and then resolve a target concept by the fixed precedence in `Discovery and Resolution`, returning the parsed concept and its issues.
 
 ## Discovery
 

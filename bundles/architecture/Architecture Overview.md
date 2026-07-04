@@ -26,7 +26,7 @@ The OKF module should stay isolated enough to extract later, but the initial cod
 ## Core Decisions
 
 - Use a thin CLI that delegates all bundle logic to library services.
-- Keep filesystem access, parsing, serialization, and presentation separate from domain models.
+- Keep bundle resolution, OKF read-model construction, serialization, and presentation separate from domain models.
 - Preserve unknown frontmatter keys.
 - Treat broken links, unknown types, missing optional fields, and extra frontmatter fields as tolerated issues.
 - Use one consistent machine-readable error envelope for CLI and automation.

@@ -46,7 +46,7 @@ Keep key names stable and predictable so automation can consume them without spe
 ## Command Payloads
 
 - `tree` should place the rendered directory inventory in `data`.
-- `list` should place the filtered concept array in `data`.
+- `list` should place the windowed concept result object in `data`.
 - `show` should place the resolved concept object in `data`.
 - Future commands should reuse the same top-level envelope and only vary the payload inside `data`.
 
@@ -54,6 +54,7 @@ Keep key names stable and predictable so automation can consume them without spe
 
 - Keep human output concise and path-first.
 - Make `tree`, `list`, and `show` visually distinct but structurally consistent.
+- `list` may note when a visible slice is truncated, but the JSON payload must carry the authoritative `total` and window metadata.
 - Do not rely on color or terminal width for meaning.
 
 ## Ordering

@@ -15,7 +15,7 @@ tags:
 
 `tooling` is a local Python library and CLI for reusable tools in this repository.
 
-The first supported domain is OKF, focused on summarized navigation, frontmatter property extraction, backlinks, broken links, and bundle health metrics.
+The first supported domain is OKF, focused on summarized navigation, concept inventory, frontmatter property extraction, backlinks, broken links, and bundle health metrics.
 
 ## Organization
 
@@ -36,3 +36,4 @@ The first supported domain is OKF, focused on summarized navigation, frontmatter
 - [PRD - Python Tooling Library and CLI](prds/PRD%20-%20Python%20Tooling%20Library%20and%20CLI.md)
 - [PRD - OKF Module](prds/PRD%20-%20OKF%20Module.md)
 - [Feature - Summarized OKF Navigation](features/Feature%20-%20Summarized%20OKF%20Navigation.md)
+- [Feature - OKF Concept List](features/Feature%20-%20OKF%20Concept%20List.md)

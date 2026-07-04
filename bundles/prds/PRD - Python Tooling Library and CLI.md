@@ -375,7 +375,7 @@ Until then, this repository is the product, validation, and evolution environmen
 | Command | Phase | Contract | Test |
 |---|---|---|---|
 | `tooling okf tree` | Phase 1 | relative/absolute bundle input and automatic discovery | small bundle fixture, human and JSON output |
-| `tooling okf list` | Phase 1 | type filter and basic concept reading | predictable list by type, unknown fields preserved |
+| `tooling okf list` | Phase 1 | concept inventory with `type` and `tag` filters | predictable list, unknown fields preserved, stable ordering |
 | `tooling okf show` | Phase 1 | concept reading by id/path and stable JSON | summarized and JSON output comparison |
 | `tooling okf links` | Phase 2 | link resolution and status classification | resolved, broken, and external cases |
 | `tooling okf backlinks` | Phase 2 | inverse link relationship | fixture with multiple references |
@@ -388,4 +388,6 @@ Until then, this repository is the product, validation, and evolution environmen
 - [Tooling Overview](../Tooling%20Overview.md)
 - [PRD - OKF Module](PRD%20-%20OKF%20Module.md)
 - [Feature - Summarized OKF Navigation](../features/Feature%20-%20Summarized%20OKF%20Navigation.md)
+- [Feature - OKF Concept List](../features/Feature%20-%20OKF%20Concept%20List.md)
+- [List Command Contract](../architecture/List%20Command%20Contract.md)
 - [Open Knowledge Format Specification](../references/Open%20Knowledge%20Format%20Specification.md)

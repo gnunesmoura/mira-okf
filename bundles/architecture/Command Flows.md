@@ -18,7 +18,9 @@ Tree output should not require full body reads. It may use frontmatter for conce
 
 ## list
 
-Resolve the bundle, inventory concepts, apply optional filters, and return a deterministic listing sorted by `concept_id`.
+Resolve the bundle, inventory concepts only, apply optional exact-match `type` and `tag` filters with AND semantics, sort by `concept_id`, and return a deterministic windowed listing with total-match metadata.
+
+When `--offset` and `--limit` are present, apply them after filtering and sorting so that chunked browsing stays stable.
 
 ## show
 

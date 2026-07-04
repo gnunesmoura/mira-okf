@@ -1,7 +1,7 @@
 ---
 type: ArchitectureDecision
 title: Data Contracts
-description: Defines the initial read model for bundles, concepts, directories, links, and issues.
+description: Defines the initial read model for bundles, concepts, directories, list windows, links, and issues.
 tags:
   - tooling
   - okf
@@ -51,6 +51,24 @@ Concept invariants:
 - `concept_id` is the bundle-relative path without `.md`;
 - `title` falls back to a filename-derived value when omitted;
 - reserved files are never treated as concepts.
+
+## ListResult
+
+- `concepts`
+- `total`
+- `returned`
+- `offset`
+- `limit`
+- `truncated`
+
+List result invariants:
+
+- `concepts` contains only concept records and stays sorted by `concept_id`;
+- `total` is the number of matched concepts before any window is applied;
+- `returned` equals the number of concepts in the current payload;
+- `offset` is the zero-based position into the sorted filtered match set;
+- `limit` is `null` when the full filtered match set is returned;
+- `truncated` is `true` when the current payload does not include every matched concept.
 
 ## Directory
 

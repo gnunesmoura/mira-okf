@@ -2,6 +2,8 @@
 
 ## 2026-07-04
 
+- **Update**: Audited the OKF bundle docs against the local spec, reconciled the `links` and `backlinks` feature guidance, and verified internal references.
+- **Creation**: Added the [PRD - OKF Links](prds/PRD%20-%20OKF%20Links.md) and [Links Command Contract](architecture/Links%20Command%20Contract.md) bundle artifacts for outbound link discovery.
 - **Update**: Tightened the OKF concept list definitions so invalid pagination is rejected and human list output exposes bundle-relative paths.
 - **Update**: Split the OKF read model into dedicated reader and listing modules so `list` no longer depends on `tree` for shared inventory behavior.
 - **Update**: Extracted shared OKF bundle resolution into a dedicated module so `tree`, `list`, and future commands reuse the same discovery and ambiguity rules.

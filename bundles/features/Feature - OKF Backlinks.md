@@ -13,12 +13,13 @@ tags:
 
 ## Objective
 
-Help people, scripts, and skills answer a single question for one concept: which other concepts reference it in the current OKF bundle.
+Help people, scripts, and skills answer one question for a resolved concept: which other concepts reference it in the current OKF bundle.
 
 ## Scope
 
 - `tooling okf backlinks [<bundle>] <concept-id-or-path> [--json]` resolves one concept and lists incoming links to it.
 - The command uses the shared bundle discovery and target resolution rules.
+- The command reuses the same link extraction and normalization rules as `tooling okf links`.
 - The result is concept-scoped and ordered deterministically.
 - Broken or unresolved references are reported as tolerated issues, not fatal failures.
 - JSON output uses the shared envelope and places the backlinks payload in `data`.
@@ -50,6 +51,7 @@ Help people, scripts, and skills answer a single question for one concept: which
 - JSON mode includes the resolved concept and the backlink payload in `data`.
 - Tolerated link or read issues appear in `issues` without forcing command failure.
 - The command does not invent references that are not present in the bundle read model.
+- The command uses the same target-resolution precedence as `show`.
 
 ## Minimum Tests
 
@@ -71,3 +73,4 @@ Help people, scripts, and skills answer a single question for one concept: which
 - [Data Contracts](../architecture/Data%20Contracts.md)
 - [Output and Errors](../architecture/Output%20and%20Errors.md)
 - [Test Strategy](../architecture/Test%20Strategy.md)
+- [Feature - OKF Links](Feature%20-%20OKF%20Links.md)

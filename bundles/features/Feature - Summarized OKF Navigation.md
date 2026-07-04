@@ -21,11 +21,11 @@ Show a short view of an OKF bundle structure to guide humans, scripts, and skill
 tooling okf tree [<bundle>] --depth 2 --summary
 ```
 
-`<bundle>` may be a relative or absolute path. When omitted, the CLI should look for an OKF bundle in the directory where it was called.
+`<bundle>` may be a relative or absolute path. When omitted, the CLI should inspect the current directory tree to find OKF bundle roots before failing or picking a unique candidate.
 
 ## Expected Behavior
 
-- Resolve the bundle by the provided path or by automatic discovery in the current directory.
+- Resolve the bundle by the provided path or by automatic discovery in the current directory tree.
 - Fail when discovery finds multiple bundles and list the candidate paths.
 - Show directories up to the requested depth.
 - Indicate the presence of `index.md` and `log.md`.
@@ -51,6 +51,7 @@ A skill should start with this feature to understand the bundle structure. After
 ## Minimum Tests
 
 - Discover a bundle when `<bundle>` is omitted.
+- Discover nested bundle roots when the current directory itself is not the bundle.
 - Fail with multiple candidates when discovery finds more than one bundle.
 - Respect the configured depth.
 - Emit stable JSON for the summarized tree.

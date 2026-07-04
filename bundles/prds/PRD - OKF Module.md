@@ -22,7 +22,7 @@ Allow people, scripts, and skills to navigate, summarize, and audit OKF bundles 
 
 ## MVP Scope
 
-- Discover an OKF bundle from a relative path, absolute path, or automatic discovery in the current directory.
+- Discover an OKF bundle from a relative path, absolute path, or automatic discovery in the current directory tree.
 - Read bundle structure for `tree`, `list`, and `show`.
 - Identify concepts, indexes, and logs.
 - Parse basic OKF frontmatter and expose the main properties needed for navigation.
@@ -59,7 +59,7 @@ tooling okf validate [<bundle>] [--json]
 
 - The CLI lists the structure of the bundle provided in `<bundle>` without opening all content in the output.
 - The CLI accepts `<bundle>` as a relative or absolute path.
-- The CLI attempts to discover an OKF bundle in the current directory when `<bundle>` is omitted.
+- The CLI attempts to discover an OKF bundle in the current directory tree when `<bundle>` is omitted.
 - If discovery finds multiple candidates, the CLI fails and lists candidates with reference commands for each path.
 - JSON output from `tree` and `list` is stable for skills.
 - Basic OKF parsing tolerates `Issue` entries and other read problems without blocking bundle consumption.

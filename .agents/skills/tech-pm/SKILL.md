@@ -37,6 +37,7 @@ Use concise sections:
 ## Rules
 
 - Define observable behavior, not implementation internals.
+- Update the relations off the feature to the PRDs, architecture decisions, and other features it constrains.
 - Keep acceptance criteria testable and specific.
 - Split unrelated behavior into separate Feature documents.
 - Link parent PRDs, dependent features, and relevant architecture decisions.

@@ -38,6 +38,7 @@ Use concise sections:
 ## Rules
 
 - Translate features and architecture decisions into implementation requirements.
+- Update relations off the PRD to the features, architecture decisions, and other PRDs it constrains.
 - Keep requirements concrete enough for a developer or agent to execute.
 - Name files, commands, contracts, and expected outputs when known.
 - Include the narrowest useful test plan.

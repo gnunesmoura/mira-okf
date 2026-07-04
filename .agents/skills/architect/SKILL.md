@@ -35,6 +35,7 @@ Use concise sections:
 ## Rules
 
 - State the chosen design clearly enough that implementation can proceed.
+- Add relations off the architecture decision to the features, PRDs, and other decisions it constrains.
 - Prefer existing repo patterns and stdlib-first approaches.
 - Keep boundaries explicit: domain, adapters, filesystem, serialization, and CLI should not blur.
 - Record consequences honestly, including limitations.

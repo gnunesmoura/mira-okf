@@ -72,3 +72,4 @@ tooling okf validate [<bundle>] [--json]
 - [PRD - Python Tooling Library and CLI](PRD%20-%20Python%20Tooling%20Library%20and%20CLI.md)
 - [Tooling Overview](../Tooling%20Overview.md)
 - [Feature - Summarized OKF Navigation](../features/Feature%20-%20Summarized%20OKF%20Navigation.md)
+- [Open Knowledge Format Specification](../references/Open%20Knowledge%20Format%20Specification.md)

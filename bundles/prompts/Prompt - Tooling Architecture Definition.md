@@ -18,22 +18,27 @@ Use this prompt to define the initial architecture of `tooling`: a local Python 
 
 ## Prompt
 
-You are a senior Python software architect. Define the initial technical architecture for the local `tooling` library and CLI, considering the OKF bundle documents in `tooling/bundles/`.
+You are a senior Python software architect. Define the initial architecture for the local `tooling` Python library and CLI.
 
-Required context:
+Use these primary sources:
 
-- The product starts inside this repository, in `tooling/`.
-- The root CLI must be `tooling`.
-- The first domain is OKF, accessed through `tooling okf ...` commands.
-- The code should start small, testable, and removable.
-- The OKF module should be extractable to a standalone repository or package in the future.
-- The CLI must accept `<bundle>` as a relative or absolute path.
-- When `<bundle>` is omitted, the CLI should try to discover an OKF bundle in the current directory.
-- If multiple candidates are found, the CLI must fail and list candidates with reference commands for each path.
-- Broken links, unknown types, and extra fields must be tolerated.
-- Human output must be readable; JSON output must be stable for skills and automation.
+- `tooling/bundles/prds/PRD - Python Tooling Library and CLI.md`
+- `tooling/bundles/prds/PRD - OKF Module.md`
+- `tooling/bundles/features/Feature - Summarized OKF Navigation.md`
+- `tooling/bundles/references/Open Knowledge Format Specification.md`
 
-Separate the scope explicitly:
+Architecture constraints:
+
+- Start inside this repository with root CLI command `tooling`.
+- First domain: OKF through `tooling okf ...`.
+- Keep the code small, testable, removable, and OKF-focused.
+- Keep library/domain logic separate from CLI, filesystem, parsing, serialization, and presentation.
+- Keep the OKF module isolated enough for possible later extraction, but do not design around extraction yet.
+- Accept `<bundle>` as a relative or absolute path.
+- When `<bundle>` is omitted, discover an OKF bundle from the current directory.
+- If discovery finds multiple candidates, fail and list candidates with reference commands.
+- Treat broken links, unknown types, missing optional fields, and extra frontmatter fields as tolerated issues, not fatal parse errors.
+- Keep human output readable and JSON output stable for skills and automation.
 
 ### Required MVP
 
@@ -45,7 +50,7 @@ Separate the scope explicitly:
 - human and JSON output
 - consistent error envelope
 
-### Future interfaces
+### Future Interfaces
 
 - `links`
 - `backlinks`
@@ -53,53 +58,42 @@ Separate the scope explicitly:
 - `health`
 - `validate`
 
-Future interfaces must be included as contract and test boundaries, but not as required Phase 1 implementation work.
+Define contract and test boundaries for future interfaces, but do not make them Phase 1 implementation work.
 
-Read and use as primary sources:
+OKF rules:
 
-- `tooling/bundles/prds/PRD - Python Tooling Library and CLI.md`
-- `tooling/bundles/prds/PRD - OKF Module.md`
-- `tooling/bundles/features/Feature - Summarized OKF Navigation.md`
-- `.agents/skills/okf-authoring/references/SPEC.md`
+- OKF core is Markdown with YAML frontmatter.
+- Concept files have required `type`.
+- `index.md` and `log.md` are reserved files.
+- Unknown frontmatter fields must be preserved.
+- Wikilinks may be supported as a convention, but must not require Obsidian.
+- Do not depend on fixed vault paths, network, database, or external services.
 
-Deliver an architecture proposal with:
+Deliver:
 
-1. Recommended directory structure for `tooling/`.
-2. Separation between library, CLI, models, parsing, bundle discovery, output serialization, and error envelopes.
-3. Main data contracts, including `Bundle`, `Concept`, `Directory`, `Link`, `Issue`, and the minimum fields for each.
-4. Execution flow for `tooling okf tree`, `list`, `show`, and the future interfaces.
-5. Automatic bundle discovery strategy when `<bundle>` is omitted.
-6. Error strategy for multiple candidates, including message format, reference commands, and stable exit behavior.
-7. Initial human and JSON output contracts for the MVP commands.
-8. Unit test strategy and minimum fixtures.
-9. Recommended Python dependencies and justification.
-10. Incremental implementation plan in small steps.
-11. Matrix `command x phase x contract x test`.
-
-Constraints:
-
-- Do not implement code in this response.
-- Do not create generic abstractions before the first OKF use case.
-- Do not depend on Obsidian to read wikilinks.
-- Do not depend on fixed paths from this vault.
-- Do not require network, database, or external services.
-- Do not treat broken links as fatal errors.
-- Do not reject bundles because of unknown frontmatter fields.
-- Treat OKF core as markdown with YAML frontmatter, required `type`, reserved `index.md` and `log.md`, and tolerant parsing.
-- Treat wikilinks as a vault convention that can be supported, but not as a core requirement of the SPEC.
-- Do not make `links`, `backlinks`, `props`, `health`, or `validate` mandatory implementation work for Phase 1; only define their boundaries, contracts, and tests.
+1. Summarized architecture decision.
+2. Directory structure.
+3. Boundaries for library, CLI, models, parsing, discovery, serialization, and errors.
+4. Data contracts for `Bundle`, `Concept`, `Directory`, `Link`, and `Issue`.
+5. Flows for `tree`, `list`, `show`, and future interfaces.
+6. Discovery and multiple-candidate error behavior.
+7. Human and JSON output contracts.
+8. Test strategy and minimum fixtures.
+9. Dependencies with justification.
+10. Matrix: `command x phase x contract x test`.
+11. Small incremental implementation plan and risks.
 
 Response format:
 
 - Start with a summarized architecture decision.
-- Then detail the proposed structure.
-- Then describe flows, contracts, and the MVP versus future split.
-- Include a matrix `command x phase x contract x test`.
+- Separate MVP from future work.
 - End with an incremental plan and risks.
 - Be direct, technical, and specific enough for implementation.
+- Do not implement code.
 
 ## Relations
 
 - [PRD - Python Tooling Library and CLI](../prds/PRD%20-%20Python%20Tooling%20Library%20and%20CLI.md)
 - [PRD - OKF Module](../prds/PRD%20-%20OKF%20Module.md)
 - [Feature - Summarized OKF Navigation](../features/Feature%20-%20Summarized%20OKF%20Navigation.md)
+- [Open Knowledge Format Specification](../references/Open%20Knowledge%20Format%20Specification.md)

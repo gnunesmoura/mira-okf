@@ -388,3 +388,4 @@ Until then, this repository is the product, validation, and evolution environmen
 - [Tooling Overview](../Tooling%20Overview.md)
 - [PRD - OKF Module](PRD%20-%20OKF%20Module.md)
 - [Feature - Summarized OKF Navigation](../features/Feature%20-%20Summarized%20OKF%20Navigation.md)
+- [Open Knowledge Format Specification](../references/Open%20Knowledge%20Format%20Specification.md)

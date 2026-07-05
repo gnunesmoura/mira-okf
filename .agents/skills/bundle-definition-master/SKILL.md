@@ -38,6 +38,7 @@ For each role:
 - Include this instruction in every spawned brief: the subagent must not delegate work to any further subagent under any circumstance.
 - Tell each subagent it is working on planning or changing bundle content for the bundle, and that the content it receives is the role-directed brief it should act on.
 - Treat the master as a coordinator, not the author of the role artifacts.
+- Use the repository as the workspace for the subagents, directing them to read and write the files related to the requested bundle-definition work.
 
 Each brief should include:
 

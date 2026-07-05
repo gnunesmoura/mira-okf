@@ -64,11 +64,17 @@ def resolve_concept(bundle: Bundle, target: str) -> Concept:
     concepts_by_id = {concept.concept_id: concept for concept in bundle.concepts}
     concepts_by_relative = {concept.relative_path: concept for concept in bundle.concepts}
 
-    candidates = _concept_candidates(target)
+    normalized_target = target.strip().lstrip("/").replace("\\", "/")
+    candidates = [normalized_target]
+    if normalized_target.endswith(".md"):
+        candidates.append(normalized_target.removesuffix(".md"))
+    else:
+        candidates.append(f"{normalized_target}.md")
+
     for candidate in candidates:
-        concept = concepts_by_id.get(candidate) or concepts_by_relative.get(candidate)
-        if concept is not None:
+        if concept := concepts_by_id.get(candidate) or concepts_by_relative.get(candidate):
             return concept
+
     raise ConceptResolutionError(
         "OKF_CONCEPT_NOT_FOUND",
         f"Concept not found: {target}",
@@ -129,13 +135,3 @@ def _display_path(input_path: str, resolved_path: Path, cwd: Path) -> str:
         return resolved_path.relative_to(cwd).as_posix()
     except ValueError:
         return input_path
-
-
-def _concept_candidates(target: str) -> list[str]:
-    normalized = target.strip().lstrip("/")
-    candidates = [normalized]
-    if normalized.endswith(".md"):
-        candidates.append(normalized.removesuffix(".md"))
-    else:
-        candidates.append(f"{normalized}.md")
-    return [candidate for index, candidate in enumerate(candidates) if candidate and candidate not in candidates[:index]]

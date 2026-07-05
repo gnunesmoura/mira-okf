@@ -47,7 +47,7 @@ def build_parser() -> argparse.ArgumentParser:
         if name == "backlinks":
             command_parser.add_argument("concept")
         elif name == "show":
-            command_parser.add_argument("concept")
+            command_parser.add_argument("concept", nargs="?")
         for flag, kwargs in arguments:
             command_parser.add_argument(flag, **kwargs)
         command_parser.set_defaults(handler=command_stub)
@@ -56,7 +56,10 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: Sequence[str] | None = None) -> int:
-    args = build_parser().parse_args(argv)
+    parser = build_parser()
+    args = parser.parse_args(argv)
+    if getattr(args, "okf_command", None) == "show" and args.bundle is None and args.concept is None:
+        parser.error("the following arguments are required: concept")
     handler = getattr(args, "handler", None)
     if handler is None:
         return 0

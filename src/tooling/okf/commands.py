@@ -5,6 +5,7 @@ from argparse import Namespace
 
 from .links import run_backlinks, run_links
 from .listing import run_list
+from .show import run_show
 from .tree import run_tree
 
 
@@ -13,6 +14,8 @@ def command_stub(args: Namespace) -> int:
         return run_tree(args)
     if args.okf_command == "list":
         return run_list(args)
+    if args.okf_command == "show":
+        return run_show(args)
     if args.okf_command == "links":
         return run_links(args)
     if args.okf_command == "backlinks":

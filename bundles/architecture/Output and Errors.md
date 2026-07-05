@@ -1,11 +1,12 @@
 ---
 type: ArchitectureDecision
 title: Output and Errors
-description: Defines the stable JSON envelope, human output rules, and issue semantics.
+description: Defines the stable JSON envelope, human output rules, and issue semantics for OKF commands.
 tags:
   - tooling
   - okf
   - output
+  - show
 ---
 
 # Output and Errors
@@ -56,6 +57,9 @@ Keep key names stable and predictable so automation can consume them without spe
 - Make `tree`, `list`, and `show` visually distinct but structurally consistent.
 - `list` should show the bundle-relative path for each concept, alongside the concept identity and other compact summary fields when available.
 - `list` may note when a visible slice is truncated, but the JSON payload must carry the authoritative `total` and window metadata.
+- `show` should render the resolved concept first and append an `Issues` section at the end only when tolerated issues are present.
+- `show` should omit the `Issues` section when there are no tolerated issues.
+- `show` summary mode should keep the same end-of-output warning behavior.
 - Do not rely on color or terminal width for meaning.
 - Do not silently coerce invalid CLI inputs such as negative window bounds.
 
@@ -71,3 +75,9 @@ Keep key names stable and predictable so automation can consume them without spe
 - `info`, `warning`, and `error` are the only severity levels.
 - Content issues stay non-fatal unless the bundle cannot be read at all.
 - `fatal` is reserved for transport and execution failures, not for tolerated OKF content problems.
+
+## Relations
+
+- [Feature - OKF Show](../features/Feature%20-%20OKF%20Show.md)
+- [PRD - OKF Show](../prds/PRD%20-%20OKF%20Show.md)
+- [Command Flows](Command%20Flows.md)

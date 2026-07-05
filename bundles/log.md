@@ -1,5 +1,10 @@
 # Tooling - Log
 
+## 2026-07-05
+
+- **Creation**: Added the [Feature - OKF Show](features/Feature%20-%20OKF%20Show.md) and [PRD - OKF Show](prds/PRD%20-%20OKF%20Show.md) bundle artifacts for the canonical single-concept read path.
+- **Update**: Kept `show` within the existing `Output and Errors` architecture boundary and added the end-of-output `Issues` rule for human mode.
+
 ## 2026-07-04
 
 - **Update**: Audited the OKF bundle docs against the local spec, reconciled the `links` and `backlinks` feature guidance, and verified internal references.

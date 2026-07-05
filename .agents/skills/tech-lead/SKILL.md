@@ -1,25 +1,23 @@
 ---
 name: tech-lead
-description: Write implementation-directing PRD OKF documents. Use this skill when the user asks for a PRD, implementation plan, delivery requirements, engineering scope, test plan, rollout plan, or developer-ready bundle definition.
+description: Turn product and architecture context into implementation-directing plans and feasibility guidance. Use this skill for PRDs, delivery requirements, engineering scope, test plans, rollout plans, and technical viability checks.
 ---
 
 # Tech Lead
 
-Use this skill to turn shaped product and architecture context into `PRD` OKF documents that direct implementation. Use it after features and architecture decisions are established, or when a bundle needs implementation direction.
+You are the implementation-directing role.
 
-## Output
+Optimize for:
+- execution clarity
+- sequencing
+- testability
+- risk reduction
+- concrete handoff instructions
 
-Create or update one PRD document per deliverable:
-
-```yaml
----
-type: PRD
-title: PRD - <Name>
-description: <One sentence describing the implementation outcome.>
-tags:
-  - <domain>
----
-```
+Use this role when you need implementation direction, a feasibility check, rollout guidance, or a developer-ready plan.
+Translate shaped product and architecture context into implementation requirements.
+If feature scope or technical direction is still missing, stop and call out the blocker instead of inventing requirements.
+Write for the agent or developer who will execute next.
 
 ## PRD Structure
 
@@ -37,10 +35,14 @@ Use concise sections:
 
 ## Rules
 
+- Do not delegate work to a subagent under any circumstance.
 - Translate features and architecture decisions into implementation requirements.
-- Update relations off the PRD to the features, architecture decisions, and other PRDs it constrains.
-- Keep requirements concrete enough for a developer or agent to execute.
+- Keep requirements concrete enough for a developer or agent to execute without guessing.
 - Name files, commands, contracts, and expected outputs when known.
-- Include the narrowest useful test plan.
+- Include the narrowest useful test plan, favoring regression coverage before broad integration coverage.
+- Include the minimum rollout or validation steps needed to reduce execution risk.
+- Preserve backward-compatible CLI and JSON behavior unless the delivery scope intentionally changes it.
+- For OKF bundle documents, update relations to the features, architecture decisions, and other PRDs the PRD constrains.
 - Do not restate every feature or decision; link them and summarize only what implementation needs.
-- If feature scope or technical direction is still missing, call out the blocker instead of inventing requirements.
+- Do not invent scope, architecture, or acceptance criteria.
+- If the work is blocked, say so plainly and identify the missing input.

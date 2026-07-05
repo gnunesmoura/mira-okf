@@ -1,6 +1,6 @@
 # AGENTS
 
-Use these instructions when developing or maintaining this repository.
+Use this repository charter for every task in this workspace. Role-specific product, architecture, delivery, and bundle-definition behavior belongs in the relevant skill under `.agents/skills/`.
 
 ## Purpose
 
@@ -9,7 +9,7 @@ Use these instructions when developing or maintaining this repository.
 - Prefer clear domain boundaries over generic abstractions.
 - Treat documentation, tests, and CLI behavior as part of the product.
 
-## Engineering Principles
+## Engineering Rules
 
 - Write production code in English: module names, classes, functions, commands, errors, comments, and docs.
 - Keep changes narrow and intentional.
@@ -19,25 +19,19 @@ Use these instructions when developing or maintaining this repository.
 - Preserve backward-compatible CLI and JSON behavior unless a documented change requires otherwise.
 - Avoid hidden dependencies on a specific machine, vault layout, network, database, or external service.
 
-## Domain-Driven Design
+## Domain and Tests
 
 - Model the domain in the library before exposing it through the CLI.
 - Use domain names consistently in code, tests, and documentation.
 - Keep entities, value objects, services, and errors close to the domain they belong to.
 - Make invalid or ambiguous domain states visible through typed results, issues, or explicit errors.
 - Keep adapters thin: CLI, filesystem, and output formatting should call domain/application services, not own business rules.
-
-## Test-Driven Development
-
 - Start behavior changes with a failing or missing test whenever practical.
 - Write small tests around domain rules before broad integration tests.
 - Use fixtures that are minimal, readable, and specific to the behavior under test.
 - Cover normal paths, edge cases, and error paths for every public command or contract.
 - When fixing a bug, add a regression test that would have failed before the fix.
 - Do not weaken or delete tests to make a change pass unless the product behavior was intentionally changed and documented.
-
-## Code Quality
-
 - Prefer simple Python 3.11+ code with minimal dependencies.
 - Keep functions short enough to read without losing context.
 - Use type hints for public functions, data contracts, and cross-module boundaries.
@@ -51,7 +45,7 @@ Use these instructions when developing or maintaining this repository.
 - Update documentation when commands, contracts, setup, domain behavior, or roadmap decisions change.
 - Keep product and architecture knowledge in `tooling/bundles/`.
 - Content inside `tooling/bundles/` must be written in English.
-- If documentation belongs to an OKF bundle, preserve valid YAML frontmatter for concept files and keep `index.md`/`log.md` frontmatter-free.
+- For OKF bundle authoring rules, use the `okf-authoring` skill and preserve the local OKF structure.
 
 ## Working Rules
 

@@ -151,7 +151,7 @@ def _is_concept_file(path: Path) -> bool:
 def _read_concept(path: Path, root_path: Path, directory_label: str) -> Concept:
     relative_path = _relative_display_path(path, root_path)
     directory = relative_path.rsplit("/", 1)[0] if "/" in relative_path else directory_label
-    frontmatter, issues = _read_frontmatter(path, relative_path)
+    frontmatter, body, issues = _read_document(path, relative_path)
     title = _scalar_text(frontmatter.get("title")) or _title_from_filename(path.stem)
     concept_type = _scalar_text(frontmatter.get("type"))
     if not concept_type:
@@ -176,30 +176,16 @@ def _read_concept(path: Path, root_path: Path, directory_label: str) -> Concept:
         resource=_scalar_text(frontmatter.get("resource")),
         tags=_normalize_tags(frontmatter.get("tags")),
         timestamp=_scalar_text(frontmatter.get("timestamp")),
-        body="",
+        body=body,
         frontmatter=frontmatter,
         issues=issues,
     )
 
 
-def _read_frontmatter(path: Path, relative_path: str) -> tuple[dict[str, Any], list[Issue]]:
+def _read_document(path: Path, relative_path: str) -> tuple[dict[str, Any], str, list[Issue]]:
     issues: list[Issue] = []
     try:
-        with path.open(encoding="utf-8", errors="replace") as handle:
-            if handle.readline().strip() != "---":
-                issues.append(
-                    Issue(
-                        code="OKF_FRONTMATTER_MISSING",
-                        message="Concept is missing frontmatter.",
-                        path=relative_path,
-                    )
-                )
-                return {}, issues
-            raw_lines: list[str] = []
-            for line in handle:
-                if line.strip() == "---":
-                    return _parse_frontmatter(raw_lines), issues
-                raw_lines.append(line.rstrip("\n"))
+        text = path.read_text(encoding="utf-8", errors="replace")
     except OSError as error:
         issues.append(
             Issue(
@@ -210,7 +196,23 @@ def _read_frontmatter(path: Path, relative_path: str) -> tuple[dict[str, Any], l
                 fatal=False,
             )
         )
-        return {}, issues
+        return {}, "", issues
+    lines = text.splitlines()
+    if not lines or lines[0].strip() != "---":
+        issues.append(
+            Issue(
+                code="OKF_FRONTMATTER_MISSING",
+                message="Concept is missing frontmatter.",
+                path=relative_path,
+            )
+        )
+        return {}, text, issues
+    raw_lines: list[str] = []
+    for line in lines[1:]:
+        if line.strip() == "---":
+            body = "\n".join(lines[len(raw_lines) + 2 :])
+            return _parse_frontmatter(raw_lines), body, issues
+        raw_lines.append(line.rstrip("\n"))
     issues.append(
         Issue(
             code="OKF_FRONTMATTER_UNTERMINATED",
@@ -218,7 +220,7 @@ def _read_frontmatter(path: Path, relative_path: str) -> tuple[dict[str, Any], l
             path=relative_path,
         )
     )
-    return _parse_frontmatter(raw_lines), issues
+    return _parse_frontmatter(raw_lines), "\n".join(lines[1:]), issues
 
 
 def _parse_frontmatter(lines: list[str]) -> dict[str, Any]:

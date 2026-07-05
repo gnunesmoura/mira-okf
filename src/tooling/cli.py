@@ -39,9 +39,15 @@ def build_parser() -> argparse.ArgumentParser:
             ),
         ),
         ("show", "Show a single concept.", (("--summary", {"action": "store_true"}), ("--json", {"action": "store_true"}))),
+        ("links", "List outbound links in a bundle.", (("--broken", {"action": "store_true"}), ("--external", {"action": "store_true"}), ("--json", {"action": "store_true"}))),
+        ("backlinks", "List inbound links for a concept.", (("--json", {"action": "store_true"}),)),
     ):
         command_parser = okf_subparsers.add_parser(name, help=help_text)
         command_parser.add_argument("bundle", nargs="?")
+        if name == "backlinks":
+            command_parser.add_argument("concept")
+        elif name == "show":
+            command_parser.add_argument("concept")
         for flag, kwargs in arguments:
             command_parser.add_argument(flag, **kwargs)
         command_parser.set_defaults(handler=command_stub)

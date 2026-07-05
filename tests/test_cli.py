@@ -45,7 +45,7 @@ class CliBootstrapTest(unittest.TestCase):
         root_actions = [action for action in parser._actions if isinstance(action, argparse._SubParsersAction)]
         okf_parser = root_actions[0].choices["okf"]
         okf_actions = [action for action in okf_parser._actions if isinstance(action, argparse._SubParsersAction)]
-        self.assertEqual(sorted(okf_actions[0].choices), ["list", "show", "tree"])
+        self.assertEqual(sorted(okf_actions[0].choices), ["backlinks", "links", "list", "show", "tree"])
 
     def test_okf_command_stub_dispatches_list(self) -> None:
         args = argparse.Namespace(okf_command="list")
@@ -292,6 +292,51 @@ class CliBootstrapTest(unittest.TestCase):
                 parser.parse_args(["okf", "list", "--limit", "-1"])
         self.assertEqual(raised.exception.code, 2)
         self.assertIn("must be non-negative", stderr.getvalue())
+
+    def test_links_and_backlinks_use_shared_resolution(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir) / "bundle"
+            _write_files(
+                root,
+                {
+                    "index.md": "index\n",
+                    "alpha.md": "---\ntype: Note\ntitle: Alpha\n---\nSee [Beta](./beta.md), [[gamma]], [Broken](./missing.md), [External](https://example.com), and [Angle](<https://example.org/path>).\n",
+                    "beta.md": "---\ntype: Note\ntitle: Beta\n---\nBack to [Alpha](alpha.md).\n",
+                    "gamma.md": "---\ntype: Note\ntitle: Gamma\n---\n",
+                },
+            )
+
+            exit_code, stdout, stderr = _run_main(["okf", "links", str(root), "--json"])
+            self.assertEqual(exit_code, 0)
+            self.assertEqual(stderr, "")
+            payload = json.loads(stdout)
+            self.assertTrue(payload["ok"])
+            self.assertEqual(payload["command"], "okf.links")
+            self.assertEqual([link["target_path"] for link in payload["data"]["links"]], ["beta.md", "gamma.md", "alpha.md"])
+            self.assertEqual(payload["data"]["total"], 6)
+            self.assertEqual(payload["data"]["returned"], 3)
+            self.assertEqual([issue["code"] for issue in payload["issues"]], ["OKF_LINK_BROKEN"])
+
+            exit_code, stdout, stderr = _run_main(["okf", "links", str(root), "--broken", "--external", "--json"])
+            self.assertEqual(exit_code, 0)
+            self.assertEqual(stderr, "")
+            payload = json.loads(stdout)
+            self.assertEqual([link["target"] for link in payload["data"]["links"]], ["./beta.md", "gamma", "./missing.md", "https://example.com", "https://example.org/path", "alpha.md"])
+
+            exit_code, stdout, stderr = _run_main(["okf", "links", str(root), "--external"])
+            self.assertEqual(exit_code, 0)
+            self.assertEqual(stderr, "")
+            self.assertIn("[external] https://example.com", stdout)
+            self.assertIn("[external] https://example.org/path", stdout)
+
+            exit_code, stdout, stderr = _run_main(["okf", "backlinks", str(root), "beta.md", "--json"])
+            self.assertEqual(exit_code, 0)
+            self.assertEqual(stderr, "")
+            payload = json.loads(stdout)
+            self.assertTrue(payload["ok"])
+            self.assertEqual(payload["command"], "okf.backlinks")
+            self.assertEqual(payload["data"]["concept"]["concept_id"], "beta")
+            self.assertEqual([link["source_path"] for link in payload["data"]["links"]], ["alpha.md"])
 
 
 if __name__ == "__main__":

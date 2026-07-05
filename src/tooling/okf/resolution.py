@@ -3,12 +3,20 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from .models import Bundle
+from .models import Bundle, Concept
 
 RESERVED_FILENAMES = {"index.md", "log.md"}
 
 
 class BundleResolutionError(Exception):
+    def __init__(self, code: str, message: str, details: dict[str, Any] | None = None) -> None:
+        super().__init__(message)
+        self.code = code
+        self.message = message
+        self.details = details or {}
+
+
+class ConceptResolutionError(Exception):
     def __init__(self, code: str, message: str, details: dict[str, Any] | None = None) -> None:
         super().__init__(message)
         self.code = code
@@ -49,6 +57,22 @@ def resolve_bundle(bundle_argument: str | None, command: str, reference_suffix: 
         relative_path=_display_path(str(path.relative_to(cwd)) if path != cwd else ".", path, cwd),
         source_kind="discovered",
         source_path=path,
+    )
+
+
+def resolve_concept(bundle: Bundle, target: str) -> Concept:
+    concepts_by_id = {concept.concept_id: concept for concept in bundle.concepts}
+    concepts_by_relative = {concept.relative_path: concept for concept in bundle.concepts}
+
+    candidates = _concept_candidates(target)
+    for candidate in candidates:
+        concept = concepts_by_id.get(candidate) or concepts_by_relative.get(candidate)
+        if concept is not None:
+            return concept
+    raise ConceptResolutionError(
+        "OKF_CONCEPT_NOT_FOUND",
+        f"Concept not found: {target}",
+        {"target": target},
     )
 
 
@@ -105,3 +129,13 @@ def _display_path(input_path: str, resolved_path: Path, cwd: Path) -> str:
         return resolved_path.relative_to(cwd).as_posix()
     except ValueError:
         return input_path
+
+
+def _concept_candidates(target: str) -> list[str]:
+    normalized = target.strip().lstrip("/")
+    candidates = [normalized]
+    if normalized.endswith(".md"):
+        candidates.append(normalized.removesuffix(".md"))
+    else:
+        candidates.append(f"{normalized}.md")
+    return [candidate for index, candidate in enumerate(candidates) if candidate and candidate not in candidates[:index]]

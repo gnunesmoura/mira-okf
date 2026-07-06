@@ -25,6 +25,7 @@ The current OKF baseline already covers:
 - `list`
 - `links`
 - `backlinks`
+- `show`
 
 The existing baseline PRDs are:
 
@@ -32,6 +33,11 @@ The existing baseline PRDs are:
 - [PRD - OKF Module](prds/PRD%20-%20OKF%20Module.md)
 - [PRD - OKF Concept List](prds/PRD%20-%20OKF%20Concept%20List.md)
 - [PRD - OKF Links](prds/PRD%20-%20OKF%20Links.md)
+- [PRD - OKF Show](prds/PRD%20-%20OKF%20Show.md)
+
+## Current Focus
+
+`show` is complete as of the recent implementation history. The next implementation-ready bundle is `validate`, which turns shared read-model issues into a non-blocking conformance report without changing bundle parsing behavior.
 
 ## Product Spine
 
@@ -41,8 +47,8 @@ The user journey should move from discovering and opening a single concept, to v
 
 ## Feature Sequence
 
-1. `show` - establish the canonical single-concept read path so later commands share the same target-resolution behavior.
-2. `validate` - define non-blocking conformance reporting while the read model and issue semantics are still simple.
+1. `show` - completed; establishes the canonical single-concept read path so later commands share the same target-resolution behavior.
+2. `validate` - next; defines non-blocking conformance reporting while the read model and issue semantics are still simple.
 3. `health` - aggregate inventory and quality signals into a compact bundle status view once validation rules are fixed.
 4. `props` - add the narrow frontmatter export surface last, after the shared read model and output contracts are stable.
 
@@ -54,13 +60,17 @@ The user journey should move from discovering and opening a single concept, to v
 - [PRD - OKF Module](prds/PRD%20-%20OKF%20Module.md)
 - [PRD - OKF Concept List](prds/PRD%20-%20OKF%20Concept%20List.md)
 - [PRD - OKF Links](prds/PRD%20-%20OKF%20Links.md)
+- [PRD - OKF Show](prds/PRD%20-%20OKF%20Show.md)
+- [PRD - OKF Validation](prds/PRD%20-%20OKF%20Validation.md)
+
+### Implementation-Ready PRDs
+
+1. `PRD - OKF Validation` - next because validation should define conformance reporting before broader health aggregation.
 
 ### PRDs to Create
 
-1. `PRD - OKF Show` - first because it locks down concept resolution and detail rendering on the shared read model.
-2. `PRD - OKF Validation` - next because validation should define conformance reporting before broader health aggregation.
-3. `PRD - OKF Health` - after validation because health should summarize the finalized issue vocabulary and quality signals.
-4. `PRD - OKF Properties Export` - last because it is a narrow projection surface that depends on stable frontmatter normalization and output contracts.
+1. `PRD - OKF Health` - after validation because health should summarize the finalized issue vocabulary and quality signals.
+2. `PRD - OKF Properties Export` - last because it is a narrow projection surface that depends on stable frontmatter normalization and output contracts.
 
 ## Architecture Decisions to Keep Fixed
 
@@ -87,9 +97,12 @@ The user journey should move from discovering and opening a single concept, to v
 - [Feature - OKF Concept List](features/Feature%20-%20OKF%20Concept%20List.md)
 - [Feature - OKF Links](features/Feature%20-%20OKF%20Links.md)
 - [Feature - OKF Backlinks](features/Feature%20-%20OKF%20Backlinks.md)
+- [Feature - OKF Show](features/Feature%20-%20OKF%20Show.md)
+- [Feature - OKF Validation](features/Feature%20-%20OKF%20Validation.md)
 - [Discovery and Resolution](architecture/Discovery%20and%20Resolution.md)
 - [Data Contracts](architecture/Data%20Contracts.md)
 - [Command Flows](architecture/Command%20Flows.md)
 - [Output and Errors](architecture/Output%20and%20Errors.md)
+- [Validation Report Contract](architecture/Validation%20Report%20Contract.md)
 - [Test Strategy](architecture/Test%20Strategy.md)
 - [Incremental Plan and Risks](architecture/Incremental%20Plan%20and%20Risks.md)

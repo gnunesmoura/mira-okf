@@ -5,6 +5,7 @@ from argparse import Namespace
 
 from .links import run_backlinks, run_links
 from .listing import run_list
+from .validate import run_validate
 from .show import run_show
 from .tree import run_tree
 
@@ -20,5 +21,7 @@ def command_stub(args: Namespace) -> int:
         return run_links(args)
     if args.okf_command == "backlinks":
         return run_backlinks(args)
+    if args.okf_command == "validate":
+        return run_validate(args)
     print(f"tooling okf {args.okf_command} is not implemented yet.", file=sys.stderr)
     return 1

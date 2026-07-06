@@ -1,5 +1,10 @@
 # Architecture Log
 
+## 2026-07-05
+
+- **Update**: Expanded the [Validation Report Contract](Validation%20Report%20Contract.md) with reserved `index.md` and `log.md` conformance rules from the local OKF specification.
+- **Creation**: Added the [Validation Report Contract](Validation%20Report%20Contract.md) decision for `validate` summary payload, issue ordering, and process failure semantics.
+
 ## 2026-07-04
 
 - **Update**: Audited the architecture bundle against the OKF spec and confirmed the link-contract references stay aligned with the feature docs.

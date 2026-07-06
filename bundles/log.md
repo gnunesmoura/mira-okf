@@ -2,6 +2,9 @@
 
 ## 2026-07-05
 
+- **Update**: Expanded `validate` planning to cover reserved `index.md` and `log.md` conformance from the local OKF specification, including the root `okf_version` exception.
+- **Creation**: Added the [Feature - OKF Validation](features/Feature%20-%20OKF%20Validation.md), [Validation Report Contract](architecture/Validation%20Report%20Contract.md), and [PRD - OKF Validation](prds/PRD%20-%20OKF%20Validation.md) bundle artifacts for the next implementation target.
+- **Update**: Advanced the [Tooling Roadmap](Tooling%20Roadmap.md) from completed `show` work to implementation-ready `validate` planning.
 - **Creation**: Added the [Feature - OKF Show](features/Feature%20-%20OKF%20Show.md) and [PRD - OKF Show](prds/PRD%20-%20OKF%20Show.md) bundle artifacts for the canonical single-concept read path.
 - **Update**: Kept `show` within the existing `Output and Errors` architecture boundary and added the end-of-output `Issues` rule for human mode.
 

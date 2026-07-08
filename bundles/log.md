@@ -1,5 +1,11 @@
 # Tooling - Log
 
+## 2026-07-06
+
+- **Creation**: Added the [PRD - OKF Health](prds/PRD%20-%20OKF%20Health.md) implementation requirements for the read-only `tooling okf health` command and stable health report signals.
+- **Creation**: Added the [Health Report Contract](architecture/Health%20Report%20Contract.md) architecture decision for `tooling okf health` report shape and soft health signal semantics.
+- **Creation**: Added the [Feature - OKF Health](features/Feature%20-%20OKF%20Health.md) concept for compact read-only bundle status signals after validation.
+
 ## 2026-07-05
 
 - **Update**: Expanded `validate` planning to cover reserved `index.md` and `log.md` conformance from the local OKF specification, including the root `okf_version` exception.

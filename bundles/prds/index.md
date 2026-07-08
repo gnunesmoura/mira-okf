@@ -10,3 +10,4 @@ Product requirements and product decisions for `tooling`.
 - [PRD - OKF Validation](PRD%20-%20OKF%20Validation.md) - Implementation requirements for read-only OKF bundle validation with stable reports.
 - [PRD - OKF Concept List](PRD%20-%20OKF%20Concept%20List.md) - Implementation requirements for the concept inventory command with exact-match filters and bounded browsing.
 - [PRD - OKF Links](PRD%20-%20OKF%20Links.md) - Implementation requirements for outbound link discovery and classification.
+- [PRD - OKF Health](PRD%20-%20OKF%20Health.md) - Implementation requirements for the read-only OKF bundle health command and its stable report signals.

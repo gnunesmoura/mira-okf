@@ -1,5 +1,9 @@
 # Architecture Log
 
+## 2026-07-06
+
+- **Creation**: Added the [Health Report Contract](Health%20Report%20Contract.md) decision for `health` payload shape, local quality signals, and non-fatal soft signal semantics.
+
 ## 2026-07-05
 
 - **Update**: Expanded the [Validation Report Contract](Validation%20Report%20Contract.md) with reserved `index.md` and `log.md` conformance rules from the local OKF specification.

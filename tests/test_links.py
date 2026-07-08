@@ -45,7 +45,24 @@ class LinksCommandTest(unittest.TestCase):
             self.assertIn("[external] https://example.com", stdout)
             self.assertIn("[external] https://example.org/path", stdout)
 
+    def test_links_resolve_encoded_and_parent_relative_targets(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir) / "bundle"
+            write_files(
+                root,
+                {
+                    "index.md": "index\n",
+                    "Alpha Note.md": "---\ntype: Note\n---\n",
+                    "nested/beta.md": "---\ntype: Note\n---\n[Alpha](../Alpha%20Note.md)\n",
+                },
+            )
+            exit_code, stdout, stderr = run_main(["okf", "links", str(root), "--json"])
+            self.assertEqual(exit_code, 0)
+            self.assertEqual(stderr, "")
+            payload = json.loads(stdout)
+            self.assertEqual(payload["data"]["links"][0]["target_path"], "Alpha Note.md")
+            self.assertEqual(payload["issues"], [])
+
 
 if __name__ == "__main__":
     unittest.main()
-

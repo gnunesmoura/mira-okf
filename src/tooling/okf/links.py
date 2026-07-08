@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 import json
+import posixpath
 import re
 import sys
 from argparse import Namespace
 from pathlib import PurePosixPath
 from typing import Any
+from urllib.parse import unquote
 
 from .read_model import bundle_payload, concept_payload, issue_payload, scan_bundle
 from .resolution import BundleResolutionError, ConceptResolutionError, resolve_bundle, resolve_concept
@@ -133,7 +135,10 @@ def _normalize_target(raw_target: str) -> str:
         target = target.split("#", 1)[0]
     if target.startswith("<") and target.endswith(">"):
         target = target[1:-1].strip()
-    return target.strip().lstrip("/")
+    target = target.strip()
+    if _is_external_target(target):
+        return target
+    return unquote(target).lstrip("/")
 
 
 def _is_external_target(target: str) -> bool:
@@ -150,6 +155,7 @@ def _resolve_internal_target(concept, target, concepts_by_id, concepts_by_relati
 
 
 def _link_candidates(source_path: str, target: str) -> list[str]:
+    target = _clean_internal_path(target)
     candidates = [target]
     if target.endswith(".md"):
         candidates.append(target.removesuffix(".md"))
@@ -157,7 +163,7 @@ def _link_candidates(source_path: str, target: str) -> list[str]:
         candidates.append(f"{target}.md")
     if source_path and not target.startswith("/") and not _is_external_target(target):
         parent = PurePosixPath(source_path).parent
-        relative = (parent / target).as_posix()
+        relative = _clean_internal_path((parent / target).as_posix())
         candidates.append(relative)
         if relative.endswith(".md"):
             candidates.append(relative.removesuffix(".md"))
@@ -168,6 +174,11 @@ def _link_candidates(source_path: str, target: str) -> list[str]:
         if candidate and candidate not in normalized:
             normalized.append(candidate)
     return normalized
+
+
+def _clean_internal_path(path: str) -> str:
+    cleaned = posixpath.normpath(path.replace("\\", "/"))
+    return "" if cleaned == "." else cleaned.lstrip("/")
 
 
 def _broken_link_issue(path: str, raw_target: str):

@@ -3,6 +3,7 @@ from __future__ import annotations
 import sys
 from argparse import Namespace
 
+from .health import run_health
 from .links import run_backlinks, run_links
 from .listing import run_list
 from .validate import run_validate
@@ -23,5 +24,7 @@ def command_stub(args: Namespace) -> int:
         return run_backlinks(args)
     if args.okf_command == "validate":
         return run_validate(args)
+    if args.okf_command == "health":
+        return run_health(args)
     print(f"tooling okf {args.okf_command} is not implemented yet.", file=sys.stderr)
     return 1

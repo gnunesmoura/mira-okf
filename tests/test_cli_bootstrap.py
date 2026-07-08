@@ -14,7 +14,7 @@ class CliBootstrapTest(unittest.TestCase):
         root_actions = [action for action in parser._actions if isinstance(action, argparse._SubParsersAction)]
         okf_parser = root_actions[0].choices["okf"]
         okf_actions = [action for action in okf_parser._actions if isinstance(action, argparse._SubParsersAction)]
-        self.assertEqual(sorted(okf_actions[0].choices), ["backlinks", "links", "list", "show", "tree", "validate"])
+        self.assertEqual(sorted(okf_actions[0].choices), ["backlinks", "health", "links", "list", "show", "tree", "validate"])
 
     def test_okf_command_stub_dispatches_list(self) -> None:
         args = argparse.Namespace(okf_command="list")
@@ -34,7 +34,12 @@ class CliBootstrapTest(unittest.TestCase):
             self.assertEqual(command_stub(args), 11)
         run_validate.assert_called_once_with(args)
 
+    def test_okf_command_stub_dispatches_health(self) -> None:
+        args = argparse.Namespace(okf_command="health")
+        with mock.patch("tooling.okf.commands.run_health", return_value=13) as run_health:
+            self.assertEqual(command_stub(args), 13)
+        run_health.assert_called_once_with(args)
+
 
 if __name__ == "__main__":
     unittest.main()
-

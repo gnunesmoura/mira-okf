@@ -54,7 +54,7 @@ Observed on 2026-07-04:
 - 4 `log.md` files.
 - 32 concepts with `type`.
 - Existing concept categories include PRDs, roadmaps, products, operations, systems, KPIs, OKRs, governance, access, data, migrations, analyses, plans, procedures, support, automation, infrastructure, and institutional references.
-- The bundle uses Obsidian `[[...]]` links, relative Markdown links, and references to paths that may not exist yet.
+- The bundle uses Obsidian-style wikilinks, relative Markdown links, and references to paths that may not exist yet.
 
 ## Users
 
@@ -275,7 +275,7 @@ Minimum entities:
 - Design commands for shell, skills, and automation use.
 - Guarantee stable JSON output.
 - Include test fixtures based on small bundles.
-- Avoid depending on Obsidian while supporting `[[wikilink]]` syntax in the later links phase.
+- Avoid depending on Obsidian while supporting wikilink syntax in the later links phase.
 - Keep the package in its own directory to simplify removal or future extraction.
 - Avoid reverse imports from `tooling` into business-specific scripts.
 - Maintain an OKF bundle in `tooling/bundles/` with guides, PRDs, features, prompts, and tooling decisions.

@@ -35,5 +35,5 @@ If the bundle path is omitted, search in the documented order from `Discovery an
 - `links` should reuse the same inventory and add outbound link extraction.
 - `backlinks` should reuse the same link index in reverse.
 - `props` should project selected frontmatter fields only.
-- `health` should aggregate inventory and link quality metrics.
+- `health` should aggregate validation summary, inventory, reserved files, links, indexes, logs, metadata, citations, and connectivity into a profile-based status report.
 - `validate` should turn issues into a validation report without changing parse behavior.

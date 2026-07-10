@@ -9,13 +9,27 @@ from datetime import date
 from pathlib import Path, PurePosixPath
 from typing import Any
 
-from .links import _collect_links, _extract_links, _is_external_target, _link_candidates, _normalize_target
+from .links import _extract_links, _is_external_target, _link_candidates, _normalize_target
 from .models import Bundle, Directory, Issue
 from .read_model import _read_markdown_text, bundle_payload, issue_payload, scan_bundle
 from .resolution import BundleResolutionError, resolve_bundle
 from .validate import _reserved_issues
 
 METADATA_FIELDS = ("title", "description", "resource", "tags", "timestamp")
+PROFILE_GROUPS = {
+    "quick": ("inventory", "reserved_files", "links", "connectivity"),
+    "full": ("inventory", "reserved_files", "links", "indexes", "logs", "metadata", "citations", "connectivity"),
+}
+GROUP_LABELS = {
+    "inventory": "inventory",
+    "reserved_files": "reserved files",
+    "links": "links",
+    "indexes": "indexes",
+    "logs": "logs",
+    "metadata": "metadata",
+    "citations": "citations",
+    "connectivity": "connectivity",
+}
 
 
 def run_health(args: Namespace) -> int:
@@ -25,10 +39,10 @@ def run_health(args: Namespace) -> int:
     except BundleResolutionError as error:
         return _emit_error(args, error)
 
-    links, link_issues = _collect_links(bundle)
+    links, link_issues = _collect_health_links(bundle)
     reserved_issues = _reserved_issues(bundle.root_path)
     validation = _validation_data(bundle, reserved_issues)
-    data = _health_data(bundle, validation, reserved_issues, links)
+    data = _health_data(bundle, validation, reserved_issues, links, getattr(args, "profile", "quick"))
     payload = {
         "ok": True,
         "command": "okf.health",
@@ -60,7 +74,9 @@ def _validation_data(bundle: Bundle, reserved_issues: list[Issue]) -> dict[str, 
     }
 
 
-def _health_data(bundle: Bundle, validation: dict[str, Any], reserved_issues: list[Issue], links: list[dict[str, Any]]) -> dict[str, Any]:
+def _health_data(bundle: Bundle, validation: dict[str, Any], reserved_issues: list[Issue], links: list[dict[str, Any]], profile: str) -> dict[str, Any]:
+    selected_groups = PROFILE_GROUPS.get(profile, PROFILE_GROUPS["quick"])
+    ignored_groups = tuple(group for group in PROFILE_GROUPS["full"] if group not in selected_groups)
     reserved = _reserved_files(bundle, reserved_issues)
     indexes = _indexes(bundle)
     logs = _logs(bundle)
@@ -68,19 +84,24 @@ def _health_data(bundle: Bundle, validation: dict[str, Any], reserved_issues: li
     citations = _citations(bundle, links)
     connectivity = _connectivity(bundle, links)
     link_data = _links(links)
-    warnings = (
-        reserved["malformed_reserved_file_count"]
-        + link_data["broken_internal_link_count"]
-        + indexes["directories_without_index_count"]
-        + indexes["unlisted_content_count"]
-        + logs["malformed_date_heading_count"]
-        + logs["ordering_issue_count"]
-        + sum(field["missing_count"] for field in metadata["fields"])
-        + citations["external_linked_without_citations_count"]
-        + connectivity["orphan_concept_count"]
-    )
+    group_data = {
+        "inventory": _inventory(bundle),
+        "reserved_files": reserved,
+        "links": link_data,
+        "indexes": indexes,
+        "logs": logs,
+        "metadata": metadata,
+        "citations": citations,
+        "connectivity": connectivity,
+    }
+    warnings = sum(_warning_signal_count(group, group_data[group]) for group in selected_groups)
     status = "invalid" if not validation["passed"] else "attention" if warnings else "ok"
     return {
+        "rules": {
+            "profile": profile if profile in PROFILE_GROUPS else "quick",
+            "evaluated_groups": list(selected_groups),
+            "ignored_groups": list(ignored_groups),
+        },
         "status": status,
         "summary": {
             "status": status,
@@ -91,14 +112,7 @@ def _health_data(bundle: Bundle, validation: dict[str, Any], reserved_issues: li
             "error_signal_count": 0,
         },
         "validation": validation,
-        "inventory": _inventory(bundle),
-        "reserved_files": reserved,
-        "links": link_data,
-        "indexes": indexes,
-        "logs": logs,
-        "metadata": metadata,
-        "citations": citations,
-        "connectivity": connectivity,
+        **group_data,
     }
 
 
@@ -173,7 +187,7 @@ def _index_links(root_path: Path, directory: Directory, concepts_by_relative: di
         return set()
     found: set[str] = set()
     source = f"{directory.path}/index.md" if directory.path != "." else "index.md"
-    for _, raw in _extract_links(text):
+    for _, raw in _extract_links(_health_text(text)):
         target = _normalize_target(raw)
         if not target or _is_external_target(target):
             continue
@@ -195,7 +209,7 @@ def _logs(bundle: Bundle) -> dict[str, Any]:
         relative = path.relative_to(bundle.root_path).as_posix()
         text, _ = _read_markdown_text(path, relative)
         previous: date | None = None
-        for line in (text or "").splitlines():
+        for line in _health_text(text or "").splitlines():
             match = re.fullmatch(r"##\s+(.+?)\s*", line)
             if match is None:
                 continue
@@ -252,7 +266,7 @@ def _citations(bundle: Bundle, links: list[dict[str, Any]]) -> dict[str, Any]:
 
 
 def _has_citations(body: str) -> bool:
-    return any(re.fullmatch(r"\s{0,3}#{1,6}\s+Citations\s*#*\s*", line, re.IGNORECASE) for line in body.splitlines())
+    return any(re.fullmatch(r"\s{0,3}#{1,6}\s+Citations\s*#*\s*", line, re.IGNORECASE) for line in _health_text(body).splitlines())
 
 
 def _connectivity(bundle: Bundle, links: list[dict[str, Any]]) -> dict[str, Any]:
@@ -269,22 +283,126 @@ def _connectivity(bundle: Bundle, links: list[dict[str, Any]]) -> dict[str, Any]
     }
 
 
+def _collect_health_links(bundle: Bundle) -> tuple[list[dict[str, Any]], list[Issue]]:
+    records: list[dict[str, Any]] = []
+    issues: list[Issue] = []
+    concepts_by_id = {concept.concept_id: concept for concept in bundle.concepts}
+    concepts_by_relative = {concept.relative_path: concept for concept in bundle.concepts}
+
+    for concept in sorted(bundle.concepts, key=lambda item: item.relative_path):
+        for index, (kind, raw_target) in enumerate(_extract_links(_health_text(concept.body))):
+            target = _normalize_target(raw_target)
+            if not target:
+                continue
+            external = _is_external_target(target)
+            resolved_concept = None
+            resolved = False
+            broken = False
+            target_concept_id = None
+            target_path = None
+            if not external:
+                for candidate in _link_candidates(concept.relative_path, target):
+                    resolved_concept = concepts_by_id.get(candidate) or concepts_by_relative.get(candidate)
+                    if resolved_concept is not None:
+                        break
+                resolved = resolved_concept is not None
+                broken = not resolved
+                if resolved_concept is not None:
+                    target_concept_id = resolved_concept.concept_id
+                    target_path = resolved_concept.relative_path
+                if broken:
+                    issues.append(
+                        Issue(
+                            code="OKF_LINK_BROKEN",
+                            message="Link target does not resolve inside the bundle.",
+                            severity="warning",
+                            path=concept.relative_path,
+                            field="link",
+                            suggestion=f"Check the target: {raw_target}",
+                        )
+                    )
+            records.append(
+                {
+                    "source_concept_id": concept.concept_id,
+                    "source_path": concept.relative_path,
+                    "raw": raw_target,
+                    "kind": kind,
+                    "target": target,
+                    "resolved": resolved,
+                    "broken": broken,
+                    "external": external,
+                    "target_concept_id": target_concept_id,
+                    "target_path": target_path,
+                    "_order": index,
+                }
+            )
+
+    records.sort(key=lambda record: (record["source_path"], record["_order"], record["target"]))
+    for record in records:
+        record.pop("_order", None)
+    return records, issues
+
+
 def _render_human(bundle_path: str, data: dict[str, Any]) -> str:
     summary = data["summary"]
-    return "\n".join(
-        [
-            f"{bundle_path}  health: {data['status']}",
-            f"validation: {data['validation']['status']}  issues: {data['validation']['issue_count']}",
-            f"inventory: concepts {summary['concept_count']}  directories {summary['directory_count']}",
-            f"reserved files: malformed {data['reserved_files']['malformed_reserved_file_count']}  root index {data['reserved_files']['root_index_present']}  root log {data['reserved_files']['root_log_present']}",
-            f"links: internal {data['links']['internal_link_count']}  resolved {data['links']['resolved_internal_link_count']}  broken {data['links']['broken_internal_link_count']}  external {data['links']['external_link_count']}",
-            f"indexes: without index {data['indexes']['directories_without_index_count']}  unlisted {data['indexes']['unlisted_content_count']}",
-            f"logs: newest {data['logs']['newest_entry_date'] or '-'}  malformed dates {data['logs']['malformed_date_heading_count']}  ordering {data['logs']['ordering_issue_count']}",
-            f"metadata: missing {sum(field['missing_count'] for field in data['metadata']['fields'])}",
-            f"citations: external without citations {data['citations']['external_linked_without_citations_count']}",
-            f"connectivity: orphans {data['connectivity']['orphan_concept_count']}",
-        ]
-    )
+    lines = [f"{bundle_path}  profile: {data['rules']['profile']}  health: {data['status']}"]
+    for group in data["rules"]["evaluated_groups"]:
+        lines.append(_render_group(group, data, summary))
+    return "\n".join(lines)
+
+
+def _render_group(group: str, data: dict[str, Any], summary: dict[str, Any]) -> str:
+    if group == "inventory":
+        return f"{GROUP_LABELS[group]}: concepts {summary['concept_count']}  directories {summary['directory_count']}"
+    if group == "reserved_files":
+        reserved = data[group]
+        return (
+            f"{GROUP_LABELS[group]}: malformed {reserved['malformed_reserved_file_count']}  "
+            f"root index {reserved['root_index_present']}  root log {reserved['root_log_present']}"
+        )
+    if group == "links":
+        links = data[group]
+        return (
+            f"{GROUP_LABELS[group]}: internal {links['internal_link_count']}  resolved {links['resolved_internal_link_count']}  "
+            f"broken {links['broken_internal_link_count']}  external {links['external_link_count']}"
+        )
+    if group == "indexes":
+        indexes = data[group]
+        return f"{GROUP_LABELS[group]}: without index {indexes['directories_without_index_count']}  unlisted {indexes['unlisted_content_count']}"
+    if group == "logs":
+        logs = data[group]
+        return (
+            f"{GROUP_LABELS[group]}: newest {logs['newest_entry_date'] or '-'}  malformed dates {logs['malformed_date_heading_count']}  "
+            f"ordering {logs['ordering_issue_count']}"
+        )
+    if group == "metadata":
+        metadata = data[group]
+        return f"{GROUP_LABELS[group]}: missing {sum(field['missing_count'] for field in metadata['fields'])}"
+    if group == "citations":
+        citations = data[group]
+        return f"{GROUP_LABELS[group]}: external without citations {citations['external_linked_without_citations_count']}"
+    if group == "connectivity":
+        connectivity = data[group]
+        return f"{GROUP_LABELS[group]}: orphans {connectivity['orphan_concept_count']}"
+    return group
+
+
+def _warning_signal_count(group: str, data: dict[str, Any]) -> int:
+    if group == "reserved_files":
+        return data["malformed_reserved_file_count"]
+    if group == "links":
+        return data["broken_internal_link_count"]
+    if group == "indexes":
+        return data["directories_without_index_count"] + data["unlisted_content_count"]
+    if group == "logs":
+        return data["malformed_date_heading_count"] + data["ordering_issue_count"]
+    if group == "metadata":
+        return sum(field["missing_count"] for field in data["fields"])
+    if group == "citations":
+        return data["external_linked_without_citations_count"]
+    if group == "connectivity":
+        return data["orphan_concept_count"]
+    return 0
 
 
 def _emit_error(args: Namespace, error: BundleResolutionError) -> int:
@@ -315,3 +433,24 @@ def _issue_key(issue: Issue) -> tuple[str, int, str, str]:
 
 def _path_key(path: str) -> tuple[str, ...]:
     return PurePosixPath(path).parts
+
+
+def _health_text(body: str) -> str:
+    lines: list[str] = []
+    in_fence = False
+    fence_marker = ""
+    for line in body.splitlines():
+        match = re.match(r"^\s{0,3}(`{3,}|~{3,})", line)
+        if match is not None:
+            marker = match.group(1)[0]
+            if not in_fence:
+                in_fence = True
+                fence_marker = marker
+            elif marker == fence_marker:
+                in_fence = False
+                fence_marker = ""
+            continue
+        if in_fence:
+            continue
+        lines.append(re.sub(r"`[^`\n]*`", "", line))
+    return "\n".join(lines)

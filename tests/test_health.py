@@ -31,14 +31,24 @@ class HealthCommandTest(unittest.TestCase):
             data = payload["data"]
             self.assertTrue(payload["ok"])
             self.assertEqual(payload["command"], "okf.health")
+            self.assertEqual(
+                data["rules"],
+                {
+                    "profile": "quick",
+                    "evaluated_groups": ["inventory", "reserved_files", "links", "connectivity"],
+                    "ignored_groups": ["indexes", "logs", "metadata", "citations"],
+                },
+            )
             self.assertEqual(data["status"], "invalid")
             self.assertEqual(
                 sorted(data),
-                ["citations", "connectivity", "indexes", "inventory", "links", "logs", "metadata", "reserved_files", "status", "summary", "validation"],
+                ["citations", "connectivity", "indexes", "inventory", "links", "logs", "metadata", "reserved_files", "rules", "status", "summary", "validation"],
             )
             self.assertNotIn("issues", data["validation"])
             self.assertFalse(data["validation"]["passed"])
             self.assertEqual(data["validation"]["issue_count"], len([issue for issue in payload["issues"] if issue["code"] != "OKF_LINK_BROKEN"]))
+            self.assertEqual(data["summary"]["warning_signal_count"], 4)
+            self.assertEqual(data["summary"]["error_signal_count"], 0)
             self.assertEqual(data["inventory"]["concept_count"], 3)
             self.assertEqual(data["inventory"]["directory_count"], 2)
             self.assertEqual(data["inventory"]["reserved_file_count"], 3)
@@ -64,18 +74,74 @@ class HealthCommandTest(unittest.TestCase):
                 root,
                 {
                     "index.md": "- [Alpha](alpha.md)\n",
-                    "log.md": "## 2026-07-05\n",
-                    "alpha.md": "---\ntype: Note\ntitle: Alpha\ndescription: One\nresource: R\ntags: [x]\ntimestamp: 2026-07-05\n---\n[Alpha](alpha.md)\n",
+                    "alpha.md": "---\ntype: Note\ntitle: Alpha\ndescription: One\n---\n[Alpha](alpha.md)\n",
                 },
             )
             exit_code, stdout, _ = run_main(["okf", "health", str(root), "--json"])
             self.assertEqual(exit_code, 0)
             self.assertEqual(json.loads(stdout)["data"]["status"], "ok")
 
-            write_files(root, {"alpha.md": "---\ntype: Note\ntitle: Alpha\n---\n"})
-            exit_code, stdout, _ = run_main(["okf", "health", str(root), "--json"])
+            exit_code, stdout, _ = run_main(["okf", "health", str(root), "--json", "--profile", "full"])
             self.assertEqual(exit_code, 0)
-            self.assertEqual(json.loads(stdout)["data"]["status"], "attention")
+            data = json.loads(stdout)["data"]
+            self.assertEqual(data["rules"]["profile"], "full")
+            self.assertEqual(
+                data["rules"]["evaluated_groups"],
+                ["inventory", "reserved_files", "links", "indexes", "logs", "metadata", "citations", "connectivity"],
+            )
+            self.assertEqual(data["rules"]["ignored_groups"], [])
+            self.assertEqual(data["status"], "attention")
+
+    def test_health_ignores_links_and_headings_inside_code(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir) / "bundle"
+            write_files(
+                root,
+                {
+                    "index.md": "---\nokf_version: 1\n---\n- [Alpha](alpha.md)\n- [Beta](beta.md)\n",
+                    "log.md": "## 2026-07-05\n\n## 2026-07-04\n",
+                    "alpha.md": (
+                        "---\n"
+                        "type: Note\n"
+                        "title: Alpha\n"
+                        "description: One\n"
+                        "resource: R\n"
+                        "tags: [x]\n"
+                        "timestamp: 2026-07-05\n"
+                        "---\n"
+                        "[Beta](beta.md)\n\n"
+                        "```md\n"
+                        "[Broken](missing.md)\n"
+                        "## 2026-07-06\n"
+                        "```\n"
+                        "Inline `[AlsoBroken](missing.md)` and `## 2026-07-06`.\n"
+                    ),
+                    "beta.md": (
+                        "---\n"
+                        "type: Note\n"
+                        "title: Beta\n"
+                        "description: Two\n"
+                        "resource: R\n"
+                        "tags: [x]\n"
+                        "timestamp: 2026-07-04\n"
+                        "---\n"
+                        "[Alpha](alpha.md)\n"
+                        "```md\n"
+                        "## 2026-07-07\n"
+                        "[Broken](missing.md)\n"
+                        "```\n"
+                    ),
+                },
+            )
+
+            exit_code, stdout, _ = run_main(["okf", "health", str(root), "--json", "--profile", "full"])
+            self.assertEqual(exit_code, 0)
+            data = json.loads(stdout)["data"]
+            self.assertEqual(data["status"], "ok")
+            self.assertEqual(data["links"]["broken_internal_link_count"], 0)
+            self.assertEqual(data["citations"]["external_linked_without_citations_count"], 0)
+            self.assertEqual(data["logs"]["malformed_date_heading_count"], 0)
+            self.assertEqual(data["logs"]["ordering_issue_count"], 0)
 
     def test_health_discovers_and_reports_ambiguity(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -95,8 +161,8 @@ class HealthCommandTest(unittest.TestCase):
             self.assertEqual(exit_code, 0)
             self.assertEqual(stderr, "")
             lines = stdout.strip().splitlines()
-            self.assertEqual(lines[0], f"{root}  health: attention")
-            self.assertEqual([line.split(":", 1)[0] for line in lines[1:]], ["validation", "inventory", "reserved files", "links", "indexes", "logs", "metadata", "citations", "connectivity"])
+            self.assertEqual(lines[0], f"{root}  profile: quick  health: attention")
+            self.assertEqual([line.split(":", 1)[0] for line in lines[1:]], ["inventory", "reserved files", "links", "connectivity"])
 
 
 if __name__ == "__main__":

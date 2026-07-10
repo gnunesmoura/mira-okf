@@ -1,5 +1,11 @@
 # Tooling - Log
 
+## 2026-07-08
+
+- **Update**: Refined the [Feature - OKF Health](features/Feature%20-%20OKF%20Health.md), [PRD - OKF Health](prds/PRD%20-%20OKF%20Health.md), and [Health Report Contract](architecture/Health%20Report%20Contract.md) bundle artifacts around the profile-based `quick` default, selected rule groups, and compact health output.
+- **Update**: Aligned the [Tooling Roadmap](Tooling%20Roadmap.md) with the created health PRD so the roadmap no longer lists `PRD - OKF Health` as a document still to create.
+- **Update**: Defined the `quick` and `full` health profiles, clarified reserved-file and signal-count scopes, extended the [Command Flows](architecture/Command%20Flows.md) note for `health`, and added health coverage to the [Test Strategy](architecture/Test%20Strategy.md).
+
 ## 2026-07-06
 
 - **Creation**: Added the [PRD - OKF Health](prds/PRD%20-%20OKF%20Health.md) implementation requirements for the read-only `tooling okf health` command and stable health report signals.

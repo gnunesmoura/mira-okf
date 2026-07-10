@@ -1,7 +1,7 @@
 ---
 type: ArchitectureDecision
 title: Health Report Contract
-description: Defines the read-only health report payload and soft signal semantics for `tooling okf health`.
+description: Defines the profile-based read-only health report payload and soft signal semantics for `tooling okf health`.
 tags:
   - tooling
   - okf
@@ -13,7 +13,9 @@ tags:
 
 ## Context
 
-`health` should give a compact status view for one OKF bundle without becoming a second validator, crawler, fixer, or scoring system. It depends on the shared resolver, shared read model, shared issue contract, shared JSON envelope, and the validation report semantics already defined for readable bundles.
+`health` should give a compact status view for one OKF bundle without becoming a second validator, crawler, fixer, or scoring system. It depends on the shared resolver, shared read model, shared issue contract, shared JSON envelope, and the validation report semantics already defined for readable bundles. The command is profile-based so the default view stays short while broader quality groups remain opt-in.
+
+Health evaluation must ignore content inside fenced code blocks and inline code spans before looking for links, headings, or other signals, so examples and snippets do not create false positives.
 
 The OKF specification separates required conformance from soft quality guidance. Concepts require parseable top-of-file YAML frontmatter and a non-empty `type`; present reserved files must follow `index.md` and `log.md` structure; missing optional fields, unknown types, unknown keys, missing `index.md`, broken cross-links, and missing citations must be tolerated by consumers.
 
@@ -30,10 +32,13 @@ The command should:
 - reuse validation report semantics for conformance status and issue counts;
 - use the shared top-level JSON envelope with `command: "okf.health"`;
 - place only the health report in `data`;
+- declare the selected profile and the evaluated versus ignored rule groups in `data`;
 - keep read, validation, and health collection issues in the shared top-level `issues` array;
 - treat poor health signals as report data, not command execution failure;
 - avoid external URL fetching, citation target verification, historical trend analysis, and opaque scoring;
 - sort all path-like detail lists by normalized bundle-relative path and all name-like lists by normalized name.
+
+The canonical rule-group IDs are strings, ordered as `inventory`, `reserved_files`, `links`, `indexes`, `logs`, `metadata`, `citations`, and `connectivity`. `rules.evaluated_groups` and `rules.ignored_groups` contain these string IDs, not objects. Validation is reported separately in `data.validation`, not as a rule group. `quick` evaluates `inventory`, `reserved_files`, `links`, and `connectivity`; `full` evaluates all canonical groups.
 
 The JSON envelope remains:
 
@@ -51,6 +56,11 @@ The `data` payload should use this stable shape:
 
 ```json
 {
+  "rules": {
+    "profile": "quick",
+    "evaluated_groups": [],
+    "ignored_groups": []
+  },
   "status": "ok",
   "summary": {
     "status": "ok",
@@ -130,11 +140,15 @@ The `data` payload should use this stable shape:
 
 `status` and `summary.status` use the same stable values:
 
-- `ok` when validation passes and there are no warning or error health signals;
-- `attention` when validation passes but soft health signals are present;
+- `ok` when validation passes and there are no warning or error health signals in the evaluated groups;
+- `attention` when validation passes but soft health signals are present in the evaluated groups;
 - `invalid` when validation does not pass.
 
-Health signal counts are derived from the grouped report fields, not from the top-level `issues` array. They summarize report concerns such as broken internal links, malformed reserved files, missing recommended metadata, missing indexes, log ordering issues, external links without detectable citations, and orphan concepts.
+`summary.warning_signal_count` and `summary.error_signal_count` count only warning and error health signals from the evaluated rule groups. They exclude ignored groups and exclude validation issues, which remain summarized separately in `data.validation` and the top-level `issues` array.
+
+Health signal counts are derived from the grouped report fields, not from the top-level `issues` array. They summarize report concerns from the evaluated rule groups such as broken internal links, malformed reserved files, missing recommended metadata, missing indexes, log ordering issues, external links without detectable citations, and orphan concepts. Ignored groups must be declared explicitly so agents can distinguish omitted checks from poor health.
+
+`reserved_files` booleans only describe root `index.md` and root `log.md` presence. `index_issue_count`, `log_issue_count`, `malformed_reserved_file_count`, and `malformed_reserved_file_paths` cover reserved-file issues for present reserved files anywhere in the bundle.
 
 `inventory.concept_types` contains objects shaped as:
 
@@ -165,9 +179,9 @@ Citation detection is intentionally mechanical. A concept has citations when its
 
 Connectivity is based only on internal concept-to-concept links. External links, reserved-file links, and broken links do not create inbound or outbound connectivity for concepts. An orphan concept is one with no inbound and no outbound resolved internal concept link.
 
-Human output should start with the resolved bundle path and the stable health status, then group the same signal families as the JSON payload: validation, inventory, reserved files, links, indexes, logs, metadata, citations, and connectivity. It should remain concise and path-first, with detail paths shown only where they make the status actionable.
+Human output should start with the resolved bundle path, selected profile, and the stable health status, then group only the selected signal families. It should remain concise and path-first, with detail paths shown only where they make the status actionable.
 
-Process failure remains reserved for unreadable bundle paths, discovery ambiguity, invalid CLI input, and unexpected execution errors. A readable bundle with validation failures or poor health signals still uses the success envelope with `ok: true`; the bundle state is expressed by `data.status`, `data.validation`, grouped health fields, and top-level `issues`.
+Process failure remains reserved for unreadable bundle paths, discovery ambiguity, invalid CLI input, and unexpected execution errors. A readable bundle with validation failures or poor health signals still uses the success envelope with `ok: true`; the bundle state is expressed by `data.rules`, `data.status`, `data.validation`, grouped health fields, and top-level `issues`.
 
 ## Consequences
 
@@ -198,6 +212,7 @@ Reporting only counts was rejected because deterministic detail paths are needed
 - [Feature - OKF Links](../features/Feature%20-%20OKF%20Links.md)
 - [Feature - OKF Backlinks](../features/Feature%20-%20OKF%20Backlinks.md)
 - [PRD - OKF Module](../prds/PRD%20-%20OKF%20Module.md)
+- [PRD - OKF Health](../prds/PRD%20-%20OKF%20Health.md)
 - [Discovery and Resolution](Discovery%20and%20Resolution.md)
 - [Data Contracts](Data%20Contracts.md)
 - [Command Flows](Command%20Flows.md)

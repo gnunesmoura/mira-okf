@@ -17,6 +17,8 @@ tags:
 - a malformed concept missing `type`
 - a concept with extra frontmatter keys
 - a concept with a broken relative link
+- a readable bundle fixture for `health` with valid inventory, reserved files, internal links, and a concept containing code blocks and inline code spans
+- a readable bundle fixture for `health` with missing optional metadata, missing `index.md`, stale logs, and an external link without a detectable citations section
 
 ## Coverage
 
@@ -30,6 +32,11 @@ tags:
 - deterministic sort order
 - tolerated issues for invalid or incomplete content
 - non-fatal handling of unknown `type` values, extra frontmatter fields, and broken links
+- health with `quick` as the default profile
+- health profile evaluation for default versus opt-in rule groups
+- health passthrough of validation summary and issue counts
+- health ignoring links and headings inside fenced code blocks and inline code spans
+- health deterministic JSON and human output ordering
 
 ## Rule
 

@@ -31,6 +31,7 @@ The existing baseline PRDs are:
 
 - [PRD - Python Tooling Library and CLI](prds/PRD%20-%20Python%20Tooling%20Library%20and%20CLI.md)
 - [PRD - OKF Module](prds/PRD%20-%20OKF%20Module.md)
+- [PRD - OKF Health](prds/PRD%20-%20OKF%20Health.md)
 - [PRD - OKF Concept List](prds/PRD%20-%20OKF%20Concept%20List.md)
 - [PRD - OKF Links](prds/PRD%20-%20OKF%20Links.md)
 - [PRD - OKF Show](prds/PRD%20-%20OKF%20Show.md)
@@ -49,7 +50,7 @@ The user journey should move from discovering and opening a single concept, to v
 
 1. `show` - completed; establishes the canonical single-concept read path so later commands share the same target-resolution behavior.
 2. `validate` - next; defines non-blocking conformance reporting while the read model and issue semantics are still simple.
-3. `health` - aggregate inventory and quality signals into a compact bundle status view once validation rules are fixed.
+3. `health` - aggregate inventory and quality signals into a compact bundle status view with a default quick profile and opt-in rule groups once validation rules are fixed.
 4. `props` - add the narrow frontmatter export surface last, after the shared read model and output contracts are stable.
 
 ## PRD Sequence
@@ -69,8 +70,7 @@ The user journey should move from discovering and opening a single concept, to v
 
 ### PRDs to Create
 
-1. `PRD - OKF Health` - after validation because health should summarize the finalized issue vocabulary and quality signals.
-2. `PRD - OKF Properties Export` - last because it is a narrow projection surface that depends on stable frontmatter normalization and output contracts.
+1. `PRD - OKF Properties Export` - last because it is a narrow projection surface that depends on stable frontmatter normalization and output contracts.
 
 ## Architecture Decisions to Keep Fixed
 

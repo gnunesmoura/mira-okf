@@ -42,7 +42,7 @@ def build_parser() -> argparse.ArgumentParser:
         ("links", "List outbound links in a bundle.", (("--broken", {"action": "store_true"}), ("--external", {"action": "store_true"}), ("--json", {"action": "store_true"}))),
         ("backlinks", "List inbound links for a concept.", (("--json", {"action": "store_true"}),)),
         ("validate", "Validate bundle conformance.", (("--json", {"action": "store_true"}),)),
-        ("health", "Report bundle health signals.", (("--json", {"action": "store_true"}),)),
+        ("health", "Report bundle health signals.", (("--profile", {"choices": ("quick", "full"), "default": "quick"}), ("--json", {"action": "store_true"}))),
     ):
         command_parser = okf_subparsers.add_parser(name, help=help_text)
         command_parser.add_argument("bundle", nargs="?")

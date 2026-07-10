@@ -27,7 +27,7 @@ tooling okf show [<bundle>] <concept-id-or-path> [--summary] [--json]
 tooling okf links [<bundle>] [--broken] [--external] [--json]
 tooling okf backlinks [<bundle>] <concept-id-or-path> [--json]
 tooling okf props [<bundle>] [--fields type,title,description,tags] [--format table|json|csv]
-tooling okf health [<bundle>] [--json]
+tooling okf health [<bundle>] [--json] [--profile <name>]
 tooling okf validate [<bundle>] [--json]
 ```
 

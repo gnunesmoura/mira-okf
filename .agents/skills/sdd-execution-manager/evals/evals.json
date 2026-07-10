@@ -1,0 +1,23 @@
+{
+  "skill_name": "sdd-execution-manager",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Execute the next eligible task from TASKS.md. Delegate it to one fresh subagent, wait for the result, and validate it before doing anything else.",
+      "expected_output": "The agent parses TASKS.md, selects one eligible task, delegates exactly one subagent, waits, independently validates the result, and reports a resumable status.",
+      "files": ["TASKS.md"]
+    },
+    {
+      "id": 2,
+      "prompt": "Resume execution from a task list where the current task's dependency is incomplete and a later task is marked pending.",
+      "expected_output": "The agent does not skip the dependency, does not delegate the later task, and reports the blocker or next required action.",
+      "files": ["TASKS.md"]
+    },
+    {
+      "id": 3,
+      "prompt": "A delegated subagent reports success, but focused validation finds a broken link introduced by its change. Continue managing the task.",
+      "expected_output": "The agent rejects completion, records the concrete validation failure, delegates a fresh retry for the same task, and does not advance.",
+      "files": ["TASKS.md"]
+    }
+  ]
+}

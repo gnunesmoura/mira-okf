@@ -215,12 +215,10 @@ Reuse the shared resolver, read model, issue channel, semantic normalization, an
 
 ## Relations
 
-- [Feature - OKF Health](../features/Feature%20-%20OKF%20Health.md)
-- [Feature - OKF Validation](../features/Feature%20-%20OKF%20Validation.md)
-- [Feature - OKF Links](../features/Feature%20-%20OKF%20Links.md)
-- [Feature - OKF Backlinks](../features/Feature%20-%20OKF%20Backlinks.md)
-- [PRD - OKF Module](../prds/PRD%20-%20OKF%20Module.md)
-- [PRD - OKF Health](../prds/PRD%20-%20OKF%20Health.md)
+- [Feature - OKF Health](../product/features/Feature%20-%20OKF%20Health.md)
+- [Feature - OKF Validation](../product/features/Feature%20-%20OKF%20Validation.md)
+- [Feature - OKF Links](../product/features/Feature%20-%20OKF%20Links.md)
+- [Feature - OKF Backlinks](../product/features/Feature%20-%20OKF%20Backlinks.md)
 - [Discovery and Resolution](Discovery%20and%20Resolution.md)
 - [Data Contracts](Data%20Contracts.md)
 - [Command Flows](Command%20Flows.md)

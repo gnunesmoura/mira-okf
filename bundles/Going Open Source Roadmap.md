@@ -223,8 +223,8 @@ Do not publish the first public release if any of these are false:
 
 - [Tooling Overview](Tooling%20Overview.md)
 - [Tooling Roadmap](Tooling%20Roadmap.md)
-- [PRD - Python Tooling Library and CLI](prds/PRD%20-%20Python%20Tooling%20Library%20and%20CLI.md)
-- [PRD - OKF Health](prds/PRD%20-%20OKF%20Health.md)
-- [PRD - OKF Validation](prds/PRD%20-%20OKF%20Validation.md)
+- [Tooling Product](product/Product%20Overview.md)
+- [Product Features](product/features/)
+- [SDD Changes](spec-driven-development/changes/)
 - [Architecture Overview](architecture/Architecture%20Overview.md)
 - [Test Strategy](architecture/Test%20Strategy.md)

@@ -92,6 +92,5 @@ Existing envelope keys, issue severity values, payload locations, and ordering r
 
 ## Relations
 
-- [Feature - OKF Show](../features/Feature%20-%20OKF%20Show.md)
-- [PRD - OKF Show](../prds/PRD%20-%20OKF%20Show.md)
+- [Feature - OKF Show](../product/features/Feature%20-%20OKF%20Show.md)
 - [Command Flows](Command%20Flows.md)

@@ -62,5 +62,5 @@ Keep the shared envelope, read-model concept fields, exact-match filter semantic
 
 ## Relations
 
-- [Feature - OKF Concept List](../features/Feature%20-%20OKF%20Concept%20List.md)
+- [Feature - OKF Concept List](../product/features/Feature%20-%20OKF%20Concept%20List.md)
 - [List Result Windowing](List%20Result%20Windowing.md)

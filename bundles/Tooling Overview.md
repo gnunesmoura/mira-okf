@@ -33,7 +33,6 @@ The first supported domain is OKF, focused on summarized navigation, concept inv
 
 ## Relations
 
-- [PRD - Python Tooling Library and CLI](prds/PRD%20-%20Python%20Tooling%20Library%20and%20CLI.md)
-- [PRD - OKF Module](prds/PRD%20-%20OKF%20Module.md)
-- [Feature - Summarized OKF Navigation](features/Feature%20-%20Summarized%20OKF%20Navigation.md)
-- [Feature - OKF Concept List](features/Feature%20-%20OKF%20Concept%20List.md)
+- [Tooling Product](product/Product%20Overview.md)
+- [Product Features](product/features/)
+- [SDD Changes](spec-driven-development/changes/)

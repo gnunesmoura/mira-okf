@@ -117,9 +117,7 @@ Preserve shared issue codes, severity meanings, ordering, reserved-file rules, a
 
 ## Relations
 
-- [Feature - OKF Validation](../features/Feature%20-%20OKF%20Validation.md)
-- [PRD - OKF Validation](../prds/PRD%20-%20OKF%20Validation.md)
-- [PRD - OKF Module](../prds/PRD%20-%20OKF%20Module.md)
+- [Feature - OKF Validation](../product/features/Feature%20-%20OKF%20Validation.md)
 - [Data Contracts](Data%20Contracts.md)
 - [Command Flows](Command%20Flows.md)
 - [Output and Errors](Output%20and%20Errors.md)

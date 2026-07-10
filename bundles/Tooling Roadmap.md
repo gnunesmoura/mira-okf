@@ -27,14 +27,9 @@ The current OKF baseline already covers:
 - `backlinks`
 - `show`
 
-The existing baseline PRDs are:
-
-- [PRD - Python Tooling Library and CLI](prds/PRD%20-%20Python%20Tooling%20Library%20and%20CLI.md)
-- [PRD - OKF Module](prds/PRD%20-%20OKF%20Module.md)
-- [PRD - OKF Health](prds/PRD%20-%20OKF%20Health.md)
-- [PRD - OKF Concept List](prds/PRD%20-%20OKF%20Concept%20List.md)
-- [PRD - OKF Links](prds/PRD%20-%20OKF%20Links.md)
-- [PRD - OKF Show](prds/PRD%20-%20OKF%20Show.md)
+The durable product context is documented in [Product](product/) and
+[Product Features](product/features/). Implementation-specific scope belongs
+in [SDD changes](spec-driven-development/changes/).
 
 ## Current Focus
 
@@ -55,11 +50,10 @@ mixed frontmatter, stable ordering, and regression tests while reusing the
 shared read model and output conventions.
 
 Non-goals are bundle mutation, a new property schema, new `props` concepts,
-and release-governance work. Confirmed context: [PRD - Python Tooling Library
-and CLI](prds/PRD%20-%20Python%20Tooling%20Library%20and%20CLI.md), [PRD - OKF
-Module](prds/PRD%20-%20OKF%20Module.md), [Data Contracts](architecture/Data%20Contracts.md),
+and release-governance work. Confirmed context: [Tooling Product](product/Product%20Overview.md),
+[Data Contracts](architecture/Data%20Contracts.md),
 [Output and Errors](architecture/Output%20and%20Errors.md), [Command Flows](architecture/Command%20Flows.md),
-[Feature - Summarized OKF Navigation](features/Feature%20-%20Summarized%20OKF%20Navigation.md),
+[Feature - Summarized OKF Navigation](product/features/Feature%20-%20Summarized%20OKF%20Navigation.md),
 [Open Knowledge Format Specification](references/Open%20Knowledge%20Format%20Specification.md),
 [Tooling Roadmap](Tooling%20Roadmap.md), and [Going Open Source Roadmap](Going%20Open%20Source%20Roadmap.md).
 No change package or implementation is created by this selection.
@@ -77,24 +71,14 @@ The user journey should move from discovering and opening a single concept, to v
 3. `health` - completed; provides aggregate inventory and quality signals with quick and full reporting profiles.
 4. `props` - next and final product feature; adds the narrow frontmatter export surface after the shared read model and output contracts stabilized.
 
-## PRD Sequence
+## SDD Change Sequence
 
-### Baseline PRDs
+1. `CHANGE-001-props` - next because `props` is the only remaining product
+   capability before public release preparation.
 
-- [PRD - Python Tooling Library and CLI](prds/PRD%20-%20Python%20Tooling%20Library%20and%20CLI.md)
-- [PRD - OKF Module](prds/PRD%20-%20OKF%20Module.md)
-- [PRD - OKF Concept List](prds/PRD%20-%20OKF%20Concept%20List.md)
-- [PRD - OKF Links](prds/PRD%20-%20OKF%20Links.md)
-- [PRD - OKF Show](prds/PRD%20-%20OKF%20Show.md)
-- [PRD - OKF Validation](prds/PRD%20-%20OKF%20Validation.md)
-
-### Implementation-Ready PRDs
-
-1. `PRD - OKF Properties Export` - next because `props` is the only remaining product feature before public release preparation.
-
-### PRDs to Create
-
-1. `PRD - OKF Properties Export` - last because it is a narrow projection surface that depends on stable frontmatter normalization and output contracts.
+Future implementation work should be shaped as a change package under
+`spec-driven-development/changes/`, with its own specification, technical
+plan, tasks, acceptance tests, and agent contract.
 
 ## Architecture Decisions to Keep Fixed
 
@@ -117,14 +101,9 @@ The user journey should move from discovering and opening a single concept, to v
 ## Relations
 
 - [Tooling Overview](Tooling%20Overview.md)
-- [Feature - Summarized OKF Navigation](features/Feature%20-%20Summarized%20OKF%20Navigation.md)
-- [Feature - OKF Concept List](features/Feature%20-%20OKF%20Concept%20List.md)
-- [Feature - OKF Links](features/Feature%20-%20OKF%20Links.md)
-- [Feature - OKF Backlinks](features/Feature%20-%20OKF%20Backlinks.md)
-- [Feature - OKF Show](features/Feature%20-%20OKF%20Show.md)
-- [Feature - OKF Validation](features/Feature%20-%20OKF%20Validation.md)
-- [Feature - OKF Health](features/Feature%20-%20OKF%20Health.md)
-- [PRD - OKF Health](prds/PRD%20-%20OKF%20Health.md)
+- [Product](product/)
+- [Product Features](product/features/)
+- [SDD Changes](spec-driven-development/changes/)
 - [Discovery and Resolution](architecture/Discovery%20and%20Resolution.md)
 - [Data Contracts](architecture/Data%20Contracts.md)
 - [Command Flows](architecture/Command%20Flows.md)

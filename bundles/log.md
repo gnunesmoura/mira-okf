@@ -2,9 +2,20 @@
 
 ## 2026-07-10
 
-- **Creation**: Added reusable SDD templates under [Changes template](/changes/_template/)
+- **Restructure**: Reorganized the bundle into `product/`,
+  `product/features/`, `architecture/`, `references/`, and
+  `spec-driven-development/changes/`.
+- **Migration**: Retired the `prds/` area after moving durable product context
+  into `product/` and keeping change-specific execution in SDD packages.
+- **Migration**: Moved the existing feature concepts into
+  `product/features/` and preserved `CHANGE-001-props` under the canonical SDD
+  change-package path.
+
+## 2026-07-10
+
+- **Creation**: Added reusable SDD templates under [SDD templates](/spec-driven-development/templates/)
   using the artifact names and frontmatter conventions defined by `OKF-SDD.md`.
-- **Creation**: Added the reserved [Changes](changes/) area for future SDD
+- **Creation**: Added the reserved [SDD changes](spec-driven-development/changes/) area for future SDD
   change packages; no package or placeholder concept was created.
 - **Decision**: Recorded human approval of [CHANGE-001 — props](Tooling%20Roadmap.md#approved-sdd-pilot) as the first SDD pilot; scope remains read-only frontmatter export and no change package is created yet.
 

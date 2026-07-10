@@ -44,10 +44,8 @@ The plan covers read-only local bundle behavior and its tests. It does not intro
 
 ## Relations
 
-- [PRD - OKF Module](../prds/PRD%20-%20OKF%20Module.md)
-- [PRD - OKF Links](../prds/PRD%20-%20OKF%20Links.md)
-- [Feature - OKF Links](../features/Feature%20-%20OKF%20Links.md)
-- [Feature - OKF Backlinks](../features/Feature%20-%20OKF%20Backlinks.md)
+- [Feature - OKF Links](../product/features/Feature%20-%20OKF%20Links.md)
+- [Feature - OKF Backlinks](../product/features/Feature%20-%20OKF%20Backlinks.md)
 - [Discovery and Resolution](Discovery%20and%20Resolution.md)
 - [Command Flows](Command%20Flows.md)
 - [Data Contracts](Data%20Contracts.md)

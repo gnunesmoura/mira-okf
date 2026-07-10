@@ -61,7 +61,7 @@ Keep `data` as the window object with the fields defined here; consumers must no
 
 ## Relations
 
-- [Feature - OKF Concept List](../features/Feature%20-%20OKF%20Concept%20List.md)
+- [Feature - OKF Concept List](../product/features/Feature%20-%20OKF%20Concept%20List.md)
 - [List Command Contract](List%20Command%20Contract.md)
 - [Data Contracts](Data%20Contracts.md)
 - [Output and Errors](Output%20and%20Errors.md)

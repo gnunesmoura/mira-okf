@@ -1,165 +1,139 @@
 ---
 name: bundle-definition-master
-description: Orchestrate bundle-definition work for OKF bundles by launching fresh subagents for tech-pm, architect, and tech-lead. Use this skill whenever the user asks to shape, define, plan, or prepare a bundle, especially when the work needs features, architecture decisions, and PRDs coordinated into an implementation-ready bundle.
+description: Orchestrate Spec-Driven Development change packages for OKF bundles by coordinating product features, architecture context, and implementation-ready SDD artifacts.
 ---
 
 # Bundle Definition Master
 
-You are the orchestration role for bundle shaping.
+The master coordinates the definition of one bounded change package. The
+durable output is a package under
+`bundles/spec-driven-development/changes/<change-id>-<short-name>/`.
 
-Your job is to shape briefs, delegate, collect, and sequence work.
-Do not draft Feature, ArchitectureDecision, or PRD bodies yourself.
-Every bundle-definition request must go through fresh subagents.
-Frame each subagent as working on planning or changing bundle content, not implementing code.
+Do not create a PRD, Feature, ArchitectureDecision, or other parallel concept
+as a default output. Link existing product features and architecture concepts
+through `related` fields. Create or update a product feature only when the
+user explicitly asks to change durable product knowledge.
+
+## Package artifacts
+
+Every change package contains:
+
+- `spec.md` - approved intent, behavior, scope, non-goals, and acceptance
+  criteria;
+- `plan.md` - technical direction, boundaries, contracts, source areas,
+  tests, risks, and decisions;
+- `tasks.md` - ordered, independently verifiable implementation work;
+- `acceptance-tests.md` - observable checks and required evidence;
+- `agent-contract.md` - reading order, scope limits, invariants, validation,
+  and closeout rules;
+- `log.md` - chronological package history, without frontmatter.
+
+Use the reusable templates in
+`bundles/spec-driven-development/templates/`. Read the process guidance in
+`bundles/spec-driven-development/guides/` and the normative rules in
+`bundles/spec-driven-development/policies/`. Preserve the package layout,
+frontmatter, relations, and lifecycle defined by
+`bundles/spec-driven-development/changes/index.md`.
 
 ## Workflow
 
-When shaping a bundle, do not read the role skills into one shared context. Instead, launch fresh subagents for each role and give each one only the question and the minimum context it needs.
-Treat each subagent as a role holder receiving a targeted brief, not as a generic helper.
+Read the bundle indexes, the relevant product features, architecture concepts,
+references, and any existing change package before delegating work.
 
-Use these role skills in order one at a time:
+Use fresh role agents in this order:
 
-1. `tech-pm` to define user-facing behavior as `Feature` OKF documents.
-2. `architect` to capture structural and technical choices as `ArchitectureDecision` OKF documents.
-3. `tech-lead` to write implementation-directing `PRD` OKF documents.
+1. `tech-pm` authors or updates `spec.md`.
+2. `architect` authors or updates `plan.md`.
+3. `tech-lead` authors or updates `tasks.md`, `acceptance-tests.md`, and
+   `agent-contract.md`.
 
-Keep the sequence unless the user explicitly asks for one role only.
+Keep the sequence unless the user explicitly requests one role only. Agents
+must receive only the relevant context and must not delegate further work.
 
-### Subagent execution model
+The master owns package creation, cross-artifact consistency, index updates,
+and status gates. Role agents own the contents of their assigned artifacts.
+Do not have multiple agents author the same artifact concurrently.
 
-For each role:
+## Role briefs
 
-- Start a fresh subagent with no prior bundle conversation unless the prior output is strictly needed as handoff input.
-- Shape a role-directed brief before launching the agent.
-- Pass only the specific role question, the relevant bundle files, and the immediately relevant outputs from earlier roles.
-- Pass prior artifacts, not your interpretation of them, when one role depends on another.
-- Do not paste the entire chat history or unrelated bundle context into every agent.
-- Keep each agent's context separate so the role can reason without anchoring on other roles' assumptions.
-- Include this instruction in every spawned brief: the subagent must not delegate work to any further subagent under any circumstance.
-- Tell each subagent it is working on planning or changing bundle content for the bundle, and that the content it receives is the role-directed brief it should act on.
-- Treat the master as a coordinator, not the author of the role artifacts.
-- Use the repository as the workspace for the subagents, directing them to read and write the files related to the requested bundle-definition work.
+### Tech PM
 
-Each brief should include:
+Define the durable user problem and the bounded change behavior. Produce a
+`spec.md` with intent, context, problem statement, desired outcome, scope,
+non-goals, actors, user stories, functional requirements, domain rules, open
+questions, acceptance criteria, and relations to product features and
+references.
 
-- the bundle goal or user request;
-- the exact role outcome expected;
-- the relevant existing bundle files or excerpts;
-- the related artifacts from earlier roles, when needed;
-- the concept pattern rules below when the agent may create or split concepts.
+### Architect
 
-Recommended handoff shape:
+Translate the approved specification into a `plan.md`. Define technical
+boundaries, affected components, contracts, data or CLI behavior, test
+strategy, validation commands, migration and rollback, risks, trade-offs, and
+relations to reusable architecture concepts.
 
-1. `tech-pm` agent receives the bundle intent, relevant bundle `index.md`/`log.md`, nearby concepts, and any user constraints.
-2. `architect` agent receives the approved feature set plus the relevant bundle context and any technical constraints already surfaced.
-3. `tech-lead` agent receives the feature set, architecture decisions, and the implementation constraints needed to write the PRDs.
+### Tech Lead
 
-If the bundle has multiple credible shapes and the choice matters, convene `council` first, then feed the council verdict into the role agents as a separate input.
+Turn the plan into executable delivery guidance. Produce ordered tasks with
+dependencies and done conditions, acceptance scenarios mapped to requirements,
+and an agent contract covering reading order, allowed paths, invariants,
+clarification policy, validation, and closeout evidence.
 
-## Bundle Concept Patterns
+## SDD lifecycle gates
 
-Use these rules when shaping briefs for agents that may plan or change bundle concepts:
+Use these statuses only with their corresponding evidence:
 
-- Keep one concept per durable product, architecture, or delivery idea.
-- Use existing concept types before inventing a new one: `Feature` for user-visible behavior, `ArchitectureDecision` for structural choices, and `PRD` for implementation requirements.
-- Promote a repeated pattern into a new concept only when it needs its own title, lifecycle, relations, or independent updates.
-- Keep incidental detail inside the parent concept when it only explains that concept and does not need separate tracking.
-- Preserve existing naming conventions: `Feature - <Name>` for features, `<Decision Name>` for architecture decisions, and `PRD - <Name>` for PRDs.
-- Relations should connect concepts that constrain or depend on each other; avoid backlink noise for merely adjacent topics.
-- Do not duplicate reusable concept guidance across bundle docs. Put role-specific behavior in the role skill and OKF structural rules in `okf-authoring`.
+`draft -> specified -> planned -> ready -> in_progress -> implemented -> validated`
 
-## OKF Output Contracts
+- `specified`: the specification has approved behavior, scope, non-goals,
+  dependencies, and observable acceptance criteria;
+- `planned`: the technical plan names boundaries, contracts, source areas,
+  tests, risks, and decisions;
+- `ready`: tasks, acceptance tests, dependencies, agent constraints, and
+  completion evidence are actionable and mutually consistent;
+- later statuses belong to implementation and validation agents.
 
-Use these contracts when a brief asks a subagent to author or update bundle content. Keep these definitions here so the role skills can stay lean.
+Do not advance status merely because files exist. Do not mark implementation
+or validation status during bundle definition.
 
-### Feature
+## Consistency checks
 
-When authoring OKF bundle content, create or update one `Feature` concept per feature:
+Before declaring a package ready, verify:
 
-```yaml
----
-type: Feature
-title: Feature - <Name>
-description: <One sentence describing the feature outcome.>
-tags:
-  - <domain>
----
-```
+- all required artifacts exist in one package directory;
+- every concept artifact has valid frontmatter with non-empty `type`,
+  `title`, `description`, `change_id`, and `status`;
+- package relations use canonical paths beginning with
+  `/spec-driven-development/changes/`;
+- product, architecture, and reference relations point to existing canonical
+  documents or are explicitly empty;
+- requirements map to acceptance criteria and acceptance tests;
+- plan boundaries map to task paths and validation commands;
+- agent-contract rules agree with the plan and task list;
+- unresolved questions that affect behavior, architecture, persistence,
+  security, or compatibility block readiness;
+- `log.md` is chronological and records only actual package events.
 
-Use concise sections:
+Reject contradictions instead of silently repairing them. Record a required
+follow-up in the package or ask the user when the decision changes scope.
 
-- `# Feature - <Name>`
-- `## Objective`
-- `## Scope`
-- `## Out of Scope`
-- `## User Flow` when behavior has multiple steps
-- `## Acceptance Criteria`
-- `## Minimum Tests`
-- `## Relations`
+## Concept boundaries
 
-### ArchitectureDecision
+- `product/features/` describes durable user-visible capabilities.
+- `architecture/` describes reusable technical boundaries and contracts.
+- `spec-driven-development/changes/` describes one bounded change and its
+  execution evidence.
+- `references/` contains governing specifications and external constraints.
 
-When authoring OKF bundle content, create or update one `ArchitectureDecision` concept per decision:
+Do not duplicate durable product or architecture guidance inside every change
+package. Use concise context and canonical relations.
 
-```yaml
----
-type: ArchitectureDecision
-title: <Decision Name>
-description: <One sentence describing the decision.>
-tags:
-  - <domain>
----
-```
+## Handoff checks
 
-Use concise sections:
+After Tech PM: `spec.md` has an approved outcome, scope, non-goals, behavior,
+acceptance criteria, and relevant product relations.
 
-- `# <Decision Name>`
-- `## Context`
-- `## Decision`
-- `## Consequences`
-- `## Alternatives Considered` when there was a real tradeoff
-- `## Relations`
+After Architect: `plan.md` has explicit boundaries, contracts, affected areas,
+tests, validation commands, risks, and relevant architecture relations.
 
-### PRD
-
-When authoring OKF bundle content, create or update one `PRD` concept per deliverable:
-
-```yaml
----
-type: PRD
-title: PRD - <Name>
-description: <One sentence describing the implementation outcome.>
-tags:
-  - <domain>
----
-```
-
-Use concise sections:
-
-- `# PRD - <Name>`
-- `## Context`
-- `## Objective`
-- `## Scope`
-- `## Requirements`
-- `## Acceptance Criteria`
-- `## Minimum Tests`
-- `## Non-Goals`
-- `## Relations`
-
-## Operating Rules
-
-- Read the existing bundle `index.md`, `log.md`, and nearby relevant concepts before delegating or applying subagent output.
-- When delegating to subagents, read those files once yourself, then hand each agent a compact context package instead of re-reading everything in every role.
-- Always delegate to fresh subagents for bundle-definition work; do not answer from the master role alone.
-- The master should shape the brief the subagent receives; the subagent should do the role work from that brief.
-- If the bundle already has related Features, ArchitectureDecisions, or PRDs, include only the directly relevant ones in the handoff.
-- Preserve OKF frontmatter and existing naming conventions.
-- Keep each document narrow: one feature, one decision, or one PRD per file.
-- Link related Features, ArchitectureDecisions, and PRDs in `## Relations`.
-- Update only the files needed for the requested bundle-definition work.
-
-## Handoff Checks
-
-- After Tech PM: each feature has objective, scope, acceptance criteria, and relations.
-- After Architect: each decision states context, decision, consequences, and relations.
-- After Tech Lead: each PRD gives implementation scope, requirements, acceptance criteria, minimum tests, and relations.
+After Tech Lead: tasks are ordered and verifiable; acceptance tests cover the
+requirements; and the agent contract defines executable guardrails.

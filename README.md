@@ -173,10 +173,6 @@ the following documents are primarily for maintainers and contributors:
 The PRDs describe product intent and roadmap status; they are not a substitute
 for verifying the behavior of a particular checkout.
 
-Maintainers working on a change should use the [bundle index](bundles/) for
-authority order, conflict handling, and lifecycle evidence, and use
-[PLAN.md](PLAN.md) for the SDD adoption scope.
-
 ## Contributing and licensing
 
 This checkout does not currently provide a license, contribution guide,

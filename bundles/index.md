@@ -14,6 +14,7 @@ Knowledge bundle for the local Python library and CLI `tooling`.
 
 - [Tooling Overview](Tooling%20Overview.md) - Scope, principles, and initial organization for `tooling`.
 - [Tooling Roadmap](Tooling%20Roadmap.md) - Roadmap spine for the remaining OKF work in `tooling`.
+- [Going Open Source Roadmap](Going%20Open%20Source%20Roadmap.md) - Product and project roadmap for public release and distribution.
 - [PRD - Python Tooling Library and CLI](prds/PRD%20-%20Python%20Tooling%20Library%20and%20CLI.md) - Main product PRD for `tooling`.
 - [Architecture Overview](architecture/Architecture%20Overview.md) - Initial architecture decisions for the local `tooling` library and CLI.
 - [Open Knowledge Format Specification](references/Open%20Knowledge%20Format%20Specification.md) - Local copy of the OKF v0.1 draft specification.

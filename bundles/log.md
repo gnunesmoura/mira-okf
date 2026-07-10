@@ -1,5 +1,10 @@
 # Tooling - Log
 
+## 2026-07-09
+
+- **Creation**: Added the [Going Open Source Roadmap](Going%20Open%20Source%20Roadmap.md) concept covering `props`, public project governance, package readiness, TestPyPI validation, first release, and post-release maintenance.
+- **Update**: Aligned the [Tooling Roadmap](Tooling%20Roadmap.md) with the current Git baseline: `validate` and `health` are complete, and `props` is the only remaining product feature before open-source release preparation.
+
 ## 2026-07-08
 
 - **Update**: Refined the [Feature - OKF Health](features/Feature%20-%20OKF%20Health.md), [PRD - OKF Health](prds/PRD%20-%20OKF%20Health.md), and [Health Report Contract](architecture/Health%20Report%20Contract.md) bundle artifacts around the profile-based `quick` default, selected rule groups, and compact health output.

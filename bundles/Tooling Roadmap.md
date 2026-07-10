@@ -38,7 +38,9 @@ The existing baseline PRDs are:
 
 ## Current Focus
 
-`show` is complete as of the recent implementation history. The next implementation-ready bundle is `validate`, which turns shared read-model issues into a non-blocking conformance report without changing bundle parsing behavior.
+The read and analysis command surface is complete through `health`. The only
+remaining product feature is `props`, which adds the narrow frontmatter export
+surface needed before release preparation can begin.
 
 ## Product Spine
 
@@ -49,9 +51,9 @@ The user journey should move from discovering and opening a single concept, to v
 ## Feature Sequence
 
 1. `show` - completed; establishes the canonical single-concept read path so later commands share the same target-resolution behavior.
-2. `validate` - next; defines non-blocking conformance reporting while the read model and issue semantics are still simple.
-3. `health` - aggregate inventory and quality signals into a compact bundle status view with a default quick profile and opt-in rule groups once validation rules are fixed.
-4. `props` - add the narrow frontmatter export surface last, after the shared read model and output contracts are stable.
+2. `validate` - completed; provides non-blocking conformance reporting without changing bundle parsing behavior.
+3. `health` - completed; provides aggregate inventory and quality signals with quick and full reporting profiles.
+4. `props` - next and final product feature; adds the narrow frontmatter export surface after the shared read model and output contracts stabilized.
 
 ## PRD Sequence
 
@@ -66,7 +68,7 @@ The user journey should move from discovering and opening a single concept, to v
 
 ### Implementation-Ready PRDs
 
-1. `PRD - OKF Validation` - next because validation should define conformance reporting before broader health aggregation.
+1. `PRD - OKF Properties Export` - next because `props` is the only remaining product feature before public release preparation.
 
 ### PRDs to Create
 

@@ -3,38 +3,35 @@ type: Technical Plan
 title: CHANGE-001 props technical plan
 description: Sets implementation boundaries, shared contracts, source areas, and risks for props export.
 tags: [sdd, change, props, technical-plan]
-change_id: "CHANGE-001"
 status: draft
-related:
-  spec: /spec-driven-development/changes/CHANGE-001-props/spec.md
-  plan: /spec-driven-development/changes/CHANGE-001-props/plan.md
-  tasks: /spec-driven-development/changes/CHANGE-001-props/tasks.md
-  acceptance_tests: /spec-driven-development/changes/CHANGE-001-props/acceptance-tests.md
-  agent_contract: /spec-driven-development/changes/CHANGE-001-props/agent-contract.md
-  prds:
-    - /product/Product%20Overview.md
-  features:
-    - /product/features/Feature%20-%20Summarized%20OKF%20Navigation.md
-  architecture:
-    - /architecture/Data%20Contracts.md
-    - /architecture/Output%20and%20Errors.md
-    - /architecture/Command%20Flows.md
-  references:
-    - /references/Open%20Knowledge%20Format%20Specification.md
-    - /Tooling%20Roadmap.md
-    - /Going%20Open%20Source%20Roadmap.md
-  source_paths:
-    - /src/tooling/okf/read_model.py
-    - /src/tooling/okf/models.py
-    - /src/tooling/okf/commands.py
-    - /src/tooling/cli.py
-    - /tests/test_list.py
-    - /tests/test_show.py
-    - /tests/test_cli_bootstrap.py
-    - /tests/support.py
 ---
 
 # Boundary
+
+## Related Product and Architecture Context
+
+- [Tooling Product](/product/Product%20Overview.md)
+- [Summarized OKF Navigation](/product/features/Feature%20-%20Summarized%20OKF%20Navigation.md)
+- [Data Contracts](/architecture/Data%20Contracts.md)
+- [Output and Errors](/architecture/Output%20and%20Errors.md)
+- [Command Flows](/architecture/Command%20Flows.md)
+
+## Affected Source Paths
+
+- `/src/tooling/okf/read_model.py`
+- `/src/tooling/okf/models.py`
+- `/src/tooling/okf/commands.py`
+- `/src/tooling/cli.py`
+- `/tests/test_list.py`
+- `/tests/test_show.py`
+- `/tests/test_cli_bootstrap.py`
+- `/tests/support.py`
+
+## Citations
+
+- [Open Knowledge Format Specification](/references/Open%20Knowledge%20Format%20Specification.md)
+- [Tooling Roadmap](/Tooling%20Roadmap.md)
+- [Going Open Source Roadmap](/Going%20Open%20Source%20Roadmap.md)
 
 Implement `props` as a thin projection over the existing resolver, inventory,
 and normalized `Concept` records. Planned source areas are the repository

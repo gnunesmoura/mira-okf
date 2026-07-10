@@ -3,27 +3,22 @@ type: Implementation Task List
 title: "Tasks: [FEATURE NAME]"
 description: "Discrete implementation tasks for [FEATURE NAME]."
 tags: [sdd, change, tasks, implementation]
-change_id: "CHANGE-000"
-tasks_id: "TASKS-000"
-spec_id: "SPEC-000"
-plan_id: "PLAN-000"
 status: draft
-owner: "[OWNER]"
-created: "YYYY-MM-DD"
-updated: "YYYY-MM-DD"
-related:
-  spec: /spec-driven-development/changes/CHANGE-000-short-name/spec.md
-  plan: /spec-driven-development/changes/CHANGE-000-short-name/plan.md
-  acceptance_tests: /spec-driven-development/changes/CHANGE-000-short-name/acceptance-tests.md
-  agent_contract: /spec-driven-development/changes/CHANGE-000-short-name/agent-contract.md
-  prds: []
-  features: []
-  architecture: []
-  references: []
-  source_paths: []
 ---
 
 # Tasks: [FEATURE NAME]
+
+## Related Product and Architecture Context
+
+- [Product feature or architecture concept](/product/features/example.md)
+
+## Affected Source Paths
+
+- `/src/example.py`
+
+## Citations
+
+- [Supporting or normative source](/references/example.md)
 
 ## Execution Rules
 

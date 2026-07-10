@@ -1,3 +1,13 @@
+---
+type: Guide
+title: SDD Workflow
+description: Defines how bounded product changes become executable SDD packages.
+tags:
+  - sdd
+  - guide
+  - workflow
+---
+
 # SDD Workflow
 
 ## Purpose
@@ -28,6 +38,16 @@ Agents should read:
    `agent-contract.md`.
 6. The package is reviewed for cross-artifact consistency before it becomes
    `ready`.
+
+## Artifact authoring boundary
+
+Keep frontmatter machine-readable and small: use `type`, `title`,
+`description`, `tags`, `status`, and links to the other artifacts in the same
+package. Derive artifact identity from the package path and filename. Put
+product, architecture, source-path, and supporting-source links in the body,
+using `## Related Product and Architecture Context`, `## Affected Source
+Paths`, and `# Citations` as applicable. Never move lifecycle state into
+prose.
 
 ## Boundaries
 

@@ -1,3 +1,13 @@
+---
+type: Policy
+title: Change Package Policy
+description: Defines the structure, metadata, and relation rules for SDD change packages.
+tags:
+  - sdd
+  - policy
+  - change
+---
+
 # Change Package Policy
 
 ## Required shape
@@ -27,6 +37,20 @@ features, or architecture concepts unless explicitly requested.
 
 ## Relations
 
-Use canonical bundle-relative paths beginning with `/`. Link product features,
-architecture concepts, references, and source paths through `related` instead
-of duplicating their content.
+Use canonical bundle-relative paths beginning with `/` for contextual links.
+Package artifact membership is derived from the canonical package directory and
+filenames; product features, architecture concepts, references, and source
+paths belong in the relevant body sections.
+
+## Metadata boundary
+
+Keep package frontmatter to the smallest machine-readable control plane:
+`type`, `title`, `description`, `tags`, and `status`.
+Derive `change_id` and artifact identity from the canonical package directory
+and filename. Do not add owner, created/updated timestamps, artifact IDs, or
+retired PRD relations unless an actual validator or workflow requires them.
+
+Put human and contextual relations in body sections: `## Related Product and
+Architecture Context`, `## Affected Source Paths`, and `# Citations`.
+`status` remains frontmatter because lifecycle tooling must read it without
+interpreting prose. Use bundle-root-relative links beginning with `/`.

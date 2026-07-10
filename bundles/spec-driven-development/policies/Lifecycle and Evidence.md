@@ -1,3 +1,13 @@
+---
+type: Policy
+title: Lifecycle and Evidence
+description: Defines SDD lifecycle transitions and the evidence required for promotion.
+tags:
+  - sdd
+  - policy
+  - lifecycle
+---
+
 # Lifecycle and Evidence
 
 ## Lifecycle

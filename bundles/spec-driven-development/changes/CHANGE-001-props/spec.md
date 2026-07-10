@@ -3,35 +3,7 @@ type: Change Specification
 title: CHANGE-001 props specification
 description: Defines the bounded read-only frontmatter property export for existing OKF concepts.
 tags: [sdd, change, props, okf]
-change_id: "CHANGE-001"
 status: draft
-related:
-  spec: /spec-driven-development/changes/CHANGE-001-props/spec.md
-  plan: /spec-driven-development/changes/CHANGE-001-props/plan.md
-  tasks: /spec-driven-development/changes/CHANGE-001-props/tasks.md
-  acceptance_tests: /spec-driven-development/changes/CHANGE-001-props/acceptance-tests.md
-  agent_contract: /spec-driven-development/changes/CHANGE-001-props/agent-contract.md
-  prds:
-    - /product/Product%20Overview.md
-  features:
-    - /product/features/Feature%20-%20Summarized%20OKF%20Navigation.md
-  architecture:
-    - /architecture/Data%20Contracts.md
-    - /architecture/Output%20and%20Errors.md
-    - /architecture/Command%20Flows.md
-  references:
-    - /references/Open%20Knowledge%20Format%20Specification.md
-    - /Tooling%20Roadmap.md
-    - /Going%20Open%20Source%20Roadmap.md
-  source_paths:
-    - /src/tooling/okf/read_model.py
-    - /src/tooling/okf/models.py
-    - /src/tooling/okf/commands.py
-    - /src/tooling/cli.py
-    - /tests/test_list.py
-    - /tests/test_show.py
-    - /tests/test_cli_bootstrap.py
-    - /tests/support.py
 ---
 
 # Intent
@@ -79,6 +51,31 @@ the [Tooling Product](../../../product/Product%20Overview.md) and
 The [OKF specification](../../references/Open%20Knowledge%20Format%20Specification.md)
 and [Going Open Source Roadmap](../../Going%20Open%20Source%20Roadmap.md) remain
 constraints and context. No props PRD or feature concept exists yet.
+
+## Related Product and Architecture Context
+
+- [Tooling Product](/product/Product%20Overview.md)
+- [Summarized OKF Navigation](/product/features/Feature%20-%20Summarized%20OKF%20Navigation.md)
+- [Data Contracts](/architecture/Data%20Contracts.md)
+- [Output and Errors](/architecture/Output%20and%20Errors.md)
+- [Command Flows](/architecture/Command%20Flows.md)
+
+## Affected Source Paths
+
+- `/src/tooling/okf/read_model.py`
+- `/src/tooling/okf/models.py`
+- `/src/tooling/okf/commands.py`
+- `/src/tooling/cli.py`
+- `/tests/test_list.py`
+- `/tests/test_show.py`
+- `/tests/test_cli_bootstrap.py`
+- `/tests/support.py`
+
+## Citations
+
+- [Open Knowledge Format Specification](/references/Open%20Knowledge%20Format%20Specification.md)
+- [Tooling Roadmap](/Tooling%20Roadmap.md)
+- [Going Open Source Roadmap](/Going%20Open%20Source%20Roadmap.md)
 
 ## Acceptance Criteria
 

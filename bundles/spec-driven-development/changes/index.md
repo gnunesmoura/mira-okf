@@ -26,7 +26,7 @@ needed for the change, with these names:
 The example directory name documents the package shape only. It is not a
 request to create that package in this task.
 
-## Artifact frontmatter
+## Artifact contract
 
 Every package artifact except its reserved `log.md` must be a concept document
 with a parseable YAML frontmatter block. The minimum SDD metadata is:
@@ -37,29 +37,27 @@ type: <artifact type>
 title: <human-readable title>
 description: <one-line summary>
 tags: [sdd, change]
-change_id: "CHANGE-000"
 status: draft
-related:
-  spec: "/spec-driven-development/changes/CHANGE-000-short-name/spec.md"
-  plan: "/spec-driven-development/changes/CHANGE-000-short-name/plan.md"
-  tasks: "/spec-driven-development/changes/CHANGE-000-short-name/tasks.md"
-  acceptance_tests: "/spec-driven-development/changes/CHANGE-000-short-name/acceptance-tests.md"
-  agent_contract: "/spec-driven-development/changes/CHANGE-000-short-name/agent-contract.md"
-  prds: []
-  features: []
-  architecture: []
-  references: []
-  source_paths: []
 ---
 ```
 
-`type`, `title`, `description`, `change_id`, and `status` are required for
-every package concept. `related` is required and must retain the package
-artifact fields (`spec`, `plan`, `tasks`, `tests`, and `contract`) plus the
-context fields (`prds`, `features`, `architecture`, `references`, and
-`source_paths`). Relation values are explicit bundle-relative links beginning
-with `/`, or empty lists when no relation applies. `log.md` is reserved by OKF,
-has no frontmatter, and uses date headings newest first.
+Every package concept must have non-empty `type`, `title`, `description`, and
+`status` fields. `tags` is the recommended categorization field. The
+artifact identity and package membership are derived from the canonical package
+path and filenames. Producers may add metadata only when automation requires
+it.
+Do not duplicate owner, creation/update dates, artifact IDs, or retired PRD
+relations in package frontmatter.
+
+Contextual relations belong in body sections named `## Related Product and
+Architecture Context`, `## Affected Source Paths`, and `# Citations` when
+applicable. Use `# Citations` for supporting or normative sources, not for
+internal package dependencies. Links should be bundle-root-relative paths
+beginning with `/` so they remain stable when an artifact moves within its
+package.
+
+`log.md` is reserved by OKF, has no frontmatter, and uses date headings newest
+first.
 
 Artifact types should identify their role: `Change Specification`, `Technical
 Plan`, `Implementation Task List`, `Acceptance Test Suite`, and `Agent Workflow
@@ -96,8 +94,7 @@ source of current status when it is absent.
 This area is linked from the [bundle index](../../index.md). Package artifacts
 must link to relevant [product features](../../product/features/),
 [architecture](../../architecture/), [references](../../references/), and
-source paths through their `related` fields instead of duplicating those
-documents.
+source paths through the contextual body sections defined above.
 The local OKF specification and repository policy govern structure; product,
 feature, architecture, package, and implementation evidence then govern their
 respective scopes as described in the bundle index.

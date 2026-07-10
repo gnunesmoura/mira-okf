@@ -3,22 +3,7 @@ type: Feature Spec
 title: "[FEATURE NAME]"
 description: "[One-line summary of the change.]"
 tags: [sdd, change]
-change_id: "CHANGE-000"
-spec_id: "SPEC-000"
 status: draft
-owner: "[OWNER]"
-created: "YYYY-MM-DD"
-updated: "YYYY-MM-DD"
-related:
-  plan: /spec-driven-development/changes/CHANGE-000-short-name/plan.md
-  tasks: /spec-driven-development/changes/CHANGE-000-short-name/tasks.md
-  acceptance_tests: /spec-driven-development/changes/CHANGE-000-short-name/acceptance-tests.md
-  agent_contract: /spec-driven-development/changes/CHANGE-000-short-name/agent-contract.md
-  prds: []
-  features: []
-  architecture: []
-  references: []
-  source_paths: []
 ---
 
 # Feature Spec: [FEATURE NAME]
@@ -31,6 +16,18 @@ related:
 
 [Describe the current state and link relevant product, feature, domain,
 architecture, and reference concepts.]
+
+## Related Product and Architecture Context
+
+- [Product feature or architecture concept](/product/features/example.md)
+
+## Affected Source Paths
+
+- `/src/example.py`
+
+## Citations
+
+- [Supporting or normative source](/references/example.md)
 
 ## Problem Statement
 

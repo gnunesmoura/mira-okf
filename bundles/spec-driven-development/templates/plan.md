@@ -3,23 +3,7 @@ type: Technical Plan
 title: "Technical Plan: [FEATURE NAME]"
 description: "Technical implementation plan for [FEATURE NAME]."
 tags: [sdd, change, plan, architecture]
-change_id: "CHANGE-000"
-plan_id: "PLAN-000"
-spec_id: "SPEC-000"
 status: draft
-owner: "[OWNER]"
-created: "YYYY-MM-DD"
-updated: "YYYY-MM-DD"
-related:
-  spec: /spec-driven-development/changes/CHANGE-000-short-name/spec.md
-  tasks: /spec-driven-development/changes/CHANGE-000-short-name/tasks.md
-  acceptance_tests: /spec-driven-development/changes/CHANGE-000-short-name/acceptance-tests.md
-  agent_contract: /spec-driven-development/changes/CHANGE-000-short-name/agent-contract.md
-  prds: []
-  features: []
-  architecture: []
-  references: []
-  source_paths: []
 ---
 
 # Technical Plan: [FEATURE NAME]
@@ -41,6 +25,18 @@ This plan implements [the linked feature spec](spec.md).
 | Source of truth | [Markdown / filesystem / other] |
 | Test framework | [Command or framework] |
 | Validation | [Commands] |
+
+## Related Product and Architecture Context
+
+- [Product feature or architecture concept](/architecture/example.md)
+
+## Affected Source Paths
+
+- `/src/example.py`
+
+## Citations
+
+- [Supporting or normative source](/references/example.md)
 
 ## Architecture Constraints
 

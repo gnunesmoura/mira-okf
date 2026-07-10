@@ -3,27 +3,22 @@ type: Acceptance Test Suite
 title: "Acceptance Tests: [FEATURE NAME]"
 description: "Behavioral acceptance tests for [FEATURE NAME]."
 tags: [sdd, change, acceptance-tests, verification]
-change_id: "CHANGE-000"
-tests_id: "TESTS-000"
-spec_id: "SPEC-000"
-plan_id: "PLAN-000"
 status: draft
-owner: "[OWNER]"
-created: "YYYY-MM-DD"
-updated: "YYYY-MM-DD"
-related:
-  spec: /spec-driven-development/changes/CHANGE-000-short-name/spec.md
-  plan: /spec-driven-development/changes/CHANGE-000-short-name/plan.md
-  tasks: /spec-driven-development/changes/CHANGE-000-short-name/tasks.md
-  agent_contract: /spec-driven-development/changes/CHANGE-000-short-name/agent-contract.md
-  prds: []
-  features: []
-  architecture: []
-  references: []
-  source_paths: []
 ---
 
 # Acceptance Tests: [FEATURE NAME]
+
+## Related Product and Architecture Context
+
+- [Product feature or architecture concept](/product/features/example.md)
+
+## Affected Source Paths
+
+- `/src/example.py`
+
+## Citations
+
+- [Supporting or normative source](/references/example.md)
 
 ## Purpose
 

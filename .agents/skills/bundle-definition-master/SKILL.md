@@ -11,8 +11,8 @@ durable output is a package under
 
 Do not create a PRD, Feature, ArchitectureDecision, or other parallel concept
 as a default output. Link existing product features and architecture concepts
-through `related` fields. Create or update a product feature only when the
-user explicitly asks to change durable product knowledge.
+through body sections. Create or update a product feature only when the user
+explicitly asks to change durable product knowledge.
 
 ## Package artifacts
 
@@ -32,7 +32,7 @@ Use the reusable templates in
 `bundles/spec-driven-development/templates/`. Read the process guidance in
 `bundles/spec-driven-development/guides/` and the normative rules in
 `bundles/spec-driven-development/policies/`. Preserve the package layout,
-frontmatter, relations, and lifecycle defined by
+minimal frontmatter control plane, body relation sections, and lifecycle defined by
 `bundles/spec-driven-development/changes/index.md`.
 
 ## Workflow
@@ -101,11 +101,9 @@ Before declaring a package ready, verify:
 
 - all required artifacts exist in one package directory;
 - every concept artifact has valid frontmatter with non-empty `type`,
-  `title`, `description`, `change_id`, and `status`;
-- package relations use canonical paths beginning with
-  `/spec-driven-development/changes/`;
-- product, architecture, and reference relations point to existing canonical
-  documents or are explicitly empty;
+  `title`, `description`, and `status`;
+- product, architecture, reference, and source-path links in body sections
+  point to existing canonical documents or source paths when declared;
 - requirements map to acceptance criteria and acceptance tests;
 - plan boundaries map to task paths and validation commands;
 - agent-contract rules agree with the plan and task list;

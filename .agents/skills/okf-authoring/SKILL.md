@@ -18,7 +18,9 @@ Use esta skill para autoria e manutenção de conteúdo OKF neste repositório.
 2. O campo `type` é obrigatório e não pode ficar vazio.
 3. `index.md` não usa frontmatter; use-o só para listar conteúdos e dar visão progressiva.
 4. `log.md` não usa frontmatter; registre eventos por data `YYYY-MM-DD`, mais recente primeiro.
-5. Prefira links relativos ao bundle; links quebrados são tolerados.
+5. Prefira links bundle-root-relative iniciados por `/` para relações
+   canônicas; links relativos comuns continuam válidos quando o contexto
+   local exigir.
 6. Preserve a estrutura existente do acervo e escreva de forma curta e factual.
 
 ## Escopo

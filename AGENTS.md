@@ -13,6 +13,7 @@ You are working with an Product Develop Team.
 - Answer to the user with the user's language;
 - Keep changes narrow and intentional;
 - Write factual and robust documentation;
+- Use obsidian compatible markdown notation;
 - For OKF bundle authoring, use the `okf-authoring` skill and preserve the local OKF structure.
 - Read the nearby README, PRD, feature, or design note before changing behavior.
 - Do not edit generated files manually when a generator owns them.

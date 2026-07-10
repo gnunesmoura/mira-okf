@@ -14,7 +14,7 @@ tags:
 
 ## Context
 
-The OKF module will be the first domain in the `tooling` library and CLI. It must consume OKF bundles permissively, respecting concepts with YAML frontmatter and required `type`, plus `index.md` and `log.md` as reserved files. OKF core covers reading and navigation; wikilinks are a planned convention for links and backlinks, not a core requirement.
+The OKF module will be the first domain in the `tooling` library and CLI. It must consume OKF bundles permissively, respecting concepts with YAML frontmatter and required `type`, plus `index.md` and `log.md` as reserved files. OKF core covers reading and navigation; wikilinks are a planned convention for links and backlinks, not a core requirement. Shared semantic normalization for links, backlinks, and health will live behind a read-only boundary so `show` can remain raw.
 
 ## Objective
 
@@ -73,5 +73,6 @@ tooling okf validate [<bundle>] [--json]
 - [Tooling Overview](../Tooling%20Overview.md)
 - [Feature - Summarized OKF Navigation](../features/Feature%20-%20Summarized%20OKF%20Navigation.md)
 - [Feature - OKF Concept List](../features/Feature%20-%20OKF%20Concept%20List.md)
+- [PRD - OKF Semantic Analysis Boundary](PRD%20-%20OKF%20Semantic%20Analysis%20Boundary.md)
 - [List Command Contract](../architecture/List%20Command%20Contract.md)
 - [Open Knowledge Format Specification](../references/Open%20Knowledge%20Format%20Specification.md)

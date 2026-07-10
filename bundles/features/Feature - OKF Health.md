@@ -27,6 +27,7 @@ Help people, scripts, and agents quickly understand whether an OKF bundle is usa
 - Health reports inventory shape, reserved file presence, link health, and connectivity in the default profile.
 - Health reports optional quality groups only when selected.
 - Health ignores text inside fenced code blocks and inline code spans when evaluating health signals, so examples and snippets do not create false problems.
+- Raw content display remains unchanged.
 - JSON output declares which profile was used and which rule groups were evaluated versus ignored.
 - Human output starts with the bundle path, profile, and compact status summary, then expands only the selected health groups in deterministic path-first or name-first order.
 - JSON output uses the shared envelope and places the health report in `data`.
@@ -83,6 +84,7 @@ Help people, scripts, and agents quickly understand whether an OKF bundle is usa
 - Reports the selected profile's inventory, reserved file, link, and connectivity signals.
 - Reports broader profile coverage for index, log, metadata, and citation groups only when selected.
 - Ignores content inside fenced code blocks and inline code spans when evaluating health signals.
+- Leaves raw concept content unchanged for `tooling okf show`.
 - Emits deterministic human output.
 - Emits stable JSON with `command: "okf.health"`, health data, and top-level issues.
 

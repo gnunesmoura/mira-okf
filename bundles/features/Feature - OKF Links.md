@@ -20,10 +20,11 @@ Give people, scripts, and skills a stable outbound link inventory for an OKF bun
 - `tooling okf links [<bundle>] [--broken] [--external] [--json]` reports outbound links from concept documents in the resolved bundle.
 - The command uses the shared bundle discovery, path normalization, and target-resolution rules.
 - The command scans concept bodies only.
-- The command extracts standard Markdown links and Obsidian wikilinks from concept bodies.
+- The command extracts standard Markdown links and Obsidian wikilinks from concept bodies outside fenced code blocks and inline code spans.
 - Internal links are resolved against the bundle read model and reported as resolved or broken.
 - External links are reported separately when `--external` is present.
 - Broken internal links are reported when `--broken` is present.
+- Raw content display remains the responsibility of `tooling okf show` and is not altered by link scanning.
 - Output order is deterministic and suitable for automation.
 - JSON output uses the shared envelope and places the visible link payload in `data`.
 
@@ -38,7 +39,7 @@ Give people, scripts, and skills a stable outbound link inventory for an OKF bun
 ## User Flow
 
 1. A user provides a bundle path or lets the CLI discover a bundle.
-2. The CLI scans concept bodies for outbound Markdown links and wikilinks.
+2. The CLI scans concept bodies for outbound Markdown links and wikilinks outside fenced code blocks and inline code spans.
 3. The CLI classifies each link as resolved internal, broken internal, or external.
 4. Optional flags include broken or external links in the visible result set.
 5. The CLI renders a compact human view or a stable JSON payload.
@@ -49,6 +50,7 @@ Give people, scripts, and skills a stable outbound link inventory for an OKF bun
 - Resolved internal links are included in the default output.
 - `--broken` makes broken internal links visible in the result set.
 - `--external` makes external links visible in the result set.
+- Links inside fenced code blocks and inline code spans are ignored by link extraction.
 - The command does not fail solely because a link target is missing.
 - Broken links are preserved as tolerated issues instead of failing the command.
 - Output is stable across repeated runs for the same bundle state.
@@ -59,6 +61,8 @@ Give people, scripts, and skills a stable outbound link inventory for an OKF bun
 
 - Extracts outbound Markdown links from a concept fixture.
 - Extracts outbound Obsidian wikilinks from a concept fixture.
+- Ignores Markdown links and wikilinks inside inline code spans.
+- Ignores Markdown links and wikilinks inside fenced code blocks.
 - Resolves an internal link to a bundle concept.
 - Marks a missing internal target as broken.
 - Includes external links only when requested.

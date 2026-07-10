@@ -186,7 +186,29 @@ class ShowCommandTest(unittest.TestCase):
             self.assertEqual(stderr_two, "")
             self.assertEqual(stdout_one, stdout_two)
 
+    def test_show_renders_code_spans_and_fences_unchanged(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir) / "bundle"
+            body = "Inline `[Beta](beta.md)` remains.\n\n```md\n[Beta](beta.md)\n[[beta]]\n```"
+            write_files(
+                root,
+                {
+                    "index.md": "index\n",
+                    "alpha.md": f"---\ntype: Note\ntitle: Alpha\n---\n{body}\n",
+                    "beta.md": "---\ntype: Note\n---\n",
+                },
+            )
+
+            exit_code, stdout, stderr = run_main(["okf", "show", str(root), "alpha"])
+            self.assertEqual(exit_code, 0)
+            self.assertEqual(stderr, "")
+            self.assertIn(body, stdout)
+
+            exit_code, stdout, stderr = run_main(["okf", "show", str(root), "alpha", "--json"])
+            self.assertEqual(exit_code, 0)
+            self.assertEqual(stderr, "")
+            self.assertEqual(json.loads(stdout)["data"]["body"], body)
+
 
 if __name__ == "__main__":
     unittest.main()
-

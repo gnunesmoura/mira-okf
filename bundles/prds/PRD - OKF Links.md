@@ -14,7 +14,7 @@ tags:
 
 ## Context
 
-`tooling okf links` is the first relationship command for OKF bundles. It helps humans, scripts, and skills inspect outbound references from concepts without opening every target. The command must stay permissive because the OKF spec treats broken links as tolerated.
+`tooling okf links` is the first relationship command for OKF bundles. It helps humans, scripts, and skills inspect outbound references from concepts without opening every target. The command must stay permissive because the OKF spec treats broken links as tolerated. It must use the shared semantic analysis boundary so fenced code blocks and inline code spans do not create link signals.
 
 ## Objective
 
@@ -25,6 +25,7 @@ Provide a stable outbound link inventory for the resolved bundle that distinguis
 - `tooling okf links [<bundle>] [--broken] [--external] [--json]`
 - Discover or resolve the bundle using the shared resolver.
 - Scan concept bodies only; reserved files are not sources.
+- Scan the normalized semantic body produced by the shared semantic analysis boundary.
 - Extract standard Markdown links and Obsidian wikilinks from concept bodies.
 - Resolve internal targets against the bundle read model.
 - Keep broken internal links as tolerated issues or broken link records, not fatal failures.
@@ -82,6 +83,7 @@ Provide a stable outbound link inventory for the resolved bundle that distinguis
 
 - [Feature - OKF Links](../features/Feature%20-%20OKF%20Links.md)
 - [Feature - OKF Backlinks](../features/Feature%20-%20OKF%20Backlinks.md)
+- [PRD - OKF Semantic Analysis Boundary](PRD%20-%20OKF%20Semantic%20Analysis%20Boundary.md)
 - [PRD - OKF Module](PRD%20-%20OKF%20Module.md)
 - [PRD - Python Tooling Library and CLI](PRD%20-%20Python%20Tooling%20Library%20and%20CLI.md)
 - [Links Command Contract](../architecture/Links%20Command%20Contract.md)

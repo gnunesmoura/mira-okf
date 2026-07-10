@@ -13,6 +13,7 @@ from .links import _extract_links, _is_external_target, _link_candidates, _norma
 from .models import Bundle, Directory, Issue
 from .read_model import _read_markdown_text, bundle_payload, issue_payload, scan_bundle
 from .resolution import BundleResolutionError, resolve_bundle
+from .semantic import semantic_text
 from .validate import _reserved_issues
 
 METADATA_FIELDS = ("title", "description", "resource", "tags", "timestamp")
@@ -187,7 +188,7 @@ def _index_links(root_path: Path, directory: Directory, concepts_by_relative: di
         return set()
     found: set[str] = set()
     source = f"{directory.path}/index.md" if directory.path != "." else "index.md"
-    for _, raw in _extract_links(_health_text(text)):
+    for _, raw in _extract_links(semantic_text(text)):
         target = _normalize_target(raw)
         if not target or _is_external_target(target):
             continue
@@ -209,7 +210,7 @@ def _logs(bundle: Bundle) -> dict[str, Any]:
         relative = path.relative_to(bundle.root_path).as_posix()
         text, _ = _read_markdown_text(path, relative)
         previous: date | None = None
-        for line in _health_text(text or "").splitlines():
+        for line in semantic_text(text or "").splitlines():
             match = re.fullmatch(r"##\s+(.+?)\s*", line)
             if match is None:
                 continue
@@ -266,7 +267,7 @@ def _citations(bundle: Bundle, links: list[dict[str, Any]]) -> dict[str, Any]:
 
 
 def _has_citations(body: str) -> bool:
-    return any(re.fullmatch(r"\s{0,3}#{1,6}\s+Citations\s*#*\s*", line, re.IGNORECASE) for line in _health_text(body).splitlines())
+    return any(re.fullmatch(r"\s{0,3}#{1,6}\s+Citations\s*#*\s*", line, re.IGNORECASE) for line in semantic_text(body).splitlines())
 
 
 def _connectivity(bundle: Bundle, links: list[dict[str, Any]]) -> dict[str, Any]:
@@ -290,7 +291,7 @@ def _collect_health_links(bundle: Bundle) -> tuple[list[dict[str, Any]], list[Is
     concepts_by_relative = {concept.relative_path: concept for concept in bundle.concepts}
 
     for concept in sorted(bundle.concepts, key=lambda item: item.relative_path):
-        for index, (kind, raw_target) in enumerate(_extract_links(_health_text(concept.body))):
+        for index, (kind, raw_target) in enumerate(_extract_links(semantic_text(concept.body))):
             target = _normalize_target(raw_target)
             if not target:
                 continue
@@ -434,23 +435,3 @@ def _issue_key(issue: Issue) -> tuple[str, int, str, str]:
 def _path_key(path: str) -> tuple[str, ...]:
     return PurePosixPath(path).parts
 
-
-def _health_text(body: str) -> str:
-    lines: list[str] = []
-    in_fence = False
-    fence_marker = ""
-    for line in body.splitlines():
-        match = re.match(r"^\s{0,3}(`{3,}|~{3,})", line)
-        if match is not None:
-            marker = match.group(1)[0]
-            if not in_fence:
-                in_fence = True
-                fence_marker = marker
-            elif marker == fence_marker:
-                in_fence = False
-                fence_marker = ""
-            continue
-        if in_fence:
-            continue
-        lines.append(re.sub(r"`[^`\n]*`", "", line))
-    return "\n".join(lines)

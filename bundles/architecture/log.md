@@ -1,5 +1,9 @@
 # Architecture Log
 
+## 2026-07-09
+
+- **Creation**: Added the [Semantic Analysis Boundary](Semantic%20Analysis%20Boundary.md) decision for the shared raw-body normalization boundary used by semantic scanners and kept separate from `show`.
+
 ## 2026-07-06
 
 - **Creation**: Added the [Health Report Contract](Health%20Report%20Contract.md) decision for `health` payload shape, local quality signals, and non-fatal soft signal semantics.

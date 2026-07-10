@@ -14,7 +14,7 @@ tags:
 
 ## Context
 
-`tooling okf health` is the compact bundle status command for OKF. It should help developers, scripts, and agents understand whether a resolved bundle is usable with a short default profile, while keeping broader quality checks opt-in and explicitly declared. It must not replace `tooling okf validate` or fail on tolerated OKF gaps.
+`tooling okf health` is the compact bundle status command for OKF. It should help developers, scripts, and agents understand whether a resolved bundle is usable with a short default profile, while keeping broader quality checks opt-in and explicitly declared. It must not replace `tooling okf validate` or fail on tolerated OKF gaps. It must use the shared semantic analysis boundary so body-derived health signals ignore fenced code blocks and inline code spans in the same way as relationship scanners.
 
 The command must follow the local OKF specification's permissive consumption model: required concept frontmatter and reserved-file structure are conformance concerns, while missing optional metadata, missing `index.md`, broken cross-links, external links without citation sections, and weak connectivity are soft signals that only matter when their rule groups are selected.
 
@@ -30,7 +30,7 @@ Implement `tooling okf health [<bundle>] [--json] [--profile <name>]` as a read-
 - Support named health profiles, with `quick` as the default.
 - Keep inventory, reserved-file, link, and connectivity signals in the default `quick` profile.
 - Keep index, log, metadata, and citation checks opt-in rather than part of the default status.
-- Ignore text inside fenced code blocks and inline code spans when evaluating health signals, so examples and snippets do not create false positives.
+- Evaluate body-derived signals against the normalized semantic text produced by the shared boundary.
 - Reuse links and backlinks extraction where practical for internal, external, broken-link, and connectivity signals.
 - Report the selected health groups and explicitly declare which groups were evaluated and which were ignored.
 - Emit concise human output and stable JSON output.
@@ -53,6 +53,7 @@ Implement `tooling okf health [<bundle>] [--json] [--profile <name>]` as a read-
 - `data.reserved_files` must report root `index.md` and root `log.md` presence, reserved-file issue counts, malformed reserved-file count, and malformed reserved-file paths.
 - `data.links` must report internal, resolved internal, broken internal, and external link counts plus concepts with broken internal links.
 - Broken internal links must remain tolerated health data, not command failure.
+- `data.links` must be derived from the normalized semantic body, not the raw body text.
 - `data.indexes` must report `directory_count`, `directories_with_index_count`, `directories_without_index_count`, `directories_without_index`, `listed_content_count`, `unlisted_content_count`, and `unlisted_content_paths` when the index group is selected.
 - Missing `index.md` files must be discoverability signals, not validation failures.
 - `data.logs` must report `log_file_count`, `newest_entry_date`, `malformed_date_heading_count`, `ordering_issue_count`, and `log_paths_with_issues` when the log group is selected.
@@ -61,6 +62,7 @@ Implement `tooling okf health [<bundle>] [--json] [--profile <name>]` as a read-
 - Citation detection must be mechanical: a concept has citations only when its body contains a markdown heading exactly named `Citations`, case-insensitive after trimming heading markers and whitespace.
 - `data.citations` must report concepts with citations, concepts with external links, and concepts with external links but no detectable citations when the citation group is selected.
 - `data.connectivity` must use only resolved internal concept-to-concept links.
+- Connectivity signals must use the shared normalized semantic body via links and backlinks extraction.
 - Connectivity must report concepts with internal links, concepts without inbound links, concepts without outbound links, and orphan concepts with neither inbound nor outbound resolved internal concept links.
 - Path-like detail lists must be sorted by normalized bundle-relative path.
 - Name-like detail lists must be sorted by normalized name.
@@ -130,6 +132,7 @@ Implement `tooling okf health [<bundle>] [--json] [--profile <name>]` as a read-
 
 - [Feature - OKF Health](../features/Feature%20-%20OKF%20Health.md)
 - [Health Report Contract](../architecture/Health%20Report%20Contract.md)
+- [PRD - OKF Semantic Analysis Boundary](PRD%20-%20OKF%20Semantic%20Analysis%20Boundary.md)
 - [PRD - OKF Module](PRD%20-%20OKF%20Module.md)
 - [PRD - OKF Validation](PRD%20-%20OKF%20Validation.md)
 - [PRD - OKF Links](PRD%20-%20OKF%20Links.md)

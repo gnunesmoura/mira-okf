@@ -11,6 +11,7 @@ from urllib.parse import unquote
 
 from .read_model import bundle_payload, concept_payload, issue_payload, scan_bundle
 from .resolution import BundleResolutionError, ConceptResolutionError, resolve_bundle, resolve_concept
+from .semantic import semantic_text
 
 LINK_PATTERN = re.compile(
     r"(?<!\!)\[[^\]]+\]\((?P<markdown>[^)\s]+)(?:\s+\"[^\"]*\")?\)|\[\[(?P<wikilink>[^\]]+)\]\]"
@@ -76,7 +77,7 @@ def _collect_links(bundle):
     concepts_by_relative = {concept.relative_path: concept for concept in bundle.concepts}
 
     for concept in sorted(bundle.concepts, key=lambda item: item.relative_path):
-        for index, (kind, raw_target) in enumerate(_extract_links(concept.body)):
+        for index, (kind, raw_target) in enumerate(_extract_links(semantic_text(concept.body))):
             target = _normalize_target(raw_target)
             if not target:
                 continue

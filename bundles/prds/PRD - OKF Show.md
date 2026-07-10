@@ -14,7 +14,7 @@ tags:
 
 ## Context
 
-The roadmap makes `show` the next OKF PRD to create and the canonical single-concept read path. The feature draft already defines the user-facing behavior: shared discovery, fixed target precedence, summary mode, JSON output, tolerated issues, and deterministic rendering.
+The roadmap makes `show` the next OKF PRD to create and the canonical single-concept read path. The feature draft already defines the user-facing behavior: shared discovery, fixed target precedence, summary mode, JSON output, tolerated issues, and deterministic rendering. `show` remains the raw presentation path and must stay outside the shared semantic analysis boundary used by relationship and health scanners.
 
 This PRD does not introduce new architecture. It translates the existing `Discovery and Resolution`, `Command Flows`, `Data Contracts`, and `Output and Errors` decisions into implementation requirements for `tooling okf show`.
 
@@ -58,7 +58,6 @@ Implement `tooling okf show` as the deterministic read path for one resolved OKF
 - JSON output must keep the top-level `issues` array for tolerated read problems and must not change the human warning-block behavior.
 - Output ordering, field ordering, and issue ordering must remain stable across repeated runs for the same bundle and target.
 - The command must not introduce any new parsing rules, discovery rules, or target-heuristic behavior beyond the shared contracts.
-- The implementation handoff must not delegate work to any further subagent under any circumstance.
 
 ## Acceptance Criteria
 
@@ -103,6 +102,7 @@ Implement `tooling okf show` as the deterministic read path for one resolved OKF
 - [PRD - Python Tooling Library and CLI](PRD%20-%20Python%20Tooling%20Library%20and%20CLI.md)
 - [PRD - OKF Module](PRD%20-%20OKF%20Module.md)
 - [Feature - OKF Show](../features/Feature%20-%20OKF%20Show.md)
+- [PRD - OKF Semantic Analysis Boundary](PRD%20-%20OKF%20Semantic%20Analysis%20Boundary.md)
 - [Tooling Roadmap](../Tooling%20Roadmap.md)
 - [Discovery and Resolution](../architecture/Discovery%20and%20Resolution.md)
 - [Command Flows](../architecture/Command%20Flows.md)

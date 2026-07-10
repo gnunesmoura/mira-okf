@@ -15,5 +15,6 @@ Initial architecture decisions for the local `tooling` library and CLI.
 - [Links Command Contract](Links%20Command%20Contract.md) - Outbound link extraction, classification, and output for `links`.
 - [Validation Report Contract](Validation%20Report%20Contract.md) - Read-only validation report payload, ordering, and pass/fail semantics.
 - [Health Report Contract](Health%20Report%20Contract.md) - Read-only health report payload and soft signal semantics.
+- [Semantic Analysis Boundary](Semantic%20Analysis%20Boundary.md) - Shared normalization boundary for semantic scanners over raw concept bodies.
 - [Test Strategy](Test%20Strategy.md) - Minimum fixtures and test boundaries for the MVP.
 - [Incremental Plan and Risks](Incremental%20Plan%20and%20Risks.md) - Small-step implementation order and known risks.

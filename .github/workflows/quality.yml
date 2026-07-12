@@ -1,0 +1,41 @@
+name: Quality
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # pyproject.toml names only the >=3.12 floor; test its explicitly named minimum.
+        python-version: ["3.12"]
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install build tooling
+        run: python -m pip install --upgrade build "setuptools>=68"
+
+      - name: Run offline product tests
+        env:
+          PIP_NO_INDEX: "1"
+          PYTHONPATH: src
+        run: python -m unittest discover -s tests
+
+      - name: Build source and wheel artifacts
+        run: python -m build --sdist --wheel --no-isolation --outdir dist
+
+      - name: Inspect built artifacts
+        run: python -m unittest tests.test_public_quality_gate.PublicQualityGateTest.test_built_source_and_wheel_contain_only_public_distribution_content
+
+      - name: Run installed CLI smoke gate
+        env:
+          PIP_NO_INDEX: "1"
+        run: python -m unittest tests.test_public_quality_gate.PublicQualityGateTest.test_installed_console_smoke_uses_built_wheel_outside_checkout

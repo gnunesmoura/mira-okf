@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tooling"
+version = "0.1.0"
+description = "Local tooling library and CLI for repository workflows."
+readme = "README.md"
+license = {file = "LICENSE"}
+maintainers = [{name = "gnunesmoura"}]
+requires-python = ">=3.12"
+dependencies = []
+
+[project.scripts]
+tooling = "tooling.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]

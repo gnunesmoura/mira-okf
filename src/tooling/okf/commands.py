@@ -1,0 +1,34 @@
+from __future__ import annotations
+
+import sys
+from argparse import Namespace
+
+from .health import run_health
+from .links import run_backlinks, run_links
+from .listing import run_list
+from .validate import run_validate
+from .show import run_show
+from .tree import run_tree
+
+
+def command_stub(args: Namespace) -> int:
+    if args.okf_command == "tree":
+        return run_tree(args)
+    if args.okf_command == "list":
+        return run_list(args)
+    if args.okf_command == "show":
+        return run_show(args)
+    if args.okf_command == "links":
+        return run_links(args)
+    if args.okf_command == "backlinks":
+        return run_backlinks(args)
+    if args.okf_command == "validate":
+        return run_validate(args)
+    if args.okf_command == "health":
+        return run_health(args)
+    if args.okf_command == "props":
+        from .props import run_props
+
+        return run_props(args)
+    print(f"tooling okf {args.okf_command} is not implemented yet.", file=sys.stderr)
+    return 1

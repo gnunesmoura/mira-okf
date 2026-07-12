@@ -1,7 +1,10 @@
-# Tooling
+# MIRA OKF
 
-`tooling` is a local, read-only Python library and CLI for inspecting Open
-Knowledge Format (OKF) bundles. It provides compact navigation, concept
+`mira-okf` is a local, read-only Python library and CLI for inspecting Open
+Knowledge Format (OKF) bundles. The distribution and CLI command are
+`mira-okf`; the import package is `mira_okf`; the public repository is
+[`gnunesmoura/mira-okf`](https://github.com/gnunesmoura/mira-okf). It provides
+compact navigation, concept
 inventory, link analysis, property projection, validation, and health reports.
 
 The supported interface is documented in [`docs/`](docs/). Start with the
@@ -13,16 +16,16 @@ The supported interface is documented in [`docs/`](docs/). Start with the
 Python 3.12 or newer is required. With a built wheel or source distribution:
 
 ```bash
-python3 -m venv /tmp/tooling-venv
-/tmp/tooling-venv/bin/python -m pip install /path/to/tooling-0.1.0-py3-none-any.whl
-/tmp/tooling-venv/bin/tooling okf tree /path/to/bundle --depth 2 --summary
+python3 -m venv /tmp/mira-okf-venv
+/tmp/mira-okf-venv/bin/python -m pip install /path/to/mira_okf-0.0.1a1-py3-none-any.whl
+/tmp/mira-okf-venv/bin/mira-okf okf tree /path/to/bundle --depth 2 --summary
 ```
 
 From this checkout, the public documentation bundle is `docs/`:
 
 ```bash
-python -m tooling okf tree docs --depth 2 --summary
-python -m tooling okf validate docs --json
+python -m mira_okf okf tree docs --depth 2 --summary
+python -m mira_okf okf validate docs --json
 ```
 
 Generic automatic discovery can be ambiguous for this nested documentation
@@ -36,7 +39,7 @@ declared scope. Documented commands, JSON envelopes, exit codes, and the OKF
 reader behavior are public compatibility surfaces.
 
 For bugs, usage help, and in-scope feature requests, use the [public issue
-tracker](https://github.com/gnunesmoura/okf-tooling/issues). Support is best
+tracker](https://github.com/gnunesmoura/mira-okf/issues). Support is best
 effort with no SLA. See [CONTRIBUTING.md](CONTRIBUTING.md),
 [SECURITY.md](SECURITY.md), and [CHANGELOG.md](CHANGELOG.md).
 

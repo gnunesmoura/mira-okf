@@ -7,7 +7,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from tooling.cli import build_parser
+from mira_okf.cli import build_parser
 from tests.support import run_main, write_files
 
 

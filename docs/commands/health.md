@@ -8,7 +8,7 @@ tags: [command, health]
 # `health`
 
 ```text
-tooling okf health docs [--profile {quick,full}] [--json]
+mira-okf okf health docs [--profile {quick,full}] [--json]
 ```
 
 `quick` is the default profile. `full` evaluates additional connectivity,

@@ -8,7 +8,7 @@ tags: [command, tree]
 # `tree`
 
 ```text
-tooling okf tree docs --depth <n> [--summary] [--json]
+mira-okf okf tree docs --depth <n> [--summary] [--json]
 ```
 
 `--depth` defaults to `2`; `--summary` adds concept and reserved-file counts.

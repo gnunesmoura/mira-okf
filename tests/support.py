@@ -9,7 +9,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from tooling.cli import main
+from mira_okf.cli import main
 
 
 def write_files(root: Path, files: dict[str, str]) -> None:
@@ -32,4 +32,3 @@ def run_main(argv: Sequence[str], cwd: Path | None = None) -> tuple[int, str, st
         if cwd is not None:
             os.chdir(previous_cwd)
     return exit_code, stdout.getvalue(), stderr.getvalue()
-

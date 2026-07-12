@@ -8,7 +8,7 @@ tags: [command, list]
 # `list`
 
 ```text
-tooling okf list docs [--type <type>] [--tag <tag>]
+mira-okf okf list docs [--type <type>] [--tag <tag>]
   [--offset <n>] [--limit <n>] [--json]
 ```
 

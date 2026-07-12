@@ -1,12 +1,12 @@
 # AGENTS
 
-This file is the public operating guide for agents using the `tooling` CLI.
+This file is the public operating guide for agents using the `mira-okf` CLI.
 It is not a product-planning, skills, backlog, or private repository-management
 manual.
 
 ## Purpose
 
-- Use `tooling okf` to inspect and validate OKF bundles.
+- Use `mira-okf okf` to inspect and validate OKF bundles.
 - Keep CLI usage examples aligned with the public command surface.
 - Report behavior and documentation changes with reproducible evidence.
 
@@ -17,12 +17,12 @@ the checkout contains more than one OKF bundle. The public documentation bundle
 is `docs/`:
 
 ```bash
-python -m tooling okf tree docs --depth 2 --summary
-python -m tooling okf list docs --json
-python -m tooling okf show docs <concept-id-or-path>
-python -m tooling okf links docs --broken --json
-python -m tooling okf validate docs --json
-python -m tooling okf health docs --profile quick --json
+python -m mira_okf okf tree docs --depth 2 --summary
+python -m mira_okf okf list docs --json
+python -m mira_okf okf show docs <concept-id-or-path>
+python -m mira_okf okf links docs --broken --json
+python -m mira_okf okf validate docs --json
+python -m mira_okf okf health docs --profile quick --json
 ```
 
 Generic automatic discovery can be ambiguous for this nested documentation
@@ -38,8 +38,8 @@ tree. Use the explicit `docs/` path in repository commands and examples.
 
   ```bash
   python -m unittest discover -s tests
-  python -m tooling okf validate docs --json
-  python -m tooling okf links docs --broken --json
+  python -m mira_okf okf validate docs --json
+  python -m mira_okf okf links docs --broken --json
   git diff --check
   ```
 

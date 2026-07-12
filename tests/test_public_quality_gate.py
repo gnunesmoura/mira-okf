@@ -1,25 +1,28 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import os
 import shutil
 import subprocess
 import sys
 import configparser
-import contextlib
-import io
 import tarfile
 import tempfile
 import unittest
 import zipfile
+from csv import reader
 from email.parser import Parser
 from pathlib import Path
 import tomllib
 
-from tests.support import run_main
+from tests.support import run_main, write_files
 
 
-FIXTURES = Path(__file__).parent / "fixtures"
+PROJECT = tomllib.loads((Path(__file__).resolve().parents[1] / "pyproject.toml").read_text())
+PROJECT_METADATA = PROJECT["project"]
+PUBLIC_DISTRIBUTION = PROJECT["tool"]["mira_okf"]["public_distribution"]
+README = (Path(__file__).resolve().parents[1] / "README.md").read_text(encoding="utf-8")
 COMMANDS = {
     "tree": ["tree", "--summary"],
     "list": ["list"],
@@ -30,13 +33,80 @@ COMMANDS = {
     "validate": ["validate"],
     "health": ["health"],
 }
+FIXTURE_FILES = {
+    "valid": {
+        "index.md": "- [Alpha](alpha.md)\n- [Beta](nested/beta.md)\n",
+        "log.md": "## 2026-07-05\n\n## 2026-07-04\n",
+        "alpha.md": "---\ntype: Note\ntitle: Alpha\ndescription: First concept\ntags:\n  - shared\n---\nAlpha body. See [Beta](nested/beta.md) and [Gamma](nested/gamma.md).\n",
+        "nested/beta.md": "---\ntype: Task\ntitle: Beta\ntags:\n  - shared\n---\nBeta body. See [Alpha](../alpha.md).\n",
+        "nested/gamma.md": "---\ntype: Note\ntitle: Gamma\n---\nGamma body.\n",
+    },
+    "malformed-readable": {
+        "index.md": "index\n",
+        "alpha.md": "---\ntype: Note\ntitle: Alpha\n---\nReadable content.\n",
+        "unterminated.md": "---\ntype: Note\ntitle: Incomplete\nReadable content remains available.\n",
+    },
+    "invalid": {"index.md": "index\n", "broken.md": "This is not a concept document.\n"},
+    "ambiguous": {
+        "one/index.md": "index\n",
+        "one/alpha.md": "---\ntype: Note\n---\n",
+        "two/index.md": "index\n",
+        "two/beta.md": "---\ntype: Note\n---\n",
+    },
+    "empty": {},
+}
 
 
 class PublicQualityGateTest(unittest.TestCase):
+    def test_approved_public_distribution_inputs_are_authoritative(self) -> None:
+        self.assertEqual(
+            PUBLIC_DISTRIBUTION,
+            {
+                "distribution": "mira-okf",
+                "import_package": "mira_okf",
+                "cli": "mira-okf",
+                "repository": "gnunesmoura/mira-okf",
+                "version_source": "pyproject.toml",
+                "version": "0.0.1a1",
+                "repository_url": "https://github.com/gnunesmoura/mira-okf",
+                "documentation_url": "https://github.com/gnunesmoura/mira-okf/tree/main/docs",
+                "issues_url": "https://github.com/gnunesmoura/mira-okf/issues",
+                "python": ">=3.12",
+                "license": "MIT",
+                "maintainer": "gnunesmoura",
+                "support_stage": "alpha",
+                "okf_specification": "0.1",
+                "platform_support": [
+                    "Linux (validated)",
+                    "Windows (best effort)",
+                    "macOS (out of scope)",
+                ],
+                "compatibility": "Breaking changes may omit a major version before 1.0 but require one after 1.0.",
+            },
+        )
+
     def copy_fixture(self, name: str, temporary_root: Path) -> Path:
         destination = temporary_root / name
-        shutil.copytree(FIXTURES / name, destination)
+        destination.mkdir(parents=True)
+        write_files(destination, FIXTURE_FILES[name])
         return destination
+
+    def write_independent_bundle(self, root: Path, *, malformed: bool = False) -> Path:
+        bundle = root / ("malformed" if malformed else "valid")
+        write_files(
+            bundle,
+            {
+                "index.md": "- [Alpha](alpha.md)\n",
+                "alpha.md": (
+                    "---\ntype: Note\ntitle: Alpha\n---\nReadable content.\n"
+                    if not malformed
+                    else "---\ntype: Note\ntitle: Alpha\n---\nReadable content.\n"
+                ),
+            },
+        )
+        if malformed:
+            (bundle / "index.md").write_text("index\n", encoding="utf-8")
+        return bundle
 
     def invoke(self, command: str, bundle: Path) -> tuple[int, dict, str]:
         arguments = ["okf", *COMMANDS[command]]
@@ -50,77 +120,137 @@ class PublicQualityGateTest(unittest.TestCase):
         return arguments + ["--json"]
 
     def build_wheel(self, artifact_dir: Path) -> Path:
-        repository = Path(__file__).resolve().parents[1]
-        build = [sys.executable, "-m", "build", "--wheel", "--no-isolation", "--outdir", str(artifact_dir)]
-        if subprocess.run(build, cwd=repository, capture_output=True, text=True).returncode != 0:
-            build = [sys.executable, "-m", "pip", "wheel", "--no-build-isolation", "--no-deps", "--wheel-dir", str(artifact_dir), "."]
-            result = subprocess.run(build, cwd=repository, capture_output=True, text=True)
-            self.assertEqual(result.returncode, 0, result.stderr)
-        wheels = sorted(artifact_dir.glob("tooling-*.whl"))
+        self.build_artifacts(artifact_dir, formats=("--wheel",))
+        wheels = sorted(artifact_dir.glob("mira_okf-*.whl"))
         self.assertEqual(len(wheels), 1)
         return wheels[0]
 
-    def build_artifacts(self, artifact_dir: Path) -> tuple[Path, Path]:
-        from setuptools.build_meta import build_sdist, build_wheel
+    def build_artifacts(
+        self, artifact_dir: Path, *, formats: tuple[str, ...] = ("--sdist", "--wheel"), epoch: str | None = None
+    ) -> tuple[Path, ...]:
+        repository = Path(__file__).resolve().parents[1]
+        command = [sys.executable, "-m", "build", *formats, "--no-isolation", "--outdir", str(artifact_dir)]
+        environment = os.environ.copy()
+        environment.pop("PYTHONPATH", None)
+        environment["PIP_NO_INDEX"] = "1"
+        if epoch is not None:
+            environment["SOURCE_DATE_EPOCH"] = epoch
+        result = subprocess.run(command, cwd=repository, env=environment, capture_output=True, text=True)
+        if result.returncode != 0 and "No module named build.__main__" in result.stderr:
+            self.skipTest("PEP 517 prerequisite unavailable: python -m build is not installed")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        return tuple(sorted(artifact_dir.iterdir()))
 
-        with contextlib.redirect_stdout(io.StringIO()):
-            sdist_name = build_sdist(str(artifact_dir))
-            wheel_name = build_wheel(str(artifact_dir))
-        return artifact_dir / sdist_name, artifact_dir / wheel_name
+    def assert_metadata(self, metadata: Parser) -> None:
+        self.assertEqual(metadata["Name"], PUBLIC_DISTRIBUTION["distribution"])
+        self.assertEqual(metadata["Version"], PUBLIC_DISTRIBUTION["version"])
+        self.assertEqual(metadata["Requires-Python"], PUBLIC_DISTRIBUTION["python"])
+        self.assertEqual(metadata["Maintainer"], PUBLIC_DISTRIBUTION["maintainer"])
+        self.assertEqual(metadata["License"], PUBLIC_DISTRIBUTION["license"])
+        self.assertEqual(metadata["Description-Content-Type"], "text/markdown")
+        self.assertEqual(metadata.get_payload().strip(), README.strip())
+        self.assertIn("Project-URL: Repository, " + PUBLIC_DISTRIBUTION["repository_url"], metadata.as_string())
+        self.assertIn("Project-URL: Documentation, " + PUBLIC_DISTRIBUTION["documentation_url"], metadata.as_string())
+        self.assertIn("Project-URL: Issues, " + PUBLIC_DISTRIBUTION["issues_url"], metadata.as_string())
 
-    def assert_public_artifact_paths(self, paths: list[str], *, source: bool) -> None:
-        self.assertTrue(paths, "artifact is empty")
-        forbidden = (".git/", ".agents/", ".codex/", "/fixtures/", "\\fixtures\\")
-        for path in paths:
-            self.assertFalse(path.startswith("/"), path)
-            self.assertNotIn("../", path)
-            self.assertNotIn("\\..\\", path)
-            self.assertNotIn("Mulher de Luxo", path)
-            self.assertFalse(any(token in path for token in forbidden), path)
-        if source:
-            self.assertIn("tooling-0.1.0/README.md", paths)
-            self.assertIn("tooling-0.1.0/pyproject.toml", paths)
-            self.assertIn("tooling-0.1.0/src/tooling/__init__.py", paths)
-            self.assertIn("tooling-0.1.0/src/tooling/cli.py", paths)
-            self.assertIn("tooling-0.1.0/src/tooling/__main__.py", paths)
-            self.assertIn("tooling-0.1.0/setup.cfg", paths)
-        else:
-            self.assertIn("tooling/__init__.py", paths)
-            self.assertIn("tooling/cli.py", paths)
-            self.assertIn("tooling/__main__.py", paths)
+    def assert_forbidden_content_absent(self, names: list[str], contents: list[bytes]) -> None:
+        forbidden = (
+            "bundles/", ".git", ".agents", ".codex", "fixtures", "private prompt",
+            "agents.md", ".github/", "tests/", "spec-driven-development/", "mulher de luxo",
+        )
+        for name, content in zip(names, contents):
+            lowered = name.lower()
+            self.assertFalse(lowered.startswith("/"), name)
+            self.assertNotIn("../", name)
+            self.assertNotIn("\\..\\", name)
+            self.assertFalse(any(token in lowered for token in forbidden), name)
+            text = content.decode("utf-8", errors="ignore").lower()
+            self.assertNotIn("mulher de luxo", text, name)
+            self.assertNotRegex(text, r"(?:/home/|/documentos/|/repositorios/|/bases de conhecimento/)", name)
+
+    def inspect_sdist(self, artifact: Path) -> tuple[list[str], list[bytes]]:
+        with tarfile.open(artifact) as archive:
+            members = archive.getmembers()
+            names = [member.name for member in members]
+            contents = [archive.extractfile(member).read() if member.isfile() else b"" for member in members]
+            root = f"mira_okf-{PUBLIC_DISTRIBUTION['version']}"
+            self.assertIn(f"{root}/README.md", names)
+            self.assertIn(f"{root}/LICENSE", names)
+            self.assertIn(f"{root}/pyproject.toml", names)
+            self.assertIn(f"{root}/src/mira_okf/__init__.py", names)
+            self.assertIn(f"{root}/src/mira_okf/cli.py", names)
+            self.assertIn(f"{root}/src/mira_okf/__main__.py", names)
+            metadata = Parser().parsestr(archive.extractfile(f"{root}/PKG-INFO").read().decode())
+            self.assert_metadata(metadata)
+            project = tomllib.loads(archive.extractfile(f"{root}/pyproject.toml").read().decode())["project"]
+            self.assertEqual(project["scripts"][PUBLIC_DISTRIBUTION["cli"]], "mira_okf.cli:main")
+            self.assertEqual(archive.extractfile(f"{root}/README.md").read().decode(), README)
+        self.assert_forbidden_content_absent(names, contents)
+        return names, contents
+
+    def inspect_wheel(self, artifact: Path) -> tuple[list[str], list[bytes]]:
+        with zipfile.ZipFile(artifact) as archive:
+            names = archive.namelist()
+            contents = [archive.read(name) for name in names]
+            self.assertIn("mira_okf/__init__.py", names)
+            self.assertIn("mira_okf/cli.py", names)
+            self.assertIn("mira_okf/__main__.py", names)
+            license_names = [name for name in names if name.endswith("/LICENSE") or name == "LICENSE"]
+            self.assertTrue(license_names)
+            metadata_name = next(name for name in names if name.endswith(".dist-info/METADATA"))
+            record_name = next(name for name in names if name.endswith(".dist-info/RECORD"))
+            entry_points_name = next(name for name in names if name.endswith(".dist-info/entry_points.txt"))
+            self.assert_metadata(Parser().parsestr(archive.read(metadata_name).decode()))
+            entry_points = configparser.ConfigParser()
+            entry_points.read_string(archive.read(entry_points_name).decode())
+            self.assertEqual(entry_points["console_scripts"][PUBLIC_DISTRIBUTION["cli"]], "mira_okf.cli:main")
+            recorded = {row[0] for row in reader(archive.read(record_name).decode().splitlines())}
+            self.assertEqual(recorded, set(names))
+        self.assert_forbidden_content_absent(names, contents)
+        return names, contents
 
     def test_built_source_and_wheel_contain_only_public_distribution_content(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
-            sdist, wheel = self.build_artifacts(Path(tmpdir))
-            with tarfile.open(sdist) as archive:
-                sdist_paths = archive.getnames()
-                self.assert_public_artifact_paths(sdist_paths, source=True)
-                metadata = Parser().parsestr(
-                    archive.extractfile("tooling-0.1.0/PKG-INFO").read().decode("utf-8")
-                )
-                project = tomllib.loads(
-                    archive.extractfile("tooling-0.1.0/pyproject.toml").read().decode("utf-8")
-                )["project"]
-                self.assertEqual(metadata["Name"], "tooling")
-                self.assertEqual(metadata["Version"], "0.1.0")
-                self.assertIn("# Tooling", metadata.get_payload())
-                self.assertEqual(project["scripts"]["tooling"], "tooling.cli:main")
+            artifacts = self.build_artifacts(Path(tmpdir))
+            sdists = [path for path in artifacts if path.name.endswith(".tar.gz")]
+            wheels = [path for path in artifacts if path.name.endswith(".whl")]
+            self.assertEqual([path.name for path in sdists], ["mira_okf-0.0.1a1.tar.gz"])
+            self.assertEqual([path.name for path in wheels], ["mira_okf-0.0.1a1-py3-none-any.whl"])
+            self.inspect_sdist(sdists[0])
+            self.inspect_wheel(wheels[0])
 
-            with zipfile.ZipFile(wheel) as archive:
-                wheel_paths = archive.namelist()
-                self.assert_public_artifact_paths(wheel_paths, source=False)
-                metadata_path = next(path for path in wheel_paths if path.endswith(".dist-info/METADATA"))
-                entry_points_path = next(
-                    path for path in wheel_paths if path.endswith(".dist-info/entry_points.txt")
-                )
-                metadata = Parser().parsestr(archive.read(metadata_path).decode("utf-8"))
-                entry_points = configparser.ConfigParser()
-                entry_points.read_string(archive.read(entry_points_path).decode("utf-8"))
-                self.assertEqual(metadata["Name"], "tooling")
-                self.assertEqual(metadata["Version"], "0.1.0")
-                self.assertEqual(metadata["Requires-Python"], ">=3.12")
-                self.assertIn("# Tooling", metadata.get_payload())
-                self.assertEqual(entry_points["console_scripts"]["tooling"], "tooling.cli:main")
+    def test_project_metadata_uses_readme_and_approved_public_inputs(self) -> None:
+        self.assertEqual(PROJECT_METADATA["name"], PUBLIC_DISTRIBUTION["distribution"])
+        self.assertEqual(PROJECT_METADATA["version"], PUBLIC_DISTRIBUTION["version"])
+        self.assertEqual(PROJECT_METADATA["readme"], "README.md")
+        self.assertEqual(PROJECT_METADATA["license"], {"file": "LICENSE"})
+        self.assertEqual(PROJECT_METADATA["maintainers"], [{"name": PUBLIC_DISTRIBUTION["maintainer"]}])
+        self.assertEqual(PROJECT_METADATA["requires-python"], PUBLIC_DISTRIBUTION["python"])
+        self.assertEqual(PROJECT["project"]["urls"], {
+            "Repository": PUBLIC_DISTRIBUTION["repository_url"],
+            "Documentation": PUBLIC_DISTRIBUTION["documentation_url"],
+            "Issues": PUBLIC_DISTRIBUTION["issues_url"],
+        })
+        self.assertEqual(PROJECT["project"]["scripts"], {"mira-okf": "mira_okf.cli:main"})
+        self.assertEqual(PROJECT_METADATA["description"], "Local, read-only Python library and CLI for inspecting Open Knowledge Format bundles.")
+        self.assertNotRegex(README, r"(?i)(?:/home/|/documentos/|private prompt|hosted operation|package index)")
+
+    def test_pep517_artifacts_are_reproducible_with_fixed_epoch(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            first = root / "first"
+            second = root / "second"
+            first.mkdir()
+            second.mkdir()
+            self.build_artifacts(first, epoch="1700000000")
+            self.build_artifacts(second, epoch="1700000000")
+            for suffix in (".tar.gz", ".whl"):
+                left = next(first.glob(f"*{suffix}"))
+                right = next(second.glob(f"*{suffix}"))
+                self.assertEqual(left.name, right.name)
+                self.assertEqual(hashlib.sha256(left.read_bytes()).digest(), hashlib.sha256(right.read_bytes()).digest())
+            self.assertEqual(self.inspect_sdist(next(first.glob("*.tar.gz")))[0], self.inspect_sdist(next(second.glob("*.tar.gz")))[0])
+            self.assertEqual(self.inspect_wheel(next(first.glob("*.whl")))[0], self.inspect_wheel(next(second.glob("*.whl")))[0])
 
     def test_installed_console_smoke_uses_built_wheel_outside_checkout(self) -> None:
         repository = Path(__file__).resolve().parents[1]
@@ -147,7 +277,7 @@ class PublicQualityGateTest(unittest.TestCase):
                 PYTHONNOUSERSITE="1",
             )
             origin_result = subprocess.run(
-                [str(python), "-c", "import tooling; print(tooling.__file__)"],
+                [str(python), "-c", "import mira_okf; print(mira_okf.__file__)"],
                 cwd=root,
                 env=run_environment,
                 check=False,
@@ -158,17 +288,17 @@ class PublicQualityGateTest(unittest.TestCase):
             origin = origin_result.stdout.strip()
             self.assertNotIn(str(repository), origin)
             self.assertTrue(Path(origin).is_relative_to(environment), origin)
-            installed_entry_point = shutil.which("tooling", path=str(bin_dir))
-            self.assertEqual(installed_entry_point, str(bin_dir / "tooling"))
+            installed_entry_point = shutil.which("mira-okf", path=str(bin_dir))
+            self.assertEqual(installed_entry_point, str(bin_dir / "mira-okf"))
 
-            valid = self.copy_fixture("valid", root)
-            malformed = self.copy_fixture("malformed-readable", root)
+            valid = self.write_independent_bundle(root)
+            malformed = self.write_independent_bundle(root, malformed=True)
             workdir = root / "unrelated-workdir"
             workdir.mkdir()
 
             for command in COMMANDS:
                 result = subprocess.run(
-                    ["tooling", *self.installed_command(command, valid)],
+                    ["mira-okf", *self.installed_command(command, valid)],
                     cwd=workdir,
                     env=run_environment,
                     check=False,
@@ -182,7 +312,7 @@ class PublicQualityGateTest(unittest.TestCase):
                 self.assertEqual(payload["command"], f"okf.{command}", command)
 
                 result = subprocess.run(
-                    ["tooling", *self.installed_command(command, malformed)],
+                    ["mira-okf", *self.installed_command(command, malformed)],
                     cwd=workdir,
                     env=run_environment,
                     check=False,
@@ -195,7 +325,7 @@ class PublicQualityGateTest(unittest.TestCase):
                 self.assertTrue(issue_payload["issues"], command)
 
                 result = subprocess.run(
-                    ["tooling", *self.installed_command(command, root / "missing")],
+                    ["mira-okf", *self.installed_command(command, root / "missing")],
                     cwd=workdir,
                     env=run_environment,
                     check=False,

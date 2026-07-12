@@ -33,8 +33,8 @@ class _UniqueFieldAction(argparse.Action):
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="tooling")
-    parser.add_argument("--version", action="version", version=f"tooling {__version__}")
+    parser = argparse.ArgumentParser(prog="mira-okf")
+    parser.add_argument("--version", action="version", version=f"mira-okf {__version__}")
 
     subparsers = parser.add_subparsers(dest="command", required=True)
     okf_parser = subparsers.add_parser("okf", help="OKF bundle commands.")

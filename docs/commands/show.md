@@ -8,7 +8,7 @@ tags: [command, show]
 # `show`
 
 ```text
-tooling okf show docs <concept-id-or-path> [--summary] [--json]
+mira-okf okf show docs <concept-id-or-path> [--summary] [--json]
 ```
 
 Resolve a concept by id or bundle-relative Markdown path. `--summary` requests

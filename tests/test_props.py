@@ -8,7 +8,7 @@ import unittest
 from pathlib import Path
 
 from tests.support import run_main, write_files
-from tooling.cli import build_parser
+from mira_okf.cli import build_parser
 
 
 class PropsCommandTest(unittest.TestCase):

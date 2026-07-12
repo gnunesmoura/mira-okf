@@ -30,5 +30,5 @@ def command_stub(args: Namespace) -> int:
         from .props import run_props
 
         return run_props(args)
-    print(f"tooling okf {args.okf_command} is not implemented yet.", file=sys.stderr)
+    print(f"mira-okf okf {args.okf_command} is not implemented yet.", file=sys.stderr)
     return 1

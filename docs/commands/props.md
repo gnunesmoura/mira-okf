@@ -8,7 +8,7 @@ tags: [command, props]
 # `props`
 
 ```text
-tooling okf props docs [--field <name>]... [--json]
+mira-okf okf props docs [--field <name>]... [--json]
 ```
 
 With no fields, the command reports available properties. Repeat `--field` to

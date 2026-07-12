@@ -6,7 +6,7 @@ import unittest
 from pathlib import Path
 
 from tests.support import run_main, write_files
-from tooling.okf.semantic import semantic_text
+from mira_okf.okf.semantic import semantic_text
 
 
 class LinksCommandTest(unittest.TestCase):

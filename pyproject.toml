@@ -3,9 +3,9 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "tooling"
-version = "0.1.0"
-description = "Local tooling library and CLI for repository workflows."
+name = "mira-okf"
+version = "0.0.1a1"
+description = "Local, read-only Python library and CLI for inspecting Open Knowledge Format bundles."
 readme = "README.md"
 license = {file = "LICENSE"}
 maintainers = [{name = "gnunesmoura"}]
@@ -13,7 +13,30 @@ requires-python = ">=3.12"
 dependencies = []
 
 [project.scripts]
-tooling = "tooling.cli:main"
+mira-okf = "mira_okf.cli:main"
+
+[project.urls]
+Repository = "https://github.com/gnunesmoura/mira-okf"
+Documentation = "https://github.com/gnunesmoura/mira-okf/tree/main/docs"
+Issues = "https://github.com/gnunesmoura/mira-okf/issues"
+
+[tool.mira_okf.public_distribution]
+distribution = "mira-okf"
+import_package = "mira_okf"
+cli = "mira-okf"
+repository = "gnunesmoura/mira-okf"
+version_source = "pyproject.toml"
+version = "0.0.1a1"
+repository_url = "https://github.com/gnunesmoura/mira-okf"
+documentation_url = "https://github.com/gnunesmoura/mira-okf/tree/main/docs"
+issues_url = "https://github.com/gnunesmoura/mira-okf/issues"
+python = ">=3.12"
+license = "MIT"
+maintainer = "gnunesmoura"
+support_stage = "alpha"
+okf_specification = "0.1"
+platform_support = ["Linux (validated)", "Windows (best effort)", "macOS (out of scope)"]
+compatibility = "Breaking changes may omit a major version before 1.0 but require one after 1.0."
 
 [tool.setuptools]
 package-dir = {"" = "src"}

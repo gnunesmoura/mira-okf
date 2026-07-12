@@ -45,8 +45,8 @@ class TreeCommandTest(unittest.TestCase):
             self.assertEqual(exit_code, 1)
             self.assertEqual(stdout, "")
             self.assertIn("More than one OKF bundle found", stderr)
-            self.assertIn("artifacts -> tooling okf tree artifacts --depth 2 --summary", stderr)
-            self.assertIn("tooling/bundles -> tooling okf tree tooling/bundles --depth 2 --summary", stderr)
+            self.assertIn("artifacts -> mira-okf okf tree artifacts --depth 2 --summary", stderr)
+            self.assertIn("tooling/bundles -> mira-okf okf tree tooling/bundles --depth 2 --summary", stderr)
 
     def test_tree_respects_depth_and_absolute_path(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:

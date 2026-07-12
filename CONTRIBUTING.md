@@ -1,6 +1,6 @@
 # Contributing
 
-Thank you for helping improve `tooling`, a local, read-only Python library and
+Thank you for helping improve `mira-okf`, a local, read-only Python library and
 CLI for reading and analyzing OKF bundles.
 
 ## Scope and compatibility
@@ -40,9 +40,9 @@ Run the full test suite before submitting a change:
 
 ```bash
 python -m unittest discover -s tests
-python -m tooling okf health docs --profile quick --json
-python -m tooling okf validate docs --json
-python -m tooling okf links docs --broken --json
+python -m mira_okf okf health docs --profile quick --json
+python -m mira_okf okf validate docs --json
+python -m mira_okf okf links docs --broken --json
 git diff --check
 ```
 
@@ -53,7 +53,7 @@ the repository's OKF tooling to check bundle health.
 
 ## Issues and support
 
-Use the [public issue tracker](https://github.com/gnunesmoura/okf-tooling/issues)
+Use the [public issue tracker](https://github.com/gnunesmoura/mira-okf/issues)
 for ordinary bugs, usage help, and feature or improvement requests within the
 product scope. Search existing issues first and use the applicable template.
 Support is best effort with no SLA; reproducible bugs are useful, but no

@@ -2,10 +2,8 @@
 
 `mira-okf` is a local, read-only Python library and CLI for inspecting Open
 Knowledge Format (OKF) bundles. The distribution and CLI command are
-`mira-okf`; the import package is `mira_okf`; the public repository is
-[`gnunesmoura/mira-okf`](https://github.com/gnunesmoura/mira-okf). It provides
-compact navigation, concept
-inventory, link analysis, property projection, validation, and health reports.
+`mira-okf`; the import package is `mira_okf`;  It provides compact navigation,
+concept inventory, link analysis, property projection, validation, and health reports.
 
 The supported interface is documented in [`docs/`](docs/). Start with the
 [getting started guide](docs/getting-started.md), then use the

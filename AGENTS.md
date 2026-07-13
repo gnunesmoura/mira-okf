@@ -1,8 +1,6 @@
 # AGENTS
 
 This file is the public operating guide for agents using the `mira-okf` CLI.
-It is not a product-planning, skills, backlog, or private repository-management
-manual.
 
 ## Purpose
 
@@ -46,5 +44,3 @@ tree. Use the explicit `docs/` path in repository commands and examples.
 - Preserve unrelated work and do not edit generated files manually.
 - Keep Markdown portable and use bundle-relative links for documents inside
   `docs/`.
-- Do not add private paths, prompts, credentials, personal data, internal
-  roadmaps, or private planning material to public files.

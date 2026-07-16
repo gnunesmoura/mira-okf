@@ -54,22 +54,24 @@ def _emit_payload(args: Namespace, payload: dict[str, Any]) -> None:
     if getattr(args, "json", False):
         print(json.dumps(payload, indent=2, ensure_ascii=False, sort_keys=True))
         return
-    print(_render_directory_summary(payload["data"]))
+    print(_render_directory_summary(payload["data"], getattr(args, "summary", False)))
 
 
-def _render_directory_summary(directory: dict[str, Any]) -> str:
-    return _render_directory(directory, 0)
+def _render_directory_summary(directory: dict[str, Any], summary: bool) -> str:
+    return _render_directory(directory, 0, summary)
 
 
-def _render_directory(directory: dict[str, Any], indent: int) -> str:
+def _render_directory(directory: dict[str, Any], indent: int, summary: bool) -> str:
     label = directory["path"] if indent == 0 else directory["name"]
     line = f"{'  ' * indent}{label or directory['name']}/"
-    if directory["has_index"]:
-        line += "  index.md"
-    if directory["has_log"]:
-        line += "  log.md"
-    line += f"  concepts: {directory['concept_count']}"
+    if summary:
+        if directory["has_index"]:
+            line += "  index.md"
+        if directory["has_log"]:
+            line += "  log.md"
+        reserved_count = int(directory["has_index"]) + int(directory["has_log"])
+        line += f"  concepts: {directory['concept_count']}  reserved: {reserved_count}"
     lines = [line]
     for child in directory["children"]:
-        lines.append(_render_directory(child, indent + 1))
+        lines.append(_render_directory(child, indent + 1, summary))
     return "\n".join(lines)

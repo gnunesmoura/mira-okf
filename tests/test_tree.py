@@ -9,6 +9,57 @@ from tests.support import run_main
 
 
 class TreeCommandTest(unittest.TestCase):
+    def test_tree_summary_controls_human_detail(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir) / "bundle"
+            (root / "index.md").parent.mkdir(parents=True)
+            (root / "index.md").write_text("index\n", encoding="utf-8")
+            (root / "alpha.md").write_text("---\ntype: Note\n---\n", encoding="utf-8")
+
+            plain_exit, plain_stdout, plain_stderr = run_main(["okf", "tree", str(root), "--depth", "0"])
+            summary_exit, summary_stdout, summary_stderr = run_main(["okf", "tree", str(root), "--depth", "0", "--summary"])
+
+            self.assertEqual((plain_exit, plain_stderr), (0, ""))
+            self.assertEqual((summary_exit, summary_stderr), (0, ""))
+            self.assertTrue(plain_stdout.strip().endswith("/bundle/"))
+            self.assertNotIn("concepts:", plain_stdout)
+            self.assertNotIn("reserved:", plain_stdout)
+            self.assertIn("index.md", summary_stdout)
+            self.assertIn("concepts: 1", summary_stdout)
+            self.assertIn("reserved: 1", summary_stdout)
+
+    def test_tree_summary_metadata_uses_directory_payload_and_json_is_unchanged(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir) / "bundle"
+            (root / "area").mkdir(parents=True)
+            write = {
+                "index.md": "index\n",
+                "log.md": "log\n",
+                "root.md": "---\ntype: Note\n---\n",
+                "area/index.md": "index\n",
+                "area/concept.md": "---\ntype: Note\n---\n",
+            }
+            for relative_path, content in write.items():
+                path = root / relative_path
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(content, encoding="utf-8")
+
+            arguments = ["okf", "tree", str(root), "--depth", "1"]
+            exit_code, plain_stdout, plain_stderr = run_main(arguments)
+            self.assertEqual((exit_code, plain_stderr), (0, ""))
+            exit_code, summary_stdout, summary_stderr = run_main([*arguments, "--summary"])
+            self.assertEqual((exit_code, summary_stderr), (0, ""))
+            self.assertEqual(summary_stdout, run_main([*arguments, "--summary"])[1])
+            self.assertIn("bundle/  index.md  log.md  concepts: 1  reserved: 2", summary_stdout)
+            self.assertIn("  area/  index.md  concepts: 1  reserved: 1", summary_stdout)
+            self.assertNotIn("area/concept.md", plain_stdout)
+
+            exit_code, plain_json, plain_stderr = run_main([*arguments, "--json"])
+            self.assertEqual((exit_code, plain_stderr), (0, ""))
+            exit_code, summary_json, summary_stderr = run_main([*arguments, "--summary", "--json"])
+            self.assertEqual((exit_code, summary_stderr), (0, ""))
+            self.assertEqual(json.loads(plain_json), json.loads(summary_json))
+
     def test_tree_discovers_bundle_from_current_directory(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             root = Path(tmpdir)

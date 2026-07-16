@@ -136,6 +136,23 @@ class ShowCommandTest(unittest.TestCase):
             self.assertEqual(payload["data"]["issues"][0]["code"], "OKF_CONCEPT_MISSING_TYPE")
             self.assertEqual(payload["issues"][0]["code"], "OKF_CONCEPT_MISSING_TYPE")
 
+    def test_show_summary_preserves_complete_json_payload(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir) / "bundle"
+            write_files(
+                root,
+                {
+                    "index.md": "index\n",
+                    "alpha.md": "---\ntype: Note\ntitle: Alpha\ndescription: A description\ntags:\n  - shared\n---\nAlpha body\n",
+                },
+            )
+            arguments = ["okf", "show", str(root), "alpha"]
+            exit_code, plain_json, plain_stderr = run_main([*arguments, "--json"])
+            self.assertEqual((exit_code, plain_stderr), (0, ""))
+            exit_code, summary_json, summary_stderr = run_main([*arguments, "--summary", "--json"])
+            self.assertEqual((exit_code, summary_stderr), (0, ""))
+            self.assertEqual(json.loads(plain_json), json.loads(summary_json))
+
     def test_show_reports_not_found_and_ambiguous_discovery(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             root = Path(tmpdir) / "bundle"

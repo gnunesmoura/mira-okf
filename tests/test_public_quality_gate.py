@@ -114,14 +114,14 @@ class PublicQualityGateTest(unittest.TestCase):
         return bundle
 
     def invoke(self, command: str, bundle: Path) -> tuple[int, dict, str]:
-        arguments = ["okf", *COMMANDS[command]]
-        arguments.insert(2, str(bundle))
+        arguments = [*COMMANDS[command]]
+        arguments.insert(1, str(bundle))
         exit_code, stdout, stderr = run_main([*arguments, "--json"])
         return exit_code, json.loads(stdout), stderr
 
     def installed_command(self, command: str, bundle: Path) -> list[str]:
-        arguments = ["okf", *COMMANDS[command]]
-        arguments.insert(2, str(bundle))
+        arguments = [*COMMANDS[command]]
+        arguments.insert(1, str(bundle))
         return arguments + ["--json"]
 
     def build_wheel(self, artifact_dir: Path) -> Path:
@@ -330,6 +330,17 @@ class PublicQualityGateTest(unittest.TestCase):
             installed_entry_point = shutil.which("mira-okf", path=str(bin_dir))
             self.assertEqual(installed_entry_point, str(bin_dir / "mira-okf"))
 
+            grouped_result = subprocess.run(
+                ["mira-okf", "okf", "tree", ".", "--json"],
+                cwd=root,
+                env=run_environment,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertNotEqual(grouped_result.returncode, 0)
+            self.assertEqual(grouped_result.stdout, "")
+
             valid = self.write_independent_bundle(root)
             malformed = self.write_independent_bundle(root, malformed=True)
             workdir = root / "unrelated-workdir"
@@ -389,8 +400,8 @@ class PublicQualityGateTest(unittest.TestCase):
                 self.assertTrue(payload["ok"], command)
                 self.assertEqual(payload["command"], f"okf.{command}")
 
-                human_args = ["okf", *COMMANDS[command]]
-                human_args.insert(2, str(bundle))
+                human_args = [*COMMANDS[command]]
+                human_args.insert(1, str(bundle))
                 human_exit, human_stdout, human_stderr = run_main(human_args)
                 self.assertEqual(human_exit, 0, command)
                 self.assertEqual(human_stderr, "", command)
@@ -450,7 +461,7 @@ class PublicQualityGateTest(unittest.TestCase):
 
             ambiguous = self.copy_fixture("ambiguous", root)
             for command in COMMANDS:
-                arguments = ["okf", *COMMANDS[command]]
+                arguments = [*COMMANDS[command]]
                 exit_code, stdout, stderr = run_main([*arguments, "--json"], cwd=ambiguous)
                 self.assertEqual(exit_code, 1, command)
                 self.assertEqual(stderr, "", command)
@@ -464,9 +475,9 @@ class PublicQualityGateTest(unittest.TestCase):
                 self.assertEqual(payload["error"]["code"], "OKF_DISCOVERY_AMBIGUOUS", command)
 
             for command in COMMANDS:
-                arguments = ["okf", *COMMANDS[command], "/no/such/bundle"]
+                arguments = [*COMMANDS[command], "/no/such/bundle"]
                 if command in {"show", "backlinks"}:
-                    arguments = ["okf", command, "/no/such/bundle", "alpha"]
+                    arguments = [command, "/no/such/bundle", "alpha"]
                 exit_code, stdout, stderr = run_main([*arguments, "--json"])
                 self.assertEqual(exit_code, 1, command)
                 self.assertEqual(stderr, "", command)

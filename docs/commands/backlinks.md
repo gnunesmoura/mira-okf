@@ -8,7 +8,7 @@ tags: [command, backlinks]
 # `backlinks`
 
 ```text
-mira-okf okf backlinks docs <concept-id-or-path> [--json]
+mira-okf backlinks docs <concept-id-or-path> [--json]
 ```
 
 The result lists concepts whose links resolve to the selected concept.

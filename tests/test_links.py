@@ -26,7 +26,7 @@ class LinksCommandTest(unittest.TestCase):
             )
 
             exit_code, stdout, stderr = run_main(
-                ["okf", "links", str(root), "--broken", "--external", "--json"]
+                ["links", str(root), "--broken", "--external", "--json"]
             )
             self.assertEqual(exit_code, 0)
             self.assertEqual(stderr, "")
@@ -54,7 +54,7 @@ class LinksCommandTest(unittest.TestCase):
 
             payloads = []
             for _ in range(2):
-                exit_code, stdout, stderr = run_main(["okf", "links", str(root), "--json"])
+                exit_code, stdout, stderr = run_main(["links", str(root), "--json"])
                 self.assertEqual(exit_code, 0)
                 self.assertEqual(stderr, "")
                 payloads.append(json.loads(stdout))
@@ -94,10 +94,10 @@ class LinksCommandTest(unittest.TestCase):
                     "alpha.md": "---\ntype: Note\n---\n",
                 },
             )
-            exit_code, absolute_stdout, stderr = run_main(["okf", "links", str(root), "--json"])
+            exit_code, absolute_stdout, stderr = run_main(["links", str(root), "--json"])
             self.assertEqual(exit_code, 0)
             self.assertEqual(stderr, "")
-            exit_code, relative_stdout, stderr = run_main(["okf", "links", ".", "--json"], cwd=root)
+            exit_code, relative_stdout, stderr = run_main(["links", ".", "--json"], cwd=root)
             self.assertEqual(exit_code, 0)
             self.assertEqual(stderr, "")
             absolute = json.loads(absolute_stdout)
@@ -118,7 +118,7 @@ class LinksCommandTest(unittest.TestCase):
                 },
             )
 
-            exit_code, stdout, stderr = run_main(["okf", "links", str(root), "--json"])
+            exit_code, stdout, stderr = run_main(["links", str(root), "--json"])
             self.assertEqual(exit_code, 0)
             self.assertEqual(stderr, "")
             payload = json.loads(stdout)
@@ -129,13 +129,13 @@ class LinksCommandTest(unittest.TestCase):
             self.assertEqual(payload["data"]["returned"], 3)
             self.assertEqual([issue["code"] for issue in payload["issues"]], ["OKF_LINK_BROKEN"])
 
-            exit_code, stdout, stderr = run_main(["okf", "links", str(root), "--broken", "--external", "--json"])
+            exit_code, stdout, stderr = run_main(["links", str(root), "--broken", "--external", "--json"])
             self.assertEqual(exit_code, 0)
             self.assertEqual(stderr, "")
             payload = json.loads(stdout)
             self.assertEqual([link["target"] for link in payload["data"]["links"]], ["./beta.md", "gamma", "./missing.md", "https://example.com", "https://example.org/path", "alpha.md"])
 
-            exit_code, stdout, stderr = run_main(["okf", "links", str(root), "--external"])
+            exit_code, stdout, stderr = run_main(["links", str(root), "--external"])
             self.assertEqual(exit_code, 0)
             self.assertEqual(stderr, "")
             self.assertIn("[external] https://example.com", stdout)
@@ -152,7 +152,7 @@ class LinksCommandTest(unittest.TestCase):
                     "nested/beta.md": "---\ntype: Note\n---\n[Alpha](../Alpha%20Note.md)\n",
                 },
             )
-            exit_code, stdout, stderr = run_main(["okf", "links", str(root), "--json"])
+            exit_code, stdout, stderr = run_main(["links", str(root), "--json"])
             self.assertEqual(exit_code, 0)
             self.assertEqual(stderr, "")
             payload = json.loads(stdout)
@@ -175,7 +175,7 @@ class LinksCommandTest(unittest.TestCase):
                 },
             )
 
-            exit_code, stdout, stderr = run_main(["okf", "links", str(root), "--json"])
+            exit_code, stdout, stderr = run_main(["links", str(root), "--json"])
             self.assertEqual(exit_code, 0)
             self.assertEqual(stderr, "")
             payload = json.loads(stdout)
@@ -201,7 +201,7 @@ class LinksCommandTest(unittest.TestCase):
                 },
             )
 
-            exit_code, stdout, stderr = run_main(["okf", "links", str(root), "--json"])
+            exit_code, stdout, stderr = run_main(["links", str(root), "--json"])
             self.assertEqual(exit_code, 0)
             self.assertEqual(stderr, "")
             links = json.loads(stdout)["data"]["links"]
@@ -223,7 +223,7 @@ class LinksCommandTest(unittest.TestCase):
                 },
             )
 
-            exit_code, stdout, stderr = run_main(["okf", "links", str(root), "--json"])
+            exit_code, stdout, stderr = run_main(["links", str(root), "--json"])
             self.assertEqual(exit_code, 0)
             self.assertEqual(stderr, "")
             links = json.loads(stdout)["data"]["links"]
@@ -244,7 +244,7 @@ class LinksCommandTest(unittest.TestCase):
                 },
             )
 
-            exit_code, stdout, stderr = run_main(["okf", "links", str(root), "--json"])
+            exit_code, stdout, stderr = run_main(["links", str(root), "--json"])
             self.assertEqual(exit_code, 0)
             self.assertEqual(stderr, "")
             links = json.loads(stdout)["data"]["links"]
@@ -275,7 +275,7 @@ class LinksCommandTest(unittest.TestCase):
                 },
             )
 
-            exit_code, stdout, stderr = run_main(["okf", "links", str(root), "--broken", "--json"])
+            exit_code, stdout, stderr = run_main(["links", str(root), "--broken", "--json"])
             self.assertEqual(exit_code, 0)
             self.assertEqual(stderr, "")
             payload = json.loads(stdout)
@@ -283,7 +283,7 @@ class LinksCommandTest(unittest.TestCase):
             self.assertEqual(payload["data"]["total"], 1)
             self.assertEqual([issue["code"] for issue in payload["issues"]], [])
 
-            exit_code, stdout, stderr = run_main(["okf", "backlinks", str(root), "beta", "--json"])
+            exit_code, stdout, stderr = run_main(["backlinks", str(root), "beta", "--json"])
             self.assertEqual(exit_code, 0)
             self.assertEqual(stderr, "")
             payload = json.loads(stdout)

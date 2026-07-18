@@ -18,10 +18,10 @@ This project follows [Keep a Changelog](https://keepachangelog.com/en/2.0.0/).
 
 ### Breaking Changes
 
-List breaking changes here when applicable, including the affected public
-interface and the reason for the change.
+The `okf` grouping token has been removed from CLI invocations. This is an
+intentional pre-1.0 breaking change that shortens the public command surface.
 
 ### Migration
 
-Provide migration guidance here when a breaking change affects users or
-integrations. Leave this section without entries when no migration is needed.
+Replace `mira-okf okf <command>` with `mira-okf <command>` mechanically; all
+following arguments and result handling remain unchanged.

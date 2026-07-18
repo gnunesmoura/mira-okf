@@ -85,7 +85,7 @@ def resolve_concept(bundle: Bundle, target: str) -> Concept:
 def _reference_command(command: str, path: Path, cwd: Path, reference_suffix: str) -> str:
     bundle_path = _display_path(str(path.relative_to(cwd)) if path != cwd else ".", path, cwd)
     suffix = f" {reference_suffix}" if reference_suffix else ""
-    return f"mira-okf okf {command} {bundle_path}{suffix}"
+    return f"mira-okf {command} {bundle_path}{suffix}"
 
 
 def _discover_bundles(cwd: Path) -> list[Path]:

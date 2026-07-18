@@ -16,14 +16,14 @@ Python 3.12 or newer is required. With a built wheel or source distribution:
 ```bash
 python3 -m venv /tmp/mira-okf-venv
 /tmp/mira-okf-venv/bin/python -m pip install /path/to/mira_okf-0.0.1a1-py3-none-any.whl
-/tmp/mira-okf-venv/bin/mira-okf okf tree /path/to/bundle --depth 2 --summary
+/tmp/mira-okf-venv/bin/mira-okf tree /path/to/bundle --depth 2 --summary
 ```
 
 From this checkout, the public documentation bundle is `docs/`:
 
 ```bash
-python -m mira_okf okf tree docs --depth 2 --summary
-python -m mira_okf okf validate docs --json
+python -m mira_okf tree docs --depth 2 --summary
+python -m mira_okf validate docs --json
 ```
 
 Generic automatic discovery can be ambiguous for this nested documentation

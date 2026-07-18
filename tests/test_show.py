@@ -20,7 +20,7 @@ class ShowCommandTest(unittest.TestCase):
                     "nested/beta.md": "---\ntype: Task\ntitle: Beta\ndescription: Beta description\ntags:\n  - shared\n---\nBeta body\n",
                 },
             )
-            exit_code, stdout, stderr = run_main(["okf", "show", str(root), "alpha", "--summary"])
+            exit_code, stdout, stderr = run_main(["show", str(root), "alpha", "--summary"])
             self.assertEqual(exit_code, 0)
             self.assertEqual(stderr, "")
             lines = stdout.strip().splitlines()
@@ -37,7 +37,7 @@ class ShowCommandTest(unittest.TestCase):
                     "broken.md": "---\ntitle: Broken\n---\nBroken body\n",
                 },
             )
-            exit_code, stdout, stderr = run_main(["okf", "show", str(root), "broken"])
+            exit_code, stdout, stderr = run_main(["show", str(root), "broken"])
             self.assertEqual(exit_code, 0)
             self.assertEqual(stderr, "")
             lines = stdout.strip().splitlines()
@@ -55,7 +55,7 @@ class ShowCommandTest(unittest.TestCase):
                     "alpha.md": "---\ntype: Note\ntitle: Alpha\n---\nAlpha body\n",
                 },
             )
-            exit_code, stdout, stderr = run_main(["okf", "show", str(root), "alpha"])
+            exit_code, stdout, stderr = run_main(["show", str(root), "alpha"])
             self.assertEqual(exit_code, 0)
             self.assertEqual(stderr, "")
             self.assertNotIn("Issues", stdout)
@@ -70,7 +70,7 @@ class ShowCommandTest(unittest.TestCase):
                     "broken.md": "---\ntitle: Broken\n---\nBroken body\n",
                 },
             )
-            exit_code, stdout, stderr = run_main(["okf", "show", str(root), "broken", "--summary"])
+            exit_code, stdout, stderr = run_main(["show", str(root), "broken", "--summary"])
             self.assertEqual(exit_code, 0)
             self.assertEqual(stderr, "")
             lines = stdout.strip().splitlines()
@@ -89,7 +89,7 @@ class ShowCommandTest(unittest.TestCase):
                     "alpha.md": "---\ntype: Note\ntitle: Alpha\n---\nAlpha body\n",
                 },
             )
-            exit_code, stdout, stderr = run_main(["okf", "show", "alpha", "--json"], cwd=root)
+            exit_code, stdout, stderr = run_main(["show", "alpha", "--json"], cwd=root)
             self.assertEqual(exit_code, 0)
             self.assertEqual(stderr, "")
             payload = json.loads(stdout)
@@ -107,7 +107,7 @@ class ShowCommandTest(unittest.TestCase):
                 },
             )
             for target in ("nested/beta", "nested/beta.md"):
-                exit_code, stdout, stderr = run_main(["okf", "show", str(root), target, "--json"])
+                exit_code, stdout, stderr = run_main(["show", str(root), target, "--json"])
                 self.assertEqual(exit_code, 0)
                 self.assertEqual(stderr, "")
                 payload = json.loads(stdout)
@@ -126,7 +126,7 @@ class ShowCommandTest(unittest.TestCase):
                     "broken.md": "---\ntitle: Broken\n---\nBroken body\n",
                 },
             )
-            exit_code, stdout, stderr = run_main(["okf", "show", str(root), "broken", "--json"])
+            exit_code, stdout, stderr = run_main(["show", str(root), "broken", "--json"])
             self.assertEqual(exit_code, 0)
             self.assertEqual(stderr, "")
             payload = json.loads(stdout)
@@ -146,7 +146,7 @@ class ShowCommandTest(unittest.TestCase):
                     "alpha.md": "---\ntype: Note\ntitle: Alpha\ndescription: A description\ntags:\n  - shared\n---\nAlpha body\n",
                 },
             )
-            arguments = ["okf", "show", str(root), "alpha"]
+            arguments = ["show", str(root), "alpha"]
             exit_code, plain_json, plain_stderr = run_main([*arguments, "--json"])
             self.assertEqual((exit_code, plain_stderr), (0, ""))
             exit_code, summary_json, summary_stderr = run_main([*arguments, "--summary", "--json"])
@@ -163,7 +163,7 @@ class ShowCommandTest(unittest.TestCase):
                     "alpha.md": "---\ntype: Note\n---\n",
                 },
             )
-            exit_code, stdout, stderr = run_main(["okf", "show", str(root), "missing"])
+            exit_code, stdout, stderr = run_main(["show", str(root), "missing"])
             self.assertEqual(exit_code, 1)
             self.assertEqual(stdout, "")
             self.assertIn("Concept not found: missing", stderr)
@@ -178,7 +178,7 @@ class ShowCommandTest(unittest.TestCase):
                         "alpha.md": "---\ntype: Note\n---\n",
                     },
                 )
-            exit_code, stdout, stderr = run_main(["okf", "show", "alpha", "--json"], cwd=root)
+            exit_code, stdout, stderr = run_main(["show", "alpha", "--json"], cwd=root)
             self.assertEqual(exit_code, 1)
             self.assertEqual(stderr, "")
             payload = json.loads(stdout)
@@ -195,10 +195,10 @@ class ShowCommandTest(unittest.TestCase):
                     "nested/beta.md": "---\ntype: Task\ntitle: Beta\ndescription: Beta description\ntags:\n  - shared\n---\nBeta body\n",
                 },
             )
-            exit_code, stdout_one, stderr_one = run_main(["okf", "show", str(root), "nested/beta.md", "--json"])
+            exit_code, stdout_one, stderr_one = run_main(["show", str(root), "nested/beta.md", "--json"])
             self.assertEqual(exit_code, 0)
             self.assertEqual(stderr_one, "")
-            exit_code, stdout_two, stderr_two = run_main(["okf", "show", str(root), "nested/beta.md", "--json"])
+            exit_code, stdout_two, stderr_two = run_main(["show", str(root), "nested/beta.md", "--json"])
             self.assertEqual(exit_code, 0)
             self.assertEqual(stderr_two, "")
             self.assertEqual(stdout_one, stdout_two)
@@ -216,12 +216,12 @@ class ShowCommandTest(unittest.TestCase):
                 },
             )
 
-            exit_code, stdout, stderr = run_main(["okf", "show", str(root), "alpha"])
+            exit_code, stdout, stderr = run_main(["show", str(root), "alpha"])
             self.assertEqual(exit_code, 0)
             self.assertEqual(stderr, "")
             self.assertIn(body, stdout)
 
-            exit_code, stdout, stderr = run_main(["okf", "show", str(root), "alpha", "--json"])
+            exit_code, stdout, stderr = run_main(["show", str(root), "alpha", "--json"])
             self.assertEqual(exit_code, 0)
             self.assertEqual(stderr, "")
             self.assertEqual(json.loads(stdout)["data"]["body"], body)

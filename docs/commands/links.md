@@ -8,7 +8,7 @@ tags: [command, links]
 # `links`
 
 ```text
-mira-okf okf links docs [--broken] [--external] [--json]
+mira-okf links docs [--broken] [--external] [--json]
 ```
 
 By default links are listed with their classification. `--broken` filters to

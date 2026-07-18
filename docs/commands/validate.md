@@ -8,7 +8,7 @@ tags: [command, validation, okf]
 # `validate`
 
 ```text
-mira-okf okf validate docs [--json]
+mira-okf validate docs [--json]
 ```
 
 Validation checks parseable frontmatter, required `type` fields, and reserved

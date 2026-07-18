@@ -12,23 +12,23 @@ from .tree import run_tree
 
 
 def command_stub(args: Namespace) -> int:
-    if args.okf_command == "tree":
+    if args.command == "tree":
         return run_tree(args)
-    if args.okf_command == "list":
+    if args.command == "list":
         return run_list(args)
-    if args.okf_command == "show":
+    if args.command == "show":
         return run_show(args)
-    if args.okf_command == "links":
+    if args.command == "links":
         return run_links(args)
-    if args.okf_command == "backlinks":
+    if args.command == "backlinks":
         return run_backlinks(args)
-    if args.okf_command == "validate":
+    if args.command == "validate":
         return run_validate(args)
-    if args.okf_command == "health":
+    if args.command == "health":
         return run_health(args)
-    if args.okf_command == "props":
+    if args.command == "props":
         from .props import run_props
 
         return run_props(args)
-    print(f"mira-okf okf {args.okf_command} is not implemented yet.", file=sys.stderr)
+    print(f"mira-okf {args.command} is not implemented yet.", file=sys.stderr)
     return 1

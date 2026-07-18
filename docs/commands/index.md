@@ -1,6 +1,6 @@
 # Commands
 
-All commands are subcommands of `mira-okf okf` and use the explicit `docs` bundle
+All commands are direct subcommands of `mira-okf` and use the explicit `docs` bundle
 path in examples for this repository. Generic automatic discovery can be
 ambiguous for this nested documentation tree. Use `--json` for machine-readable
 output.

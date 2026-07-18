@@ -23,7 +23,7 @@ into the same Python environment that provides `mira-okf`. Confirm the command
 is available before inspecting a bundle:
 
 ```bash
-mira-okf okf --help
+mira-okf --help
 ```
 
 ## Inspect a bundle
@@ -31,9 +31,9 @@ mira-okf okf --help
 Give commands a relative or absolute bundle path. This checkout uses `docs/`:
 
 ```bash
-mira-okf okf tree docs --depth 2 --summary
-mira-okf okf list docs --json
-mira-okf okf validate docs --json
+mira-okf tree docs --depth 2 --summary
+mira-okf list docs --json
+mira-okf validate docs --json
 ```
 
 Generic automatic discovery searches recursively and can be ambiguous for this
@@ -45,7 +45,7 @@ this checkout. See [discovery](behavior/discovery.md).
 Concepts can be selected by bundle-relative path or concept id:
 
 ```bash
-mira-okf okf show docs behavior/overview
+mira-okf show docs behavior/overview
 ```
 
 The CLI is read-only and does not require Obsidian, a database, network access,

@@ -24,7 +24,7 @@ class PropsCommandTest(unittest.TestCase):
                 },
             )
 
-            exit_code, stdout, stderr = run_main(["okf", "props", str(root)])
+            exit_code, stdout, stderr = run_main(["props", str(root)])
 
             self.assertEqual(exit_code, 0)
             self.assertEqual(stderr, "")
@@ -48,7 +48,7 @@ class PropsCommandTest(unittest.TestCase):
             )
 
             exit_code, stdout, stderr = run_main(
-                ["okf", "props", str(root), "--field", "title", "--field", "owner", "--json"]
+                ["props", str(root), "--field", "title", "--field", "owner", "--json"]
             )
 
             self.assertEqual(exit_code, 0)
@@ -77,7 +77,7 @@ class PropsCommandTest(unittest.TestCase):
             stderr = io.StringIO()
             with self.subTest(fields=fields), contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
                 with self.assertRaises(SystemExit) as raised:
-                    build_parser().parse_args(["okf", "props", *(arg for field in fields for arg in ("--field", field))])
+                    build_parser().parse_args(["props", *(arg for field in fields for arg in ("--field", field))])
             self.assertEqual(raised.exception.code, 2)
             self.assertEqual(stdout.getvalue(), "")
             self.assertNotIn("concept_id", stderr.getvalue())
@@ -87,21 +87,21 @@ class PropsCommandTest(unittest.TestCase):
             root = Path(tmpdir) / "bundle"
             write_files(root, {"index.md": "index\n", "alpha.md": "---\ntype: Note\ntitle: Alpha\n---\n"})
 
-            exit_code, stdout, stderr = run_main(["okf", "props", str(root), "--json"])
+            exit_code, stdout, stderr = run_main(["props", str(root), "--json"])
             self.assertEqual(exit_code, 0)
             self.assertEqual(stderr, "")
             row = json.loads(stdout)["data"]["rows"][0]
             self.assertIsNone(row["description"])
             self.assertEqual(row["tags"], [])
 
-            exit_code, stdout, stderr = run_main(["okf", "props", str(root)])
+            exit_code, stdout, stderr = run_main(["props", str(root)])
             self.assertEqual(exit_code, 0)
             self.assertEqual(stderr, "")
             self.assertEqual(stdout.splitlines()[1], "alpha\tNote\tAlpha\t\t[]")
 
             empty = Path(tmpdir) / "empty"
             empty.mkdir()
-            exit_code, stdout, stderr = run_main(["okf", "props", str(empty), "--field", "owner", "--json"])
+            exit_code, stdout, stderr = run_main(["props", str(empty), "--field", "owner", "--json"])
             self.assertEqual(exit_code, 0)
             self.assertEqual(stderr, "")
             self.assertEqual(json.loads(stdout)["data"], {"fields": ["owner"], "rows": []})
@@ -120,7 +120,7 @@ class PropsCommandTest(unittest.TestCase):
             )
 
             exit_code, stdout, stderr = run_main(
-                ["okf", "props", str(root), "--field", "title", "--field", "custom", "--json"]
+                ["props", str(root), "--field", "title", "--field", "custom", "--json"]
             )
 
             self.assertEqual(exit_code, 0)
@@ -147,7 +147,7 @@ class PropsCommandTest(unittest.TestCase):
 
             outputs = []
             for bundle in (first, second):
-                exit_code, stdout, stderr = run_main(["okf", "props", str(bundle), "--json"])
+                exit_code, stdout, stderr = run_main(["props", str(bundle), "--json"])
                 self.assertEqual(exit_code, 0)
                 self.assertEqual(stderr, "")
                 outputs.append(json.loads(stdout)["data"])
@@ -164,7 +164,7 @@ class PropsCommandTest(unittest.TestCase):
             }
 
             for arguments in ([], ["--json"]):
-                exit_code, _, stderr = run_main(["okf", "props", str(root), *arguments])
+                exit_code, _, stderr = run_main(["props", str(root), *arguments])
                 self.assertEqual(exit_code, 0)
                 self.assertEqual(stderr, "")
 

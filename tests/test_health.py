@@ -19,10 +19,10 @@ class HealthCommandTest(unittest.TestCase):
                     "alpha.md": "---\ntype: Note\ntitle: Alpha\ndescription: One\n---\n",
                 },
             )
-            exit_code, absolute_stdout, stderr = run_main(["okf", "health", str(root), "--json"])
+            exit_code, absolute_stdout, stderr = run_main(["health", str(root), "--json"])
             self.assertEqual(exit_code, 0)
             self.assertEqual(stderr, "")
-            exit_code, relative_stdout, stderr = run_main(["okf", "health", ".", "--json"], cwd=root)
+            exit_code, relative_stdout, stderr = run_main(["health", ".", "--json"], cwd=root)
             self.assertEqual(exit_code, 0)
             self.assertEqual(stderr, "")
             absolute = json.loads(absolute_stdout)
@@ -52,7 +52,7 @@ class HealthCommandTest(unittest.TestCase):
                 },
             )
 
-            exit_code, stdout, stderr = run_main(["okf", "health", str(root), "--json"])
+            exit_code, stdout, stderr = run_main(["health", str(root), "--json"])
             self.assertEqual(exit_code, 0)
             self.assertEqual(stderr, "")
             payload = json.loads(stdout)
@@ -105,11 +105,11 @@ class HealthCommandTest(unittest.TestCase):
                     "alpha.md": "---\ntype: Note\ntitle: Alpha\ndescription: One\n---\n[Alpha](alpha.md)\n",
                 },
             )
-            exit_code, stdout, _ = run_main(["okf", "health", str(root), "--json"])
+            exit_code, stdout, _ = run_main(["health", str(root), "--json"])
             self.assertEqual(exit_code, 0)
             self.assertEqual(json.loads(stdout)["data"]["status"], "ok")
 
-            exit_code, stdout, _ = run_main(["okf", "health", str(root), "--json", "--profile", "full"])
+            exit_code, stdout, _ = run_main(["health", str(root), "--json", "--profile", "full"])
             self.assertEqual(exit_code, 0)
             data = json.loads(stdout)["data"]
             self.assertEqual(data["rules"]["profile"], "full")
@@ -137,7 +137,7 @@ class HealthCommandTest(unittest.TestCase):
             )
 
             exit_code, stdout, stderr = run_main(
-                ["okf", "health", str(root), "--json", "--profile", "full"]
+                ["health", str(root), "--json", "--profile", "full"]
             )
             self.assertEqual(exit_code, 0)
             self.assertEqual(stderr, "")
@@ -187,7 +187,7 @@ class HealthCommandTest(unittest.TestCase):
                 },
             )
 
-            exit_code, stdout, _ = run_main(["okf", "health", str(root), "--json", "--profile", "full"])
+            exit_code, stdout, _ = run_main(["health", str(root), "--json", "--profile", "full"])
             self.assertEqual(exit_code, 0)
             data = json.loads(stdout)["data"]
             self.assertEqual(data["status"], "ok")
@@ -201,7 +201,7 @@ class HealthCommandTest(unittest.TestCase):
             root = Path(tmpdir)
             write_files(root / "one", {"index.md": "index\n", "a.md": "---\ntype: Note\n---\n"})
             write_files(root / "two", {"index.md": "index\n", "b.md": "---\ntype: Note\n---\n"})
-            exit_code, stdout, stderr = run_main(["okf", "health", "--json"], cwd=root)
+            exit_code, stdout, stderr = run_main(["health", "--json"], cwd=root)
             self.assertEqual(exit_code, 1)
             self.assertEqual(stderr, "")
             self.assertEqual(json.loads(stdout)["error"]["code"], "OKF_DISCOVERY_AMBIGUOUS")
@@ -210,7 +210,7 @@ class HealthCommandTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmpdir:
             root = Path(tmpdir) / "bundle"
             write_files(root, {"index.md": "index\n", "alpha.md": "---\ntype: Note\n---\n"})
-            exit_code, stdout, stderr = run_main(["okf", "health", str(root)])
+            exit_code, stdout, stderr = run_main(["health", str(root)])
             self.assertEqual(exit_code, 0)
             self.assertEqual(stderr, "")
             lines = stdout.strip().splitlines()

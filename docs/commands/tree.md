@@ -8,7 +8,7 @@ tags: [command, tree]
 # `tree`
 
 ```text
-mira-okf okf tree docs --depth <n> [--summary] [--json]
+mira-okf tree docs --depth <n> [--summary] [--json]
 ```
 
 `--depth` defaults to `2`. Human-readable output is a compact, depth-respecting

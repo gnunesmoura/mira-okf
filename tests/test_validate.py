@@ -19,7 +19,7 @@ class ValidateCommandTest(unittest.TestCase):
                     "alpha.md": "---\ntype: Note\n---\n",
                 },
             )
-            exit_code, stdout, stderr = run_main(["okf", "validate", "--json"], cwd=root)
+            exit_code, stdout, stderr = run_main(["validate", "--json"], cwd=root)
             self.assertEqual(exit_code, 0)
             self.assertEqual(stderr, "")
             payload = json.loads(stdout)
@@ -41,7 +41,7 @@ class ValidateCommandTest(unittest.TestCase):
                     "nested/index.md": "---\ntitle: Nested\n---\n",
                 },
             )
-            exit_code, stdout, stderr = run_main(["okf", "validate", str(root), "--json"])
+            exit_code, stdout, stderr = run_main(["validate", str(root), "--json"])
             self.assertEqual(exit_code, 0)
             self.assertEqual(stderr, "")
             payload = json.loads(stdout)
@@ -76,7 +76,7 @@ class ValidateCommandTest(unittest.TestCase):
                     "alpha.md": "---\ntype: Mystery\ncustom_field: value\n---\n",
                 },
             )
-            exit_code, stdout, stderr = run_main(["okf", "validate", str(root), "--json"])
+            exit_code, stdout, stderr = run_main(["validate", str(root), "--json"])
             self.assertEqual(exit_code, 0)
             self.assertEqual(stderr, "")
             payload = json.loads(stdout)
@@ -96,7 +96,7 @@ class ValidateCommandTest(unittest.TestCase):
                     "alpha.md": "---\ntype: Note\n---\n",
                 },
             )
-            exit_code, stdout, stderr = run_main(["okf", "validate", str(root), "--json"])
+            exit_code, stdout, stderr = run_main(["validate", str(root), "--json"])
             self.assertEqual(exit_code, 0)
             self.assertEqual(stderr, "")
             payload = json.loads(stdout)
@@ -113,7 +113,7 @@ class ValidateCommandTest(unittest.TestCase):
                     "alpha.md": "---\ntype: Note\n---\n",
                 },
             )
-            exit_code, stdout, stderr = run_main(["okf", "validate", str(root), "--json"])
+            exit_code, stdout, stderr = run_main(["validate", str(root), "--json"])
             self.assertEqual(exit_code, 0)
             self.assertEqual(stderr, "")
             payload = json.loads(stdout)
@@ -131,14 +131,14 @@ class ValidateCommandTest(unittest.TestCase):
                         "alpha.md": "---\ntype: Note\n---\n",
                     },
                 )
-            exit_code, stdout, stderr = run_main(["okf", "validate", "--json"], cwd=root)
+            exit_code, stdout, stderr = run_main(["validate", "--json"], cwd=root)
             self.assertEqual(exit_code, 1)
             self.assertEqual(stderr, "")
             payload = json.loads(stdout)
             self.assertFalse(payload["ok"])
             self.assertEqual(payload["error"]["code"], "OKF_DISCOVERY_AMBIGUOUS")
 
-        exit_code, stdout, stderr = run_main(["okf", "validate", "/no/such/bundle", "--json"])
+        exit_code, stdout, stderr = run_main(["validate", "/no/such/bundle", "--json"])
         self.assertEqual(exit_code, 1)
         self.assertEqual(stderr, "")
         payload = json.loads(stdout)
@@ -155,7 +155,7 @@ class ValidateCommandTest(unittest.TestCase):
                     "broken.md": "broken body\n",
                 },
             )
-            exit_code, stdout, stderr = run_main(["okf", "validate", str(root)])
+            exit_code, stdout, stderr = run_main(["validate", str(root)])
             self.assertEqual(exit_code, 0)
             self.assertEqual(stderr, "")
             lines = stdout.strip().splitlines()

@@ -37,8 +37,6 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--version", action="version", version=f"mira-okf {__version__}")
 
     subparsers = parser.add_subparsers(dest="command", required=True)
-    okf_parser = subparsers.add_parser("okf", help="OKF bundle commands.")
-    okf_subparsers = okf_parser.add_subparsers(dest="okf_command", required=True)
 
     for name, help_text, arguments in (
         ("tree", "Show a summarized bundle tree.", (("--depth", {"type": int, "default": 2}), ("--summary", {"action": "store_true"}), ("--json", {"action": "store_true"}))),
@@ -60,7 +58,7 @@ def build_parser() -> argparse.ArgumentParser:
         ("health", "Report bundle health signals.", (("--profile", {"choices": ("quick", "full"), "default": "quick"}), ("--json", {"action": "store_true"}))),
         ("props", "Export concept properties.", (("--field", {"action": _UniqueFieldAction, "type": _field_name}), ("--json", {"action": "store_true"}))),
     ):
-        command_parser = okf_subparsers.add_parser(name, help=help_text)
+        command_parser = subparsers.add_parser(name, help=help_text)
         command_parser.add_argument("bundle", nargs="?")
         if name == "backlinks":
             command_parser.add_argument("concept")
@@ -76,7 +74,7 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: Sequence[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
-    if getattr(args, "okf_command", None) == "show" and args.bundle is None and args.concept is None:
+    if args.command == "show" and args.bundle is None and args.concept is None:
         parser.error("the following arguments are required: concept")
     handler = getattr(args, "handler", None)
     if handler is None:

@@ -16,8 +16,8 @@ class TreeCommandTest(unittest.TestCase):
             (root / "index.md").write_text("index\n", encoding="utf-8")
             (root / "alpha.md").write_text("---\ntype: Note\n---\n", encoding="utf-8")
 
-            plain_exit, plain_stdout, plain_stderr = run_main(["okf", "tree", str(root), "--depth", "0"])
-            summary_exit, summary_stdout, summary_stderr = run_main(["okf", "tree", str(root), "--depth", "0", "--summary"])
+            plain_exit, plain_stdout, plain_stderr = run_main(["tree", str(root), "--depth", "0"])
+            summary_exit, summary_stdout, summary_stderr = run_main(["tree", str(root), "--depth", "0", "--summary"])
 
             self.assertEqual((plain_exit, plain_stderr), (0, ""))
             self.assertEqual((summary_exit, summary_stderr), (0, ""))
@@ -44,7 +44,7 @@ class TreeCommandTest(unittest.TestCase):
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_text(content, encoding="utf-8")
 
-            arguments = ["okf", "tree", str(root), "--depth", "1"]
+            arguments = ["tree", str(root), "--depth", "1"]
             exit_code, plain_stdout, plain_stderr = run_main(arguments)
             self.assertEqual((exit_code, plain_stderr), (0, ""))
             exit_code, summary_stdout, summary_stderr = run_main([*arguments, "--summary"])
@@ -65,7 +65,7 @@ class TreeCommandTest(unittest.TestCase):
             root = Path(tmpdir)
             (root / "index.md").write_text("index\n", encoding="utf-8")
             (root / "alpha.md").write_text("---\ntype: Note\ntitle: Alpha\n---\nbody\n", encoding="utf-8")
-            exit_code, stdout, stderr = run_main(["okf", "tree", "--summary"], cwd=root)
+            exit_code, stdout, stderr = run_main(["tree", "--summary"], cwd=root)
             self.assertEqual(exit_code, 0)
             self.assertEqual(stderr, "")
             output = stdout.strip().splitlines()
@@ -79,7 +79,7 @@ class TreeCommandTest(unittest.TestCase):
             nested.mkdir(parents=True)
             (nested / "index.md").write_text("index\n", encoding="utf-8")
             (nested / "alpha.md").write_text("---\ntype: Note\n---\n", encoding="utf-8")
-            exit_code, stdout, stderr = run_main(["okf", "tree", "--summary"], cwd=root)
+            exit_code, stdout, stderr = run_main(["tree", "--summary"], cwd=root)
             self.assertEqual(exit_code, 0)
             self.assertEqual(stderr, "")
             self.assertIn("workspace/bundle/", stdout)
@@ -92,12 +92,12 @@ class TreeCommandTest(unittest.TestCase):
             for bundle_root in (root / "artifacts", root / "tooling" / "bundles"):
                 (bundle_root / "index.md").write_text("index\n", encoding="utf-8")
                 (bundle_root / "alpha.md").write_text("---\ntype: Note\n---\n", encoding="utf-8")
-            exit_code, stdout, stderr = run_main(["okf", "tree", "--depth", "2", "--summary"], cwd=root)
+            exit_code, stdout, stderr = run_main(["tree", "--depth", "2", "--summary"], cwd=root)
             self.assertEqual(exit_code, 1)
             self.assertEqual(stdout, "")
             self.assertIn("More than one OKF bundle found", stderr)
-            self.assertIn("artifacts -> mira-okf okf tree artifacts --depth 2 --summary", stderr)
-            self.assertIn("tooling/bundles -> mira-okf okf tree tooling/bundles --depth 2 --summary", stderr)
+            self.assertIn("artifacts -> mira-okf tree artifacts --depth 2 --summary", stderr)
+            self.assertIn("tooling/bundles -> mira-okf tree tooling/bundles --depth 2 --summary", stderr)
 
     def test_tree_respects_depth_and_absolute_path(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -108,7 +108,7 @@ class TreeCommandTest(unittest.TestCase):
             (root / "area" / "index.md").write_text("index\n", encoding="utf-8")
             (root / "area" / "leaf.md").write_text("---\ntype: Note\n---\n", encoding="utf-8")
             (root / "area" / "deep" / "leaf.md").write_text("---\ntype: Note\n---\n", encoding="utf-8")
-            exit_code, stdout, stderr = run_main(["okf", "tree", str(root), "--depth", "1", "--summary"])
+            exit_code, stdout, stderr = run_main(["tree", str(root), "--depth", "1", "--summary"])
             self.assertEqual(exit_code, 0)
             self.assertEqual(stderr, "")
             output = stdout
@@ -116,7 +116,7 @@ class TreeCommandTest(unittest.TestCase):
             self.assertIn("area/", output)
             self.assertNotIn("deep/", output)
 
-            exit_code, stdout, stderr = run_main(["okf", "tree", str(root.resolve()), "--depth", "2", "--summary"])
+            exit_code, stdout, stderr = run_main(["tree", str(root.resolve()), "--depth", "2", "--summary"])
             self.assertEqual(exit_code, 0)
             self.assertEqual(stderr, "")
             self.assertIn("deep/", stdout)
@@ -127,7 +127,7 @@ class TreeCommandTest(unittest.TestCase):
             root.mkdir()
             (root / "index.md").write_text("index\n", encoding="utf-8")
             (root / "broken.md").write_text("---\ntitle: Broken\n---\n", encoding="utf-8")
-            exit_code, stdout, stderr = run_main(["okf", "tree", str(root), "--depth", "2", "--summary", "--json"])
+            exit_code, stdout, stderr = run_main(["tree", str(root), "--depth", "2", "--summary", "--json"])
             self.assertEqual(exit_code, 0)
             self.assertEqual(stderr, "")
             payload = json.loads(stdout)

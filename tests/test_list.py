@@ -22,7 +22,7 @@ class ListCommandTest(unittest.TestCase):
                     "alpha.md": "---\ntype: Note\ntitle: Alpha\n---\nbody\n",
                 },
             )
-            exit_code, stdout, stderr = run_main(["okf", "list", "--json"], cwd=root)
+            exit_code, stdout, stderr = run_main(["list", "--json"], cwd=root)
             self.assertEqual(exit_code, 0)
             self.assertEqual(stderr, "")
             payload = json.loads(stdout)
@@ -48,7 +48,7 @@ class ListCommandTest(unittest.TestCase):
                     "broken.md": "---\ntitle: Broken\n---\n",
                 },
             )
-            exit_code, stdout, stderr = run_main(["okf", "list", str(root), "--json"])
+            exit_code, stdout, stderr = run_main(["list", str(root), "--json"])
             self.assertEqual(exit_code, 0)
             self.assertEqual(stderr, "")
             payload = json.loads(stdout)
@@ -73,19 +73,19 @@ class ListCommandTest(unittest.TestCase):
                     "gamma.md": "---\ntype: Note\ntags:\n  - other\n---\n",
                 },
             )
-            exit_code, stdout, stderr = run_main(["okf", "list", str(root), "--type", "Note", "--json"])
+            exit_code, stdout, stderr = run_main(["list", str(root), "--type", "Note", "--json"])
             self.assertEqual(exit_code, 0)
             self.assertEqual(stderr, "")
             payload = json.loads(stdout)
             self.assertEqual([concept["concept_id"] for concept in payload["data"]["concepts"]], ["alpha", "gamma"])
 
-            exit_code, stdout, stderr = run_main(["okf", "list", str(root), "--tag", "shared", "--json"])
+            exit_code, stdout, stderr = run_main(["list", str(root), "--tag", "shared", "--json"])
             self.assertEqual(exit_code, 0)
             self.assertEqual(stderr, "")
             payload = json.loads(stdout)
             self.assertEqual([concept["concept_id"] for concept in payload["data"]["concepts"]], ["alpha", "beta"])
 
-            exit_code, stdout, stderr = run_main(["okf", "list", str(root), "--type", "Note", "--tag", "shared", "--json"])
+            exit_code, stdout, stderr = run_main(["list", str(root), "--type", "Note", "--tag", "shared", "--json"])
             self.assertEqual(exit_code, 0)
             self.assertEqual(stderr, "")
             payload = json.loads(stdout)
@@ -103,7 +103,7 @@ class ListCommandTest(unittest.TestCase):
                     "gamma.md": "---\ntype: Note\n---\n",
                 },
             )
-            exit_code, stdout, stderr = run_main(["okf", "list", str(root), "--offset", "1", "--limit", "1", "--json"])
+            exit_code, stdout, stderr = run_main(["list", str(root), "--offset", "1", "--limit", "1", "--json"])
             self.assertEqual(exit_code, 0)
             self.assertEqual(stderr, "")
             payload = json.loads(stdout)
@@ -125,7 +125,7 @@ class ListCommandTest(unittest.TestCase):
                     "nested/beta.md": "---\ntype: Task\ntitle: Beta\n---\n",
                 },
             )
-            exit_code, stdout, stderr = run_main(["okf", "list", str(root)])
+            exit_code, stdout, stderr = run_main(["list", str(root)])
             self.assertEqual(exit_code, 0)
             self.assertEqual(stderr, "")
             lines = stdout.strip().splitlines()
@@ -138,7 +138,7 @@ class ListCommandTest(unittest.TestCase):
         stderr = io.StringIO()
         with contextlib.redirect_stderr(stderr):
             with self.assertRaises(SystemExit) as raised:
-                parser.parse_args(["okf", "list", "--limit", "-1"])
+                parser.parse_args(["list", "--limit", "-1"])
         self.assertEqual(raised.exception.code, 2)
         self.assertIn("must be non-negative", stderr.getvalue())
 

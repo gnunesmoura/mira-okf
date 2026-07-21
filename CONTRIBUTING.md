@@ -40,9 +40,9 @@ Run the full test suite before submitting a change:
 
 ```bash
 python -m unittest discover -s tests
-python -m mira_okf okf health docs --profile quick --json
-python -m mira_okf okf validate docs --json
-python -m mira_okf okf links docs --broken --json
+python -m mira_okf health docs --profile quick --json
+python -m mira_okf validate docs --json
+python -m mira_okf links docs --broken --json
 git diff --check
 ```
 

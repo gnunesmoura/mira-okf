@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Any
 
 from .models import Bundle, Concept
+from .read_model import _is_hidden
 
 RESERVED_FILENAMES = {"index.md", "log.md"}
 
@@ -73,6 +74,8 @@ def resolve_concept(bundle: Bundle, target: str) -> Concept:
 
     for candidate in candidates:
         if concept := concepts_by_id.get(candidate) or concepts_by_relative.get(candidate):
+            if _is_hidden(concept.relative_path):
+                break
             return concept
 
     raise ConceptResolutionError(
@@ -99,6 +102,8 @@ def _discover_bundles(cwd: Path) -> list[Path]:
 def _walk_directories(root: Path) -> list[Path]:
     directories = [root.resolve()]
     for child in sorted((candidate for candidate in root.iterdir() if candidate.is_dir()), key=lambda candidate: candidate.name):
+        if _is_hidden(str(child.relative_to(root))):
+            continue
         directories.extend(_walk_directories(child))
     return directories
 
@@ -110,6 +115,8 @@ def _is_bundle_root(path: Path) -> bool:
 
 
 def _is_candidate_concept(path: Path) -> bool:
+    if path.name.startswith("."):
+        return False
     return path.suffix == ".md" and path.name not in RESERVED_FILENAMES and _has_frontmatter(path)
 
 

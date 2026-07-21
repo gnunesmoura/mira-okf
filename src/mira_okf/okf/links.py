@@ -9,7 +9,7 @@ from pathlib import PurePosixPath
 from typing import Any
 from urllib.parse import unquote
 
-from .read_model import bundle_payload, concept_payload, issue_payload, scan_bundle
+from .read_model import _is_hidden, bundle_payload, concept_payload, issue_payload, scan_bundle
 from .resolution import BundleResolutionError, ConceptResolutionError, resolve_bundle, resolve_concept
 from .semantic import semantic_text
 
@@ -95,9 +95,11 @@ def _collect_links(bundle):
                     target_concept_id = resolved_concept.concept_id
                     target_path = resolved_concept.relative_path
                 if broken:
-                    issues.append(
-                        _broken_link_issue(concept.relative_path, raw_target)
-                    )
+                    candidates = _link_candidates(concept.relative_path, target)
+                    if not any(_is_hidden(c) for c in candidates):
+                        issues.append(
+                            _broken_link_issue(concept.relative_path, raw_target)
+                        )
             records.append(
                 {
                     "source_concept_id": concept.concept_id,

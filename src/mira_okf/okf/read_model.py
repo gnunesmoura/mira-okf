@@ -114,12 +114,25 @@ def _scan_directory(path: Path, display_path: str, depth: int, max_depth: int | 
     if max_depth is None or depth < max_depth:
         for child_path in sorted((candidate for candidate in path.iterdir() if candidate.is_dir()), key=lambda candidate: candidate.name):
             child_relative = _relative_display_path(child_path, root_path)
+            if _is_hidden(child_relative):
+                continue
             child_directory, child_concepts, child_issues = _scan_directory(child_path, child_relative, depth + 1, max_depth, root_path)
             children.append(child_directory)
             concepts.extend(child_concepts)
             issues.extend(child_issues)
 
     for file_path in sorted((candidate for candidate in path.iterdir() if _is_concept_file(candidate)), key=lambda candidate: candidate.name):
+        display = _relative_display_path(file_path, root_path)
+        if _is_hidden(display):
+            continue
+        if file_path.is_symlink():
+            resolved = file_path.resolve()
+            try:
+                resolved_rel = resolved.relative_to(root_path).as_posix()
+            except ValueError:
+                continue
+            if _is_hidden(resolved_rel):
+                continue
         concept = _read_concept(file_path, root_path, display_path)
         directory_concepts.append(concept)
         concepts.append(concept)
@@ -142,6 +155,13 @@ def _scan_directory(path: Path, display_path: str, depth: int, max_depth: int | 
         issues=issues,
     )
     return directory, concepts, issues
+
+
+def _is_hidden(relative_path: str) -> bool:
+    stripped = relative_path.rstrip("/")
+    if not stripped:
+        return False
+    return any(part.startswith(".") for part in stripped.split("/"))
 
 
 def _is_concept_file(path: Path) -> bool:

@@ -8,7 +8,7 @@ from argparse import Namespace
 from pathlib import Path
 
 from .models import Issue
-from .read_model import _read_markdown_document, _read_markdown_text, bundle_payload, issue_payload, scan_bundle
+from .read_model import _is_hidden, _read_markdown_document, _read_markdown_text, bundle_payload, issue_payload, scan_bundle
 from .resolution import BundleResolutionError, resolve_bundle
 
 
@@ -62,7 +62,10 @@ def run_validate(args: Namespace) -> int:
             "warning_count": warning_count,
             "info_count": info_count,
             "concept_count": len(bundle.concepts),
-            "checked_file_count": sum(1 for _ in bundle.root_path.rglob("*.md")),
+            "checked_file_count": sum(
+    1 for path in bundle.root_path.rglob("*.md")
+    if not _is_hidden(path.relative_to(bundle.root_path).as_posix())
+),
         },
         "issues": [issue_payload(issue) for issue in issues],
     }
@@ -94,6 +97,9 @@ def run_validate(args: Namespace) -> int:
 def _reserved_issues(root_path: Path) -> list[Issue]:
     issues: list[Issue] = []
     for path in sorted(root_path.rglob("*.md"), key=lambda item: item.relative_to(root_path).as_posix()):
+        relative = path.relative_to(root_path).as_posix()
+        if _is_hidden(relative):
+            continue
         if path.name == "index.md":
             issues.extend(_validate_index(path, root_path))
         elif path.name == "log.md":

@@ -8,6 +8,11 @@ This project follows [Keep a Changelog](https://keepachangelog.com/en/2.0.0/).
 
 ### Changed
 
+- `mira-okf` resolves canonical bundle-root links (leading `/`) consistently
+  across supported bundle invocation contexts (absolute, relative, isolated,
+  nested) while preserving non-fatal broken-link reporting. Ordinary relative
+  links remain source-relative. (CHANGE-031)
+
 ### Fixed
 
 ### Deprecated

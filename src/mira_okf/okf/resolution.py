@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from pathlib import Path
+import posixpath
+from pathlib import Path, PurePosixPath
 from typing import Any
 
 from .models import Bundle, Concept
@@ -131,6 +132,30 @@ def _has_frontmatter(path: Path) -> bool:
     except OSError:
         return False
     return False
+
+
+def link_candidates(source_path: str, target: str) -> list[str]:
+    root_relative = target.startswith("/")
+    target = clean_internal_path(target)
+    if not root_relative and source_path:
+        parent = PurePosixPath(source_path).parent
+        target = clean_internal_path((parent / target).as_posix())
+
+    candidates = [target]
+    if target.endswith(".md"):
+        candidates.append(target.removesuffix(".md"))
+    else:
+        candidates.append(f"{target}.md")
+    normalized = []
+    for candidate in candidates:
+        if candidate and candidate not in normalized:
+            normalized.append(candidate)
+    return normalized
+
+
+def clean_internal_path(path: str) -> str:
+    cleaned = posixpath.normpath(path.replace("\\", "/"))
+    return "" if cleaned == "." else cleaned.lstrip("/")
 
 
 def _display_path(input_path: str, resolved_path: Path, cwd: Path) -> str:

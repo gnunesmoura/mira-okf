@@ -9,10 +9,10 @@ from datetime import date
 from pathlib import Path, PurePosixPath
 from typing import Any
 
-from .links import _extract_links, _is_external_target, _link_candidates, _normalize_target
+from .links import _broken_link_issue, _extract_links, _is_external_target, _normalize_target, _resolve_internal_target
 from .models import Bundle, Directory, Issue
-from .read_model import _read_markdown_text, bundle_payload, issue_payload, scan_bundle
-from .resolution import BundleResolutionError, resolve_bundle
+from .read_model import _is_hidden, _read_markdown_text, bundle_payload, issue_payload, scan_bundle
+from .resolution import BundleResolutionError, link_candidates, resolve_bundle
 from .semantic import semantic_text
 from .validate import _reserved_issues
 
@@ -193,7 +193,7 @@ def _index_links(root_path: Path, directory: Directory, concepts_by_relative: di
         target = _normalize_target(raw)
         if not target or _is_external_target(target):
             continue
-        for candidate in _link_candidates(source, target):
+        for candidate in link_candidates(source, target):
             if concept := concepts_by_relative.get(candidate) or concepts_by_id.get(candidate):
                 found.add(concept.relative_path)
             directory_path = candidate.removesuffix("/index.md").removesuffix("/").removesuffix(".md")
@@ -304,7 +304,7 @@ def _connectivity(bundle: Bundle, links: list[dict[str, Any]]) -> dict[str, Any]
             target = _normalize_target(raw_target)
             if not target or _is_external_target(target):
                 continue
-            for candidate in _link_candidates(source, target):
+            for candidate in link_candidates(source, target):
                 concept = concepts_by_id.get(candidate) or concepts_by_relative.get(candidate)
                 if concept is not None:
                     navigable.add(concept.concept_id)
@@ -350,26 +350,18 @@ def _collect_health_links(bundle: Bundle) -> tuple[list[dict[str, Any]], list[Is
             target_concept_id = None
             target_path = None
             if not external:
-                for candidate in _link_candidates(concept.relative_path, target):
-                    resolved_concept = concepts_by_id.get(candidate) or concepts_by_relative.get(candidate)
-                    if resolved_concept is not None:
-                        break
+                resolved_concept = _resolve_internal_target(concept, target, concepts_by_id, concepts_by_relative)
                 resolved = resolved_concept is not None
                 broken = not resolved
                 if resolved_concept is not None:
                     target_concept_id = resolved_concept.concept_id
                     target_path = resolved_concept.relative_path
                 if broken:
-                    issues.append(
-                        Issue(
-                            code="OKF_LINK_BROKEN",
-                            message="Link target does not resolve inside the bundle.",
-                            severity="warning",
-                            path=concept.relative_path,
-                            field="link",
-                            suggestion=f"Check the target: {raw_target}",
+                    candidates = link_candidates(concept.relative_path, target)
+                    if not any(_is_hidden(c) for c in candidates):
+                        issues.append(
+                            _broken_link_issue(concept.relative_path, raw_target)
                         )
-                    )
             records.append(
                 {
                     "source_concept_id": concept.concept_id,

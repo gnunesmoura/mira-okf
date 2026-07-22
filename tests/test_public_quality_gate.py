@@ -68,7 +68,7 @@ class PublicQualityGateTest(unittest.TestCase):
                 "cli": "mira-okf",
                 "repository": "gnunesmoura/mira-okf",
                 "version_source": "pyproject.toml",
-                "version": "0.0.1a1",
+                "version": "0.0.1a2",
                 "repository_url": "https://github.com/gnunesmoura/mira-okf",
                 "documentation_url": "https://github.com/gnunesmoura/mira-okf/tree/main/docs",
                 "issues_url": "https://github.com/gnunesmoura/mira-okf/issues",
@@ -158,12 +158,8 @@ class PublicQualityGateTest(unittest.TestCase):
         self.assertEqual(metadata["Version"], PUBLIC_DISTRIBUTION["version"])
         self.assertEqual(metadata["Requires-Python"], PUBLIC_DISTRIBUTION["python"])
         self.assertEqual(metadata["Maintainer"], PUBLIC_DISTRIBUTION["maintainer"])
-        normalized_license = "\n".join(
-            line[8:] if line.startswith("        ") else line
-            for line in metadata["License"].splitlines()
-        ).strip()
-        self.assertEqual(normalized_license, LICENSE_TEXT.strip())
-        self.assertTrue(metadata["License"].lstrip().startswith("MIT License"))
+        self.assertEqual(metadata["License-Expression"], "MIT")
+        self.assertEqual(metadata["License-File"], "LICENSE")
         self.assertEqual(metadata["Description-Content-Type"], "text/markdown")
         self.assertEqual(metadata.get_payload().strip(), README.strip())
         self.assertIn("Project-URL: Repository, " + PUBLIC_DISTRIBUTION["repository_url"], metadata.as_string())
@@ -231,8 +227,8 @@ class PublicQualityGateTest(unittest.TestCase):
             artifacts = self.build_artifacts(Path(tmpdir))
             sdists = [path for path in artifacts if path.name.endswith(".tar.gz")]
             wheels = [path for path in artifacts if path.name.endswith(".whl")]
-            self.assertEqual([path.name for path in sdists], ["mira_okf-0.0.1a1.tar.gz"])
-            self.assertEqual([path.name for path in wheels], ["mira_okf-0.0.1a1-py3-none-any.whl"])
+            self.assertEqual([path.name for path in sdists], ["mira_okf-0.0.1a2.tar.gz"])
+            self.assertEqual([path.name for path in wheels], ["mira_okf-0.0.1a2-py3-none-any.whl"])
             self.inspect_sdist(sdists[0])
             self.inspect_wheel(wheels[0])
 
@@ -240,7 +236,7 @@ class PublicQualityGateTest(unittest.TestCase):
         self.assertEqual(PROJECT_METADATA["name"], PUBLIC_DISTRIBUTION["distribution"])
         self.assertEqual(PROJECT_METADATA["version"], PUBLIC_DISTRIBUTION["version"])
         self.assertEqual(PROJECT_METADATA["readme"], "README.md")
-        self.assertEqual(PROJECT_METADATA["license"], {"file": "LICENSE"})
+        self.assertEqual(PROJECT_METADATA["license"], "MIT")
         self.assertEqual(PROJECT_METADATA["maintainers"], [{"name": PUBLIC_DISTRIBUTION["maintainer"]}])
         self.assertEqual(PROJECT_METADATA["requires-python"], PUBLIC_DISTRIBUTION["python"])
         self.assertEqual(PROJECT["project"]["urls"], {

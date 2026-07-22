@@ -1,16 +1,14 @@
 from __future__ import annotations
 
 import json
-import posixpath
 import re
 import sys
 from argparse import Namespace
-from pathlib import PurePosixPath
 from typing import Any
 from urllib.parse import unquote
 
 from .read_model import _is_hidden, bundle_payload, concept_payload, issue_payload, scan_bundle
-from .resolution import BundleResolutionError, ConceptResolutionError, resolve_bundle, resolve_concept
+from .resolution import BundleResolutionError, ConceptResolutionError, link_candidates, resolve_bundle, resolve_concept
 from .semantic import semantic_text
 
 LINK_PATTERN = re.compile(
@@ -95,7 +93,7 @@ def _collect_links(bundle):
                     target_concept_id = resolved_concept.concept_id
                     target_path = resolved_concept.relative_path
                 if broken:
-                    candidates = _link_candidates(concept.relative_path, target)
+                    candidates = link_candidates(concept.relative_path, target)
                     if not any(_is_hidden(c) for c in candidates):
                         issues.append(
                             _broken_link_issue(concept.relative_path, raw_target)
@@ -149,37 +147,12 @@ def _is_external_target(target: str) -> bool:
 
 
 def _resolve_internal_target(concept, target, concepts_by_id, concepts_by_relative):
-    candidates = _link_candidates(concept.relative_path, target)
+    candidates = link_candidates(concept.relative_path, target)
     for candidate in candidates:
         resolved = concepts_by_id.get(candidate) or concepts_by_relative.get(candidate)
         if resolved is not None:
             return resolved
     return None
-
-
-def _link_candidates(source_path: str, target: str) -> list[str]:
-    root_relative = target.startswith("/")
-    target = _clean_internal_path(target)
-    if not root_relative and source_path:
-        parent = PurePosixPath(source_path).parent
-        target = _clean_internal_path((parent / target).as_posix())
-
-    candidates = [target]
-    if target.endswith(".md"):
-        candidates.append(target.removesuffix(".md"))
-    else:
-        candidates.append(f"{target}.md")
-    normalized = []
-    for candidate in candidates:
-        if candidate and candidate not in normalized:
-            normalized.append(candidate)
-    return normalized
-
-
-def _clean_internal_path(path: str) -> str:
-    cleaned = posixpath.normpath(path.replace("\\", "/"))
-    return "" if cleaned == "." else cleaned.lstrip("/")
-
 
 def _broken_link_issue(path: str, raw_target: str):
     from .models import Issue

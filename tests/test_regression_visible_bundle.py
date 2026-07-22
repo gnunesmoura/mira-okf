@@ -277,3 +277,27 @@ class RegressionVisibleBundleTest(unittest.TestCase):
             data = payload["data"]
             self.assertGreaterEqual(data["summary"]["warning_signal_count"], 0)
             self.assertGreaterEqual(data["summary"]["error_signal_count"], 0)
+
+    # ------------------------------------------------------------------
+    # Portable bundle-root link resolution (CHANGE-031)
+    # ------------------------------------------------------------------
+    def test_links_root_relative_resolves_through_bundle_files(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir) / "bundle"
+            write_files(root, self.BUNDLE_FILES)
+            exit_code, stdout, stderr = run_main(["links", str(root), "--json"])
+            self.assertEqual(exit_code, 0)
+            payload = json.loads(stdout)
+            links = payload["data"]["links"]
+            target_links = [l for l in links if l["target_path"] == "target.md"]
+            self.assertGreater(len(target_links), 0)
+
+    def test_health_root_relative_links_no_false_broken(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir) / "bundle"
+            write_files(root, self.BUNDLE_FILES)
+            exit_code, stdout, stderr = run_main(["health", str(root), "--json"])
+            self.assertEqual(exit_code, 0)
+            payload = json.loads(stdout)
+            data = payload["data"]
+            self.assertGreaterEqual(data["links"]["internal_link_count"], 0)

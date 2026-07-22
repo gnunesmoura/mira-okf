@@ -8,6 +8,36 @@ from pathlib import Path
 from tests.support import run_main, write_files
 
 
+class ValidatePortableResolutionRegressionTest(unittest.TestCase):
+    """Regression tests for portable bundle-root link resolution via validate (CHANGE-031).
+
+    Validate does not produce link output; this test asserts that a missing
+    root-relative target remains a non-fatal finding (does not fail the bundle).
+    """
+
+    def test_validate_missing_root_relative_is_non_fatal(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir) / "bundle"
+            write_files(
+                root,
+                {
+                    "index.md": "index\n",
+                    "alpha.md": (
+                        "---\ntype: Note\ntitle: Alpha\n---\n"
+                        "[Missing](/missing.md)\n"
+                    ),
+                },
+            )
+            exit_code, stdout, stderr = run_main(["validate", str(root), "--json"])
+            self.assertEqual(exit_code, 0)
+            self.assertEqual(stderr, "")
+            payload = json.loads(stdout)
+            self.assertTrue(payload["ok"])
+            # Missing link is not a validate issue — validate doesn't check links
+            # But the command must complete successfully (non-fatal)
+            self.assertIsInstance(payload["data"]["passed"], bool)
+
+
 class ValidateCommandTest(unittest.TestCase):
     def test_validate_discovers_bundle_from_current_directory(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:

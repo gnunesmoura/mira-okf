@@ -4,7 +4,7 @@ This file is the public operating guide for agents using the `mira-okf` CLI.
 
 ## Purpose
 
-- Use `mira-okf okf` to inspect and validate OKF bundles.
+- Use `mira-okf` commands to inspect and validate OKF bundles.
 - Keep CLI usage examples aligned with the public command surface.
 - Report behavior and documentation changes with reproducible evidence.
 

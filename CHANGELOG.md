@@ -30,3 +30,10 @@ intentional pre-1.0 breaking change that shortens the public command surface.
 
 Replace `mira-okf okf <command>` with `mira-okf <command>` mechanically; all
 following arguments and result handling remain unchanged.
+
+## [0.0.1a3] - 2026-07-22
+
+### Added
+
+- `mira-okf show` can read explicit reserved and generic Markdown files while
+  preserving concept resolution and the shared JSON envelope.

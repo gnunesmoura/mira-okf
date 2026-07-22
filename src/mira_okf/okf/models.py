@@ -66,6 +66,12 @@ class Link:
 
 
 @dataclass(slots=True)
+class MarkdownDocument:
+    relative_path: str
+    content: str
+
+
+@dataclass(slots=True)
 class Bundle:
     root_path: Path
     relative_path: str

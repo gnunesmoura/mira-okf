@@ -36,7 +36,7 @@ supported:
 
 ```bash
 python3 -m venv /tmp/mira-okf-venv
-/tmp/mira-okf-venv/bin/python -m pip install /path/to/mira_okf-0.0.1a2-py3-none-any.whl
+/tmp/mira-okf-venv/bin/python -m pip install /path/to/mira_okf-0.0.1a3-py3-none-any.whl
 /tmp/mira-okf-venv/bin/mira-okf tree /path/to/bundle --depth 2 --summary
 ```
 

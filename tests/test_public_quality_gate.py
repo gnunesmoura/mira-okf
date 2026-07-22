@@ -68,7 +68,7 @@ class PublicQualityGateTest(unittest.TestCase):
                 "cli": "mira-okf",
                 "repository": "gnunesmoura/mira-okf",
                 "version_source": "pyproject.toml",
-                "version": "0.0.1a2",
+                "version": "0.0.1a3",
                 "repository_url": "https://github.com/gnunesmoura/mira-okf",
                 "documentation_url": "https://github.com/gnunesmoura/mira-okf/tree/main/docs",
                 "issues_url": "https://github.com/gnunesmoura/mira-okf/issues",
@@ -227,8 +227,8 @@ class PublicQualityGateTest(unittest.TestCase):
             artifacts = self.build_artifacts(Path(tmpdir))
             sdists = [path for path in artifacts if path.name.endswith(".tar.gz")]
             wheels = [path for path in artifacts if path.name.endswith(".whl")]
-            self.assertEqual([path.name for path in sdists], ["mira_okf-0.0.1a2.tar.gz"])
-            self.assertEqual([path.name for path in wheels], ["mira_okf-0.0.1a2-py3-none-any.whl"])
+            self.assertEqual([path.name for path in sdists], ["mira_okf-0.0.1a3.tar.gz"])
+            self.assertEqual([path.name for path in wheels], ["mira_okf-0.0.1a3-py3-none-any.whl"])
             self.inspect_sdist(sdists[0])
             self.inspect_wheel(wheels[0])
 

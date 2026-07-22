@@ -5,8 +5,9 @@ import sys
 from argparse import Namespace
 from typing import Any
 
+from .models import Bundle, MarkdownDocument
 from .read_model import bundle_payload, concept_payload, issue_payload, scan_bundle
-from .resolution import BundleResolutionError, ConceptResolutionError, resolve_bundle, resolve_concept
+from .resolution import BundleResolutionError, ConceptResolutionError, resolve_bundle, resolve_show_target
 
 
 def run_show(args: Namespace) -> int:
@@ -16,14 +17,18 @@ def run_show(args: Namespace) -> int:
     try:
         bundle = resolve_bundle(args.bundle, "show")
         bundle, _ = scan_bundle(bundle, None)
-        concept = resolve_concept(bundle, args.concept)
+        result = resolve_show_target(bundle, args.concept)
     except BundleResolutionError as error:
         return _emit_error(args, "okf.show", error.code, error.message, error.details)
     except ConceptResolutionError as error:
         return _emit_error(args, "okf.show", error.code, error.message, error.details)
 
     profile = getattr(args, "profile", "brief" if getattr(args, "summary", False) else "normal")
-    concept_data = concept_payload(concept)
+
+    if isinstance(result, MarkdownDocument):
+        return _emit_generic(args, bundle, result, profile)
+
+    concept_data = concept_payload(result)
     payload = {
         "ok": True,
         "command": "okf.show",
@@ -81,6 +86,42 @@ def _render_issue_line(issue: dict[str, Any]) -> str:
         line += f"{issue['path']}  "
     line += f"[{issue['code']}] {issue['message']}"
     return line
+
+
+def _filter_generic(doc: MarkdownDocument, profile: str) -> dict[str, Any]:
+    data: dict[str, Any] = {"document_kind": "markdown", "relative_path": doc.relative_path}
+    if profile != "brief":
+        data["content"] = doc.content
+    return data
+
+
+def _render_generic_output(doc: MarkdownDocument, profile: str) -> str:
+    header = f"{doc.relative_path}  [Markdown]"
+    if profile == "brief":
+        return header
+    lines = [header, "", doc.content]
+    return "\n".join(lines)
+
+
+def _emit_generic(args: Namespace, bundle: Bundle, doc: MarkdownDocument, profile: str) -> int:
+    data = _filter_generic(doc, profile)
+    issues = [
+        issue_payload(issue) for issue in bundle.issues
+        if not (issue.code == "OKF_FRONTMATTER_MISSING" and issue.path == doc.relative_path)
+    ]
+    payload = {
+        "ok": True,
+        "command": "okf.show",
+        "bundle": bundle_payload(bundle),
+        "data": {"profile": profile, **data},
+        "issues": issues,
+    }
+    if getattr(args, "json", False):
+        print(json.dumps(payload, indent=2, ensure_ascii=False, sort_keys=True))
+        return 0
+
+    print(_render_generic_output(doc, profile))
+    return 0
 
 
 def _emit_error(args: Namespace, command: str, code: str, message: str, details: dict[str, Any]) -> int:

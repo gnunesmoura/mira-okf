@@ -4,7 +4,7 @@ import posixpath
 from pathlib import Path, PurePosixPath
 from typing import Any
 
-from .models import Bundle, Concept
+from .models import Bundle, Concept, MarkdownDocument
 from .read_model import _is_hidden
 
 RESERVED_FILENAMES = {"index.md", "log.md"}
@@ -156,6 +156,84 @@ def link_candidates(source_path: str, target: str) -> list[str]:
 def clean_internal_path(path: str) -> str:
     cleaned = posixpath.normpath(path.replace("\\", "/"))
     return "" if cleaned == "." else cleaned.lstrip("/")
+
+
+def resolve_generic_markdown(bundle: Bundle, target: str) -> MarkdownDocument:
+    raw = target.strip()
+    if not raw:
+        raise ConceptResolutionError(
+            "OKF_CONCEPT_NOT_FOUND", f"Concept not found: {target}", {"target": target},
+        )
+    normalized = clean_internal_path(raw)
+    if not normalized or normalized == ".":
+        raise ConceptResolutionError(
+            "OKF_CONCEPT_NOT_FOUND", f"Concept not found: {target}", {"target": target},
+        )
+    if normalized.startswith(".."):
+        raise ConceptResolutionError(
+            "OKF_TARGET_OUTSIDE_BUNDLE",
+            "Target resolves outside the selected bundle.",
+            {"target": target},
+        )
+    if _is_hidden(normalized):
+        raise ConceptResolutionError(
+            "OKF_TARGET_HIDDEN",
+            "Target resolves to a hidden path.",
+            {"target": target},
+        )
+
+    candidates = [f"{normalized}.md"] if not normalized.endswith(".md") else [normalized]
+    bundle_root_resolved = bundle.root_path.resolve()
+    last_error: ConceptResolutionError | None = None
+
+    for candidate in candidates:
+        full_path = bundle_root_resolved / candidate
+        if full_path.is_dir():
+            raise ConceptResolutionError(
+                "OKF_TARGET_IS_DIRECTORY",
+                "Target is a directory.",
+                {"target": target, "resolved": candidate},
+            )
+        if not full_path.exists():
+            last_error = ConceptResolutionError(
+                "OKF_CONCEPT_NOT_FOUND", f"Concept not found: {target}", {"target": target},
+            )
+            continue
+        resolved = full_path.resolve()
+        try:
+            resolved.relative_to(bundle_root_resolved)
+        except ValueError:
+            raise ConceptResolutionError(
+                "OKF_TARGET_OUTSIDE_BUNDLE",
+                "Target resolves outside the selected bundle.",
+                {"target": target, "resolved": str(resolved)},
+            )
+        try:
+            content = full_path.read_text(encoding="utf-8", errors="replace")
+        except OSError as e:
+            raise ConceptResolutionError(
+                "OKF_TARGET_READ_ERROR",
+                f"Failed to read target: {e}",
+                {"target": target},
+            )
+        return MarkdownDocument(relative_path=candidate, content=content)
+
+    raise last_error or ConceptResolutionError(
+        "OKF_CONCEPT_NOT_FOUND", f"Concept not found: {target}", {"target": target},
+    )
+
+
+def resolve_show_target(bundle: Bundle, target: str) -> Concept | MarkdownDocument:
+    try:
+        concept = resolve_concept(bundle, target)
+    except ConceptResolutionError:
+        return resolve_generic_markdown(bundle, target)
+    if any(issue.code == "OKF_FRONTMATTER_MISSING" for issue in concept.issues):
+        try:
+            return resolve_generic_markdown(bundle, target)
+        except ConceptResolutionError:
+            pass
+    return concept
 
 
 def _display_path(input_path: str, resolved_path: Path, cwd: Path) -> str:

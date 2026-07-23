@@ -26,6 +26,10 @@ def command_stub(args: Namespace) -> int:
         return run_validate(args)
     if args.command == "health":
         return run_health(args)
+    if args.command == "lint":
+        from .lint import run_lint
+
+        return run_lint(args)
     if args.command == "props":
         from .props import run_props
 

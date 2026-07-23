@@ -11,9 +11,9 @@ from mira_okf.okf.commands import command_stub
 
 
 class CliBootstrapTest(unittest.TestCase):
-    commands = ("tree", "list", "show", "links", "backlinks", "props", "validate", "health")
+    commands = ("tree", "list", "show", "links", "backlinks", "lint", "props", "validate", "health")
 
-    def test_root_subcommands_are_the_eight_direct_commands(self) -> None:
+    def test_root_subcommands_are_the_nine_direct_commands(self) -> None:
         parser = build_parser()
         root_actions = [action for action in parser._actions if isinstance(action, argparse._SubParsersAction)]
         self.assertEqual(sorted(root_actions[0].choices), sorted(self.commands))
@@ -25,6 +25,7 @@ class CliBootstrapTest(unittest.TestCase):
             "show": "mira_okf.okf.commands.run_show",
             "links": "mira_okf.okf.commands.run_links",
             "backlinks": "mira_okf.okf.commands.run_backlinks",
+            "lint": "mira_okf.okf.lint.run_lint",
             "props": "mira_okf.okf.props.run_props",
             "validate": "mira_okf.okf.commands.run_validate",
             "health": "mira_okf.okf.commands.run_health",

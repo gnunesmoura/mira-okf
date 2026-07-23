@@ -5,7 +5,14 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from tests.support import run_main, write_files
+from tests.support import NoPyMarkdown, run_main, write_files
+
+try:
+    from pymarkdown.api import PyMarkdownApi  # noqa: F401
+
+    HAS_PYMARKDOWN = True
+except ImportError:
+    HAS_PYMARKDOWN = False
 
 
 class ValidatePortableResolutionRegressionTest(unittest.TestCase):
@@ -192,6 +199,53 @@ class ValidateCommandTest(unittest.TestCase):
             self.assertEqual(lines[0], str(root))
             self.assertIn("validation: fail", lines[1])
             self.assertIn("[error] OKF_FRONTMATTER_MISSING", lines[2])
+
+
+class ValidateLintIntegrationTest(unittest.TestCase):
+    @unittest.skipUnless(HAS_PYMARKDOWN, "requires pymarkdownlnt")
+    def test_validate_includes_lint_data(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir) / "bundle"
+            write_files(
+                root,
+                {
+                    "index.md": "index\n",
+                    "alpha.md": (
+                        "---\ntype: Note\n---\n# Heading\ntext\n"
+                    ),
+                },
+            )
+            exit_code, stdout, stderr = run_main(["validate", str(root), "--json"])
+            self.assertEqual(exit_code, 0)
+            payload = json.loads(stdout)
+            self.assertIn("lint", payload["data"])
+            lint = payload["data"]["lint"]
+            self.assertIn("findings", lint)
+            self.assertIn("count", lint)
+            self.assertIn("by_file", lint)
+            self.assertIn("config", lint)
+            self.assertGreater(lint["count"], 0)
+
+    @unittest.skipUnless(HAS_PYMARKDOWN, "requires pymarkdownlnt to confirm it can be blocked")
+    def test_validate_lint_omitted_when_unavailable(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir) / "bundle"
+            write_files(
+                root,
+                {
+                    "index.md": "index\n",
+                    "alpha.md": (
+                        "---\ntype: Note\n---\n# Heading\ntext\n"
+                    ),
+                },
+            )
+            with NoPyMarkdown():
+                exit_code, stdout, stderr = run_main(["validate", str(root), "--json"])
+            self.assertEqual(exit_code, 0)
+            payload = json.loads(stdout)
+            self.assertNotIn("lint", payload["data"])
+            codes = [issue["code"] for issue in payload["issues"]]
+            self.assertIn("OKF_LINT_UNAVAILABLE", codes)
 
 
 if __name__ == "__main__":

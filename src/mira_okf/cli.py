@@ -57,6 +57,7 @@ def build_parser() -> argparse.ArgumentParser:
         ("backlinks", "List inbound links for a concept.", (("--json", {"action": "store_true"}),)),
         ("validate", "Validate bundle conformance.", (("--json", {"action": "store_true"}),)),
         ("health", "Report bundle health signals.", (("--profile", {"choices": ("quick", "full"), "default": "quick"}), ("--json", {"action": "store_true"}))),
+        ("lint", "Lint markdown formatting.", (("--json", {"action": "store_true"}),)),
         ("props", "Export concept properties.", (("--field", {"action": _UniqueFieldAction, "type": _field_name}), ("--json", {"action": "store_true"}))),
     ):
         command_parser = subparsers.add_parser(name, help=help_text)

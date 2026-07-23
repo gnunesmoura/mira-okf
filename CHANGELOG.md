@@ -6,6 +6,13 @@ This project follows [Keep a Changelog](https://keepachangelog.com/en/2.0.0/).
 
 ### Added
 
+- `mira-okf lint` command for read-only markdown formatting checks via
+  PyMarkdown, with `.markdownlint.json`/`.markdownlint.yaml`/`.yml` config
+  discovery, root-only `ignores`, and an OKF default profile. (CHANGE-038)
+- `mira-okf health` and `mira-okf validate` include `data.lint` findings when
+  the optional `lint` extra is installed; degrade gracefully with an
+  informational `OKF_LINT_UNAVAILABLE` issue otherwise. (CHANGE-038)
+
 ### Changed
 
 - `mira-okf` resolves canonical bundle-root links (leading `/`) consistently

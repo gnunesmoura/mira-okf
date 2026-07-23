@@ -12,6 +12,15 @@ from .read_model import _is_hidden, _read_markdown_document, _read_markdown_text
 from .resolution import BundleResolutionError, resolve_bundle
 
 
+def _get_lint_data(bundle):
+    try:
+        from .lint import _lint_data
+
+        return _lint_data(bundle)
+    except ImportError:
+        return None, []
+
+
 def run_validate(args: Namespace) -> int:
     try:
         bundle = resolve_bundle(args.bundle, "validate")
@@ -37,8 +46,18 @@ def run_validate(args: Namespace) -> int:
                 print(f"- {candidate['path']} -> {candidate['command']}", file=sys.stderr)
         return 1
 
+    lint_data, lint_issues = _get_lint_data(bundle)
+    if lint_data is None:
+        lint_issues.append(
+            Issue(
+                code="OKF_LINT_UNAVAILABLE",
+                message="pymarkdownlnt is not installed. Install with: pip install mira-okf[lint]",
+                severity="info",
+            )
+        )
+
     issues = sorted(
-        [*bundle.issues, *_reserved_issues(bundle.root_path)],
+        [*bundle.issues, *_reserved_issues(bundle.root_path), *lint_issues],
         key=lambda issue: (
             issue.path or "",
             issue.line if issue.line is not None else 10**9,
@@ -50,23 +69,26 @@ def run_validate(args: Namespace) -> int:
     warning_count = sum(1 for issue in issues if issue.severity == "warning")
     info_count = sum(1 for issue in issues if issue.severity == "info")
     passed = error_count == 0 and warning_count == 0
+    data = {
+        "passed": passed,
+        "status": "pass" if passed else "fail",
+        "issue_count": len(issues),
+        "error_count": error_count,
+        "warning_count": warning_count,
+        "info_count": info_count,
+        "concept_count": len(bundle.concepts),
+        "checked_file_count": sum(
+    1 for path in bundle.root_path.rglob("*.md")
+    if not _is_hidden(path.relative_to(bundle.root_path).as_posix())
+),
+    }
+    if lint_data is not None:
+        data["lint"] = lint_data
     payload = {
         "ok": True,
         "command": "okf.validate",
         "bundle": bundle_payload(bundle),
-        "data": {
-            "passed": passed,
-            "status": "pass" if passed else "fail",
-            "issue_count": len(issues),
-            "error_count": error_count,
-            "warning_count": warning_count,
-            "info_count": info_count,
-            "concept_count": len(bundle.concepts),
-            "checked_file_count": sum(
-    1 for path in bundle.root_path.rglob("*.md")
-    if not _is_hidden(path.relative_to(bundle.root_path).as_posix())
-),
-        },
+        "data": data,
         "issues": [issue_payload(issue) for issue in issues],
     }
     if getattr(args, "json", False):

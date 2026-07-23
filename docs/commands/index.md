@@ -10,6 +10,7 @@ output.
 - [show](show.md) — read one concept.
 - [links](links.md) — inspect outbound links.
 - [backlinks](backlinks.md) — find links pointing to a concept.
+- [lint](lint.md) — lint markdown formatting.
 - [props](props.md) — project frontmatter properties.
 - [validate](validate.md) — report OKF conformance.
 - [health](health.md) — report grouped health signals.

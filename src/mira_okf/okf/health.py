@@ -33,6 +33,15 @@ GROUP_LABELS = {
 }
 
 
+def _get_lint_data(bundle: Bundle) -> tuple[dict | None, list[Issue]]:
+    try:
+        from .lint import _lint_data
+
+        return _lint_data(bundle)
+    except ImportError:
+        return None, []
+
+
 def run_health(args: Namespace) -> int:
     try:
         bundle = resolve_bundle(args.bundle, "health")
@@ -44,12 +53,25 @@ def run_health(args: Namespace) -> int:
     reserved_issues = _reserved_issues(bundle.root_path)
     validation = _validation_data(bundle, reserved_issues)
     data = _health_data(bundle, validation, reserved_issues, links, getattr(args, "profile", "quick"))
+
+    lint_data, lint_issues = _get_lint_data(bundle)
+    if lint_data is not None:
+        data["lint"] = lint_data
+    else:
+        lint_issues.append(
+            Issue(
+                code="OKF_LINT_UNAVAILABLE",
+                message="pymarkdownlnt is not installed. Install with: pip install mira-okf[lint]",
+                severity="info",
+            )
+        )
+
     payload = {
         "ok": True,
         "command": "okf.health",
         "bundle": bundle_payload(bundle),
         "data": data,
-        "issues": [issue_payload(issue) for issue in sorted([*bundle.issues, *reserved_issues, *link_issues], key=_issue_key)],
+        "issues": [issue_payload(issue) for issue in sorted([*bundle.issues, *reserved_issues, *link_issues, *lint_issues], key=_issue_key)],
     }
     if getattr(args, "json", False):
         print(json.dumps(payload, indent=2, ensure_ascii=False, sort_keys=True))

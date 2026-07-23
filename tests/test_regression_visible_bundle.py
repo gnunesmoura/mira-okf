@@ -238,7 +238,7 @@ class RegressionVisibleBundleTest(unittest.TestCase):
             data = payload["data"]
             expected_keys = {
                 "citations", "connectivity", "indexes", "inventory", "links",
-                "logs", "metadata", "reserved_files", "rules", "status", "summary", "validation",
+                "lint", "logs", "metadata", "reserved_files", "rules", "status", "summary", "validation",
             }
             self.assertEqual(set(data), expected_keys)
             self.assertIn("inventory", data)

@@ -4,13 +4,16 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mira-okf"
-version = "0.0.1a3"
+version = "0.0.1a4"
 description = "Local, read-only Python library and CLI for inspecting Open Knowledge Format bundles."
 readme = "README.md"
 license = "MIT"
 maintainers = [{name = "gnunesmoura"}]
 requires-python = ">=3.12"
 dependencies = []
+
+[project.optional-dependencies]
+lint = ["pymarkdownlnt>=0.9", "PyYAML>=6.0"]
 
 [project.scripts]
 mira-okf = "mira_okf.cli:main"
@@ -26,7 +29,7 @@ import_package = "mira_okf"
 cli = "mira-okf"
 repository = "gnunesmoura/mira-okf"
 version_source = "pyproject.toml"
-version = "0.0.1a3"
+version = "0.0.1a4"
 repository_url = "https://github.com/gnunesmoura/mira-okf"
 documentation_url = "https://github.com/gnunesmoura/mira-okf/tree/main/docs"
 issues_url = "https://github.com/gnunesmoura/mira-okf/issues"

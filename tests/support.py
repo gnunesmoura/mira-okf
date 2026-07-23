@@ -32,3 +32,37 @@ def run_main(argv: Sequence[str], cwd: Path | None = None) -> tuple[int, str, st
         if cwd is not None:
             os.chdir(previous_cwd)
     return exit_code, stdout.getvalue(), stderr.getvalue()
+
+
+class NoPyMarkdown:
+    """Context manager that makes `pymarkdown` unimportable for its duration."""
+
+    def __init__(self) -> None:
+        self._saved: dict[str, object] = {}
+
+    def __enter__(self) -> "NoPyMarkdown":
+        self._saved = {key: sys.modules.get(key) for key in list(sys.modules) if key == "pymarkdown" or key.startswith("pymarkdown.")}
+        for key in list(sys.modules):
+            if key == "pymarkdown" or key.startswith("pymarkdown."):
+                del sys.modules[key]
+
+        from importlib.machinery import ModuleSpec
+
+        class _Blocker:
+            def find_spec(self, fullname: str, path=None, target=None):
+                if fullname == "pymarkdown" or fullname.startswith("pymarkdown."):
+                    return ModuleSpec(fullname, None)
+                return None
+
+        self._blocker = _Blocker()
+        sys.meta_path.insert(0, self._blocker)
+        return self
+
+    def __exit__(self, *exc) -> None:
+        sys.meta_path.remove(self._blocker)
+        for key in list(sys.modules):
+            if key == "pymarkdown" or key.startswith("pymarkdown."):
+                del sys.modules[key]
+        for key, value in self._saved.items():
+            if value is not None:
+                sys.modules[key] = value

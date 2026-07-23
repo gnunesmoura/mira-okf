@@ -22,3 +22,8 @@ Links beginning with `/` are resolved from the bundle root; ordinary relative
 links are resolved from the source document's directory. This applies to all
 link checks, including `index.md` resolution in the `full` profile. Missing
 targets are non-fatal findings in the health output.
+
+## Lint integration
+
+When `pymarkdownlnt` is installed (the `lint` extra), JSON output includes
+`data.lint` with lint findings for the bundle.

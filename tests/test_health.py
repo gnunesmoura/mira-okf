@@ -5,7 +5,14 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from tests.support import run_main, write_files
+from tests.support import NoPyMarkdown, run_main, write_files
+
+try:
+    from pymarkdown.api import PyMarkdownApi  # noqa: F401
+
+    HAS_PYMARKDOWN = True
+except ImportError:
+    HAS_PYMARKDOWN = False
 
 
 class HealthPortableResolutionRegressionTest(unittest.TestCase):
@@ -190,7 +197,8 @@ class HealthCommandTest(unittest.TestCase):
             self.assertTrue(absolute["ok"])
             self.assertEqual(sorted(absolute["data"]), [
                 "citations", "connectivity", "indexes", "inventory", "links",
-                "logs", "metadata", "reserved_files", "rules", "status", "summary", "validation",
+                "lint", "logs", "metadata", "reserved_files", "rules", "status",
+                "summary", "validation",
             ])
             self.assertEqual(absolute["data"], relative["data"])
             self.assertEqual(absolute["issues"], relative["issues"])
@@ -228,7 +236,7 @@ class HealthCommandTest(unittest.TestCase):
             self.assertEqual(data["status"], "invalid")
             self.assertEqual(
                 sorted(data),
-                ["citations", "connectivity", "indexes", "inventory", "links", "logs", "metadata", "reserved_files", "rules", "status", "summary", "validation"],
+                ["citations", "connectivity", "indexes", "inventory", "links", "lint", "logs", "metadata", "reserved_files", "rules", "status", "summary", "validation"],
             )
             self.assertNotIn("issues", data["validation"])
             self.assertFalse(data["validation"]["passed"])
@@ -477,6 +485,53 @@ class HealthCommandTest(unittest.TestCase):
             self.assertEqual(reports[0], reports[1])
             self.assertEqual(reports[0]["semantic_concept_count"], 0)
             self.assertEqual(reports[0]["unreachable_concepts"], ["alpha", "zeta"])
+
+
+class HealthLintIntegrationTest(unittest.TestCase):
+    @unittest.skipUnless(HAS_PYMARKDOWN, "requires pymarkdownlnt")
+    def test_health_includes_lint_data(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir) / "bundle"
+            write_files(
+                root,
+                {
+                    "index.md": "index\n",
+                    "alpha.md": (
+                        "---\ntype: Note\n---\n# Heading\ntext\n"
+                    ),
+                },
+            )
+            exit_code, stdout, stderr = run_main(["health", str(root), "--json"])
+            self.assertEqual(exit_code, 0)
+            payload = json.loads(stdout)
+            self.assertIn("lint", payload["data"])
+            lint = payload["data"]["lint"]
+            self.assertIn("findings", lint)
+            self.assertIn("count", lint)
+            self.assertIn("by_file", lint)
+            self.assertIn("config", lint)
+            self.assertGreater(lint["count"], 0)
+
+    @unittest.skipUnless(HAS_PYMARKDOWN, "requires pymarkdownlnt to confirm it can be blocked")
+    def test_health_lint_omitted_when_unavailable(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir) / "bundle"
+            write_files(
+                root,
+                {
+                    "index.md": "index\n",
+                    "alpha.md": (
+                        "---\ntype: Note\n---\n# Heading\ntext\n"
+                    ),
+                },
+            )
+            with NoPyMarkdown():
+                exit_code, stdout, stderr = run_main(["health", str(root), "--json"])
+            self.assertEqual(exit_code, 0)
+            payload = json.loads(stdout)
+            self.assertNotIn("lint", payload["data"])
+            codes = [issue["code"] for issue in payload["issues"]]
+            self.assertIn("OKF_LINT_UNAVAILABLE", codes)
 
 
 if __name__ == "__main__":

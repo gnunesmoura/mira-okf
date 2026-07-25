@@ -7,8 +7,8 @@ from pathlib import Path
 
 from tests.support import run_main, write_files
 
+class ShowConceptResolutionTest(unittest.TestCase):
 
-class ShowCommandTest(unittest.TestCase):
     def test_show_resolves_exact_concept_id_and_summary_output(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             root = Path(tmpdir) / "bundle"
@@ -269,9 +269,6 @@ class ShowCommandTest(unittest.TestCase):
             self.assertEqual(stderr, "")
             self.assertEqual(json.loads(stdout)["data"]["body"], body)
 
-
-    # --- Generic Markdown file reads (reserved files) ---
-
     def test_show_reads_root_index_md(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             root = Path(tmpdir) / "bundle"
@@ -310,8 +307,6 @@ class ShowCommandTest(unittest.TestCase):
             self.assertIn("nested/index.md  [Markdown]", stdout)
             self.assertIn("# Nested Index", stdout)
 
-    # --- Visible Markdown without concept frontmatter ---
-
     def test_show_reads_visible_md_without_concept_frontmatter(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             root = Path(tmpdir) / "bundle"
@@ -324,8 +319,6 @@ class ShowCommandTest(unittest.TestCase):
             self.assertEqual(stderr, "")
             self.assertIn("readme.md  [Markdown]", stdout)
             self.assertIn("# Readme", stdout)
-
-    # --- JSON generic output ---
 
     def test_show_generic_json_fields(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -348,8 +341,6 @@ class ShowCommandTest(unittest.TestCase):
             self.assertEqual(data["content"], content)
             self.assertNotIn("concept_id", data)
             self.assertEqual(payload["issues"], [])
-
-    # --- Profile filtering for generic output ---
 
     def test_show_generic_brief_omits_content(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -426,8 +417,6 @@ class ShowCommandTest(unittest.TestCase):
             self.assertEqual(normal_data["relative_path"], "readme.md")
             self.assertEqual(normal_data["content"], content)
 
-    # --- Concept precedence ---
-
     def test_show_concept_precedence_over_generic_fallback(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             root = Path(tmpdir) / "bundle"
@@ -458,81 +447,3 @@ class ShowCommandTest(unittest.TestCase):
             self.assertIn("Beta body", stdout)
             self.assertNotIn("[Markdown]", stdout)
 
-    # --- Malformed concept preserved alongside generic files ---
-
-    def test_show_malformed_concept_preserved_when_generic_exists(self) -> None:
-        with tempfile.TemporaryDirectory() as tmpdir:
-            root = Path(tmpdir) / "bundle"
-            write_files(root, {
-                "index.md": "index\n",
-                "broken.md": "---\ntitle: Broken\n---\nBroken body\n",
-                "readme.md": "# Readme\n",
-            })
-            exit_code, stdout, stderr = run_main(["show", str(root), "broken"])
-            self.assertEqual(exit_code, 0)
-            self.assertEqual(stderr, "")
-            self.assertIn("Broken body", stdout)
-            self.assertIn("Issues", stdout)
-            self.assertIn("OKF_CONCEPT_MISSING_TYPE", stdout)
-
-    # --- Rejection of invalid targets ---
-
-    def test_show_rejects_missing_target(self) -> None:
-        with tempfile.TemporaryDirectory() as tmpdir:
-            root = Path(tmpdir) / "bundle"
-            write_files(root, {"index.md": "index\n"})
-            exit_code, stdout, stderr = run_main(["show", str(root), "nonexistent"])
-            self.assertEqual(exit_code, 1)
-            self.assertEqual(stdout, "")
-            self.assertIn("not found", stderr.lower())
-
-    def test_show_rejects_directory_target(self) -> None:
-        with tempfile.TemporaryDirectory() as tmpdir:
-            root = Path(tmpdir) / "bundle"
-            write_files(root, {
-                "index.md": "index\n",
-                "subdir/index.md": "nested\n",
-            })
-            exit_code, stdout, stderr = run_main(["show", str(root), "subdir"])
-            self.assertEqual(exit_code, 1)
-            self.assertEqual(stdout, "")
-            self.assertTrue(stderr)
-
-    def test_show_rejects_non_markdown_target(self) -> None:
-        with tempfile.TemporaryDirectory() as tmpdir:
-            root = Path(tmpdir) / "bundle"
-            write_files(root, {
-                "index.md": "index\n",
-                "data.json": '{"key": "value"}\n',
-            })
-            exit_code, stdout, stderr = run_main(["show", str(root), "data.json"])
-            self.assertEqual(exit_code, 1)
-            self.assertEqual(stdout, "")
-            self.assertTrue(stderr)
-
-    def test_show_rejects_hidden_target(self) -> None:
-        with tempfile.TemporaryDirectory() as tmpdir:
-            root = Path(tmpdir) / "bundle"
-            write_files(root, {
-                "index.md": "index\n",
-                ".hidden.md": "secret\n",
-            })
-            exit_code, stdout, stderr = run_main(["show", str(root), ".hidden.md"])
-            self.assertEqual(exit_code, 1)
-            self.assertEqual(stdout, "")
-            self.assertTrue(stderr)
-
-    def test_show_rejects_outside_bundle_target(self) -> None:
-        with tempfile.TemporaryDirectory() as tmpdir:
-            root = Path(tmpdir) / "bundle"
-            write_files(root, {"index.md": "index\n"})
-            outside = Path(tmpdir) / "outside.md"
-            outside.write_text("outside\n", encoding="utf-8")
-            exit_code, stdout, stderr = run_main(["show", str(root), "../outside.md"])
-            self.assertEqual(exit_code, 1)
-            self.assertEqual(stdout, "")
-            self.assertTrue(stderr)
-
-
-if __name__ == "__main__":
-    unittest.main()

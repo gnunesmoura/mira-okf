@@ -1,13 +1,28 @@
 # MIRA OKF
 
-`mira-okf` is a local, read-only Python library and CLI for inspecting Open
-Knowledge Format (OKF) bundles. The distribution and CLI command are
-`mira-okf`; the import package is `mira_okf`;  It provides compact navigation,
-concept inventory, link analysis, property projection, validation, and health reports.
+MIRA OKF is a local tool for exploring and checking Open Knowledge Format
+(OKF) bundles. It reads Markdown-based knowledge bases without changing them,
+so you can browse concepts, inspect links, project metadata, validate
+structure, and review bundle health from the terminal.
 
-The supported interface is documented in [`docs/`](docs/). Start with the
-[getting started guide](docs/getting-started.md), then use the
-[command map](docs/commands/index.md) and [behavior reference](docs/behavior/index.md).
+MIRA stands for **Markdown Indexing, Retrieval & Analysis**. The `OKF` suffix
+makes the supported format explicit.
+
+## Try it
+
+```bash
+mira-okf tree path/to/bundle --depth 2 --summary
+mira-okf show path/to/bundle concept-id
+mira-okf validate path/to/bundle --json
+```
+
+The CLI is read-only and works locally: it does not require Obsidian, a
+database, a network connection, or a hosted service.
+
+The full interface is documented in [`docs/`](docs/).
+
+The repository's `docs/` directory is itself an OKF bundle, so it can be used
+as a local example when trying the commands above.
 
 ## Install
 

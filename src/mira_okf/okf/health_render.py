@@ -1,5 +1,7 @@
 """Human-readable health output rendering."""
 
+from typing import Any
+
 GROUP_LABELS = {
     "inventory": "inventory",
     "reserved_files": "reserved files",

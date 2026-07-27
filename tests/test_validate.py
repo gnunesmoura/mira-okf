@@ -86,14 +86,15 @@ class ValidateCommandTest(unittest.TestCase):
             self.assertEqual(payload["command"], "okf.validate")
             self.assertFalse(payload["data"]["passed"])
             self.assertEqual(payload["data"]["status"], "fail")
-            self.assertEqual(payload["data"]["issue_count"], len(payload["issues"]))
+            counted_issues = [issue for issue in payload["issues"] if issue["code"] != "OKF_LINT_UNAVAILABLE"]
+            self.assertEqual(payload["data"]["issue_count"], len(counted_issues))
             self.assertEqual(payload["data"]["error_count"], 2)
             self.assertEqual(payload["data"]["warning_count"], 3)
             self.assertEqual(payload["data"]["info_count"], 0)
             self.assertEqual(payload["data"]["concept_count"], 3)
             self.assertEqual(payload["data"]["checked_file_count"], 6)
             self.assertEqual(
-                [issue["code"] for issue in payload["issues"]],
+                [issue["code"] for issue in payload["issues"] if issue["code"] != "OKF_LINT_UNAVAILABLE"],
                 [
                     "OKF_FRONTMATTER_MISSING",
                     "OKF_CONCEPT_MISSING_TYPE",
@@ -250,4 +251,3 @@ class ValidateLintIntegrationTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

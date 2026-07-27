@@ -59,20 +59,22 @@ def run_validate(args: Namespace) -> int:
     issues = sorted(
         [*bundle.issues, *_reserved_issues(bundle.root_path), *lint_issues],
         key=lambda issue: (
+            issue.path is None,
             issue.path or "",
             issue.line if issue.line is not None else 10**9,
             issue.field or "",
             issue.code,
         ),
     )
-    error_count = sum(1 for issue in issues if issue.severity == "error")
-    warning_count = sum(1 for issue in issues if issue.severity == "warning")
-    info_count = sum(1 for issue in issues if issue.severity == "info")
+    validation_issues = [issue for issue in issues if issue.code != "OKF_LINT_UNAVAILABLE"]
+    error_count = sum(1 for issue in validation_issues if issue.severity == "error")
+    warning_count = sum(1 for issue in validation_issues if issue.severity == "warning")
+    info_count = sum(1 for issue in validation_issues if issue.severity == "info")
     passed = error_count == 0 and warning_count == 0
     data = {
         "passed": passed,
         "status": "pass" if passed else "fail",
-        "issue_count": len(issues),
+        "issue_count": len(validation_issues),
         "error_count": error_count,
         "warning_count": warning_count,
         "info_count": info_count,

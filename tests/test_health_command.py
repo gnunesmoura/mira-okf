@@ -36,11 +36,14 @@ class HealthCommandTest(unittest.TestCase):
             self.assertEqual(sorted(absolute), ["bundle", "command", "data", "issues", "ok"])
             self.assertEqual(absolute["command"], "okf.health")
             self.assertTrue(absolute["ok"])
-            self.assertEqual(sorted(absolute["data"]), [
+            expected_keys = [
                 "citations", "connectivity", "indexes", "inventory", "links",
-                "lint", "logs", "metadata", "reserved_files", "rules", "status",
+                "logs", "metadata", "reserved_files", "rules", "status",
                 "summary", "validation",
-            ])
+            ]
+            if HAS_PYMARKDOWN:
+                expected_keys.insert(5, "lint")
+            self.assertEqual(sorted(absolute["data"]), sorted(expected_keys))
             self.assertEqual(absolute["data"], relative["data"])
             self.assertEqual(absolute["issues"], relative["issues"])
 
@@ -75,13 +78,19 @@ class HealthCommandTest(unittest.TestCase):
                 },
             )
             self.assertEqual(data["status"], "invalid")
-            self.assertEqual(
-                sorted(data),
-                ["citations", "connectivity", "indexes", "inventory", "links", "lint", "logs", "metadata", "reserved_files", "rules", "status", "summary", "validation"],
-            )
+            expected_keys = [
+                "citations", "connectivity", "indexes", "inventory", "links", "logs",
+                "metadata", "reserved_files", "rules", "status", "summary", "validation",
+            ]
+            if HAS_PYMARKDOWN:
+                expected_keys.insert(5, "lint")
+            self.assertEqual(sorted(data), sorted(expected_keys))
             self.assertNotIn("issues", data["validation"])
             self.assertFalse(data["validation"]["passed"])
-            self.assertEqual(data["validation"]["issue_count"], len([issue for issue in payload["issues"] if issue["code"] != "OKF_LINK_BROKEN"]))
+            self.assertEqual(
+                data["validation"]["issue_count"],
+                len([issue for issue in payload["issues"] if issue["code"] not in {"OKF_LINK_BROKEN", "OKF_LINT_UNAVAILABLE"}]),
+            )
             self.assertEqual(data["summary"]["warning_signal_count"], 4)
             self.assertEqual(data["summary"]["error_signal_count"], 0)
             self.assertEqual(data["inventory"]["concept_count"], 3)
@@ -372,4 +381,3 @@ class HealthLintIntegrationTest(unittest.TestCase):
             self.assertNotIn("lint", payload["data"])
             codes = [issue["code"] for issue in payload["issues"]]
             self.assertIn("OKF_LINT_UNAVAILABLE", codes)
-

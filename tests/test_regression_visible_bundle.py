@@ -7,6 +7,13 @@ from pathlib import Path
 
 from tests.support import run_main, write_files
 
+try:
+    from pymarkdown.api import PyMarkdownApi  # noqa: F401
+
+    HAS_PYMARKDOWN = True
+except ImportError:
+    HAS_PYMARKDOWN = False
+
 
 class RegressionVisibleBundleTest(unittest.TestCase):
     """Characterization tests capturing current visible-only bundle behavior.
@@ -167,7 +174,8 @@ class RegressionVisibleBundleTest(unittest.TestCase):
             exit_code, stdout, stderr = run_main(["validate", str(root), "--json"])
             self.assertEqual(exit_code, 0)
             payload = json.loads(stdout)
-            self.assertEqual(payload["data"]["issue_count"], len(payload["issues"]))
+            counted_issues = [issue for issue in payload["issues"] if issue["code"] != "OKF_LINT_UNAVAILABLE"]
+            self.assertEqual(payload["data"]["issue_count"], len(counted_issues))
             self.assertEqual(
                 payload["data"]["error_count"] + payload["data"]["warning_count"] + payload["data"]["info_count"],
                 payload["data"]["issue_count"],
@@ -238,8 +246,10 @@ class RegressionVisibleBundleTest(unittest.TestCase):
             data = payload["data"]
             expected_keys = {
                 "citations", "connectivity", "indexes", "inventory", "links",
-                "lint", "logs", "metadata", "reserved_files", "rules", "status", "summary", "validation",
+                "logs", "metadata", "reserved_files", "rules", "status", "summary", "validation",
             }
+            if HAS_PYMARKDOWN:
+                expected_keys.add("lint")
             self.assertEqual(set(data), expected_keys)
             self.assertIn("inventory", data)
             self.assertIn("concept_count", data["inventory"])

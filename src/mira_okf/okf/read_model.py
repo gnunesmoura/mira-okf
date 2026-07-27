@@ -88,7 +88,7 @@ def issue_payload(issue: Issue) -> dict[str, Any]:
         "code": issue.code,
         "message": issue.message,
         "severity": issue.severity,
-        "path": issue.path,
+        "path": issue.path or "",
         "line": issue.line,
         "field": issue.field,
         "suggestion": issue.suggestion,
